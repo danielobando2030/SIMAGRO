@@ -1,0 +1,119 @@
+---
+title: ' '
+params:
+  datos: NA
+  porcent_prod: NA
+  acumulado: NA
+  prod_neces: NA
+  num_productos: NA
+  subtitulo: NA
+  mensaje1: NA
+  mensaje2: NA
+  mensaje3: NA
+  algo: NA
+  mes: NA
+  anio: NA
+  ubicacion: NA
+  plot: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}  # Agregar esta línea
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{} 
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \usepackage{eso-pic}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+---
+
+
+```{r setup, include=FALSE,warning=FALSE,message=FALSE}
+# Instalamos librerias
+#tinytex::install_tinytex()
+#tinytex::tlmgr_install("caption")
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+#install.packages("xelatex")
+```
+<!-- Fecha -->
+\begin{flushright}
+\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\end{flushright}
+
+\section*{Parámetros con los cuales se generó el informe:}
+```{r,warning=FALSE,message=FALSE}
+  # Cargar el paquete knitr
+  library(knitr)
+  library(kableExtra)
+  library(xtable)
+
+  # Label para tipo: 
+  opciones_algo <- c("Entradas" = "Neto_entra", "Salidas" = "Neto_sale", "Entradas Locales" = "Neto_entra_local","Entradas Externas" = "Neto_entra_exter")
+  opciones_Mes <- c("Enero" = 1, "Febrero" = 2, "Marzo" = 3, "Abril" = 4, "Mayo" = 5, "Junio" = 6, "Julio" = 7, "Agosto" = 8, "Septiembre" = 9, "Octubre" = 10, "Noviembre" = 11, "Diciembre" =12)
+  
+  tipo_algo <- ifelse(is.na(params$algo), "", names(opciones_algo)[which(opciones_algo == params$algo)])
+  mes_label <- ifelse(is.na(params$mes) | !(params$mes %in% opciones_Mes), "Todos los meses", names(opciones_Mes)[which(opciones_Mes == params$mes)])
+  
+  df <- data.frame(
+    "Parametro" = c("Variable:", "Año:", "Mes:", "Origen:"),
+    "Valor" = c(tipo_algo, ifelse(is.na(params$anio) | params$anio == "todo", "Todos los años", params$anio), mes_label, ifelse(is.na(params$ubicacion) | params$ubicacion == "todo", "Todos los departamentos", params$ubicacion))
+  )
+  
+
+
+# Crear la tabla con knitr::kable
+tabla_kable <- df %>%
+  knitr::kable(
+    col.names = NULL,  # No mostrar nombres de columnas
+    align = 'l',  # Alineación de las columnas
+    format = "latex",  # Formato de salida
+    booktabs = TRUE,  # No utilizar el estilo de las tablas del paquete booktabs
+    linesep = "",  # No agregar ninguna línea separadora
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left", bootstrap_options = "borderless")  # Estilo de la tabla con bordes blancos y cuadrícula completa
+
+# Imprimir la tabla con knitr::kable
+tabla_kable
+
+```
+
+<!-- Titulo del tablaro -->
+\fontsize{14}{14} \selectfont \textcolor{mygreen}{Análisis de Pareto del flujo de alimentos en Cundinamarca}\
+\fontsize{12}{12} \selectfont \textcolor{green2}{Productos principales por volumen en flujo de alimentos en Cundinamarca.}\
+<!-- Subtitulo -->
+\fontsize{10}{10} \selectfont `r params$subtitulo`\
+<!-- Grafica -->
+```{r, out.width = "80%", fig.align = "center", warning=FALSE,message=FALSE}
+print(params$plot)
+```
+
+\fontsize{10}{10} \selectfont `r params$mensaje1`\
+
+\fontsize{10}{10} \selectfont `r params$mensaje3`\
+
+
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Se muestran los alimentos que reunen aproximadamente el 85\% del acumulado.}\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.}\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Entradas externas: Productos reportados con origen fuera del departamento de  Cundinamarca.}\
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+

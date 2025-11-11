@@ -1,0 +1,132 @@
+---
+title: "Huella de carbono por grupo y producto"
+params:
+  datos: NA
+  resumen: NA
+  mensaje1: NA
+  grafico: NA
+  anio: NA
+  mes: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs} 
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{19,65,116}
+- \definecolor{gray}{RGB}{78,77,77}
+- \definecolor{green2}{RGB}{19,65,116}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{} 
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \usepackage{eso-pic}
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(glue)
+```
+
+<!-- Fecha -->
+\begin{flushright}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\end{flushright}
+
+# \textcolor{mygreen}{Parámetros del informe}
+
+```{r}
+opciones_Mes <- c("Enero" = 1, "Febrero" = 2, "Marzo" = 3, "Abril" = 4, "Mayo" = 5, 
+                  "Junio" = 6, "Julio" = 7, "Agosto" = 8, "Septiembre" = 9, 
+                  "Octubre" = 10, "Noviembre" = 11, "Diciembre" =12)
+mes_label <- ifelse(is.na(params$mes) | !(params$mes %in% opciones_Mes),
+                    "Todos los meses", names(opciones_Mes)[which(opciones_Mes == params$mes)])
+
+df_params <- data.frame(
+  "Parámetro" = c("Año:", "Mes:"),
+  "Valor" = c(ifelse(is.na(params$anio), "Todos los años", params$anio),
+              mes_label)
+)
+
+df_params %>%
+  kable(col.names = NULL, align = "l", format = "latex", booktabs = TRUE) %>%
+  kable_styling(full_width = FALSE, position = "left", latex_options = "HOLD_position")
+```
+
+---
+
+# \textcolor{mygreen}{Huella de carbono por grupo y producto}
+
+\fontsize{12}{12}\selectfont
+\textcolor{gray}{Este informe presenta la distribución de la huella de carbono (en toneladas de CO₂) asociada al transporte y abastecimiento de productos agropecuarios durante el período seleccionado. El gráfico tipo *treemap* muestra la participación relativa de cada grupo y producto dentro del total de emisiones estimadas.}
+
+\medskip
+
+\textcolor{green2}{`r if (!is.null(params$mensaje1)) params$mensaje1 else ""`}
+
+---
+
+# \textcolor{mygreen}{Resumen de emisiones por grupo}
+
+```{r, results='asis'}
+if (!is.null(params$resumen) && nrow(params$resumen) > 0) {
+  params$resumen %>%
+    mutate(
+      `Toneladas (tCO₂)` = round(total_co2, 1),
+      `% del total` = round(porcentaje, 1)
+    ) %>%
+    select("Categoría" = categoria, `Toneladas (tCO₂)`, `% del total`) %>%
+    kable(format = "latex", booktabs = TRUE, align = "lcc",
+          caption = "Distribución de la huella de carbono por grupo de alimentos") %>%
+    kable_styling(latex_options = c("striped", "hold_position"))
+} else {
+  cat("No hay datos disponibles para generar la tabla de resumen.")
+}
+```
+
+---
+
+# \textcolor{mygreen}{Visualización general}
+
+```{r grafico, out.width = "90%", fig.align='center', echo=FALSE}
+if (!is.null(params$grafico) && file.exists(params$grafico)) {
+  knitr::include_graphics(params$grafico)
+} else {
+  cat("No hay gráfico disponible para los parámetros seleccionados.")
+}
+```
+
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios con base en el Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.}
+
+\medskip
+
+\fontsize{10}{10}\selectfont
+\textcolor{gray}{Los grupos en tonos más oscuros representan mayor peso en la huella total, mientras que los tonos claros corresponden a productos de menor participación. Los valores incluyen estimaciones por transporte, volumen y distancia promedio recorrida.}
+
+---
+
+# \textcolor{mygreen}{Notas metodológicas}
+
+\fontsize{9}{9}\selectfont
+\textcolor{gray}{
+Las estimaciones se basan en factores de conversión provenientes de:
+\textit{IPCC (2006, 2019)}, \textit{DEFRA (2023)} y \textit{FAO (2022) – Global Livestock Environmental Assessment Model (GLEAM) 2.0}.
+}
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

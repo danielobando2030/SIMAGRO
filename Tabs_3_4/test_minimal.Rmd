@@ -1,0 +1,7 @@
+---
+title: "Prueba mínima"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+Hola FAO.

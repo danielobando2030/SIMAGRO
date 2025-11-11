@@ -1,0 +1,117 @@
+---
+title: ' '
+params:
+  datos: NA
+  grafico: NA
+  temporalidad: NA
+  variable: NA
+  anio: NA
+  producto: NA
+  promedio: NA
+  fecha_max: NA
+  fecha_min: NA
+  prod_mas_volatil: NA
+  promedio_cambio: NA
+  mes_max: NA
+  valor_max: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{}
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+- \usepackage{eso-pic}
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(xtable)
+```
+
+\begin{flushright}
+\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\end{flushright}
+
+\section*{Parámetros con los cuales se generó el informe:}
+
+```{r params-tabla, message=FALSE, warning=FALSE}
+opciones_temporalidad <- c("Mensual" = "mensual", "Diaria" = "diaria")
+opciones_variable <- c("Precio promedio" = "precio_prom",
+                       "Cambio porcentual mensual" = "cambio_pct",
+                       "Cambio porcentual anual" = "cambio_pct_anual")
+
+temporalidad_label <- names(opciones_temporalidad)[which(opciones_temporalidad == params$temporalidad)]
+variable_label <- names(opciones_variable)[which(opciones_variable == params$variable)]
+
+df <- data.frame(
+  "Parámetro" = c("Temporalidad:", "Variable:", "Año:", "Producto:"),
+  "Valor" = c(
+    ifelse(is.na(temporalidad_label), "N/A", temporalidad_label),
+    ifelse(is.na(variable_label), "N/A", variable_label),
+    ifelse(is.na(params$anio) | params$anio == "Todos los años", "Todos los años", params$anio),
+    ifelse(is.na(params$producto) | params$producto == "Todos los productos", "Todos los productos", params$producto)
+  )
+)
+
+tabla_kable <- df %>%
+  knitr::kable(
+    col.names = NULL,
+    align = 'l',
+    format = "latex",
+    booktabs = TRUE,
+    linesep = "",
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left")
+tabla_kable
+```
+
+\fontsize{14}{14}\selectfont \textcolor{mygreen}{Comportamiento de los precios mayoristas en Bogotá y Cundinamarca}\
+
+\fontsize{12}{12}\selectfont \textcolor{green2}{Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.}\
+
+\fontsize{10}{10}\selectfont
+Durante el período analizado, el precio promedio fue de **$`r round(params$promedio, 0)`**.  
+El valor máximo se registró en **`r format(params$fecha_max, "%B de %Y")`**  
+y el mínimo en **`r format(params$fecha_min, "%B de %Y")`**.
+
+# Indicadores adicionales
+
+- Producto más volátil: **`r params$prod_mas_volatil`**  
+- Promedio de variación porcentual: **`r round(params$promedio_cambio, 2)`%**  
+- Mes con mayor aumento anual: **`r format(params$mes_max, "%B de %Y")`** (incremento de **`r round(params$valor_max, 2)`%**)
+
+# Visualización de precios
+
+```{r grafico, out.width = "90%", fig.align='center', message=FALSE, warning=FALSE}
+knitr::include_graphics(params$grafico)
+```
+
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
+\textcolor{mygreen}{La información solo se muestra para los precios en el centro de acopio de Bogotá.}\
+\textcolor{mygreen}{Para los productos fríjol verde, tomate, aguacate, banano, guayaba, mandarina, naranja, piña, arracacha, papa negra y yuca, los precios reportados corresponden a la variedad predominante en el mercado al momento de la recolección de la información.}\
+\textcolor{mygreen}{De acuerdo con el SIPSA, el valor reportado corresponde al precio mayorista por kilogramo de producto de primera calidad en la Central Mayorista de Corabastos.}\
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

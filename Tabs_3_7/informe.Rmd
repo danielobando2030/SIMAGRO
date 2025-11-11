@@ -1,0 +1,113 @@
+
+---
+title: " "
+params:
+  grafico: NA
+  producto: NA
+  anio: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- '\setmainfont{Prompt-Regular.ttf}'
+- \pagestyle{fancy}
+- \fancyfoot{}
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+- \usepackage{eso-pic}
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(knitr)
+library(ggplot2)
+library(plotly)
+library(htmlwidgets)
+library(webshot2)
+library(dplyr)
+library(stringr)
+try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
+```
+
+\begin{flushright}
+\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\end{flushright}
+
+\section*{Parámetros del informe}
+
+```{r params-tabla}
+df_params <- data.frame(
+  "Parámetro" = c("Producto:", "Año:"),
+  "Valor" = c(
+    ifelse(is.null(params$producto) || is.na(params$producto), "N/A", params$producto),
+    ifelse(is.null(params$anio) || is.na(params$anio), "N/A", params$anio)
+  )
+)
+
+df_params %>%
+  kable(col.names = NULL, align = "l", format = "latex", booktabs = TRUE, linesep = "", escape = FALSE) %>%
+  kable_styling(full_width = TRUE, latex_options = c("HOLD_position"), position = "left")
+```
+
+\fontsize{14}{14}\selectfont \textcolor{mygreen}{Análisis de la variación mensual de precios}\
+
+\fontsize{12}{12}\selectfont \textcolor{green2}{Identificación de los meses con mayores incrementos y reducciones en los precios mayoristas}\
+
+\vspace{0.5cm}
+
+```{r resumen, results='asis'}
+texto <- paste0(
+  "\\fontsize{10}{12}\\selectfont ",
+  "El presente informe muestra la evolución mensual de los precios promedio mayoristas ",
+  "del producto \\textbf{", params$producto, "} durante el año \\textbf{", params$anio, "}. ",
+  "La gráfica siguiente presenta la variación porcentual intermensual, ",
+  "permitiendo identificar los meses con mayores aumentos o caídas relativas en los precios. ",
+  "Estos cambios reflejan dinámicas estacionales, variaciones en la oferta y demanda, ",
+  "o condiciones coyunturales de los mercados agropecuarios."
+)
+writeLines(texto)
+```
+
+### Visualización de la variación mensual de precios
+
+```{r grafico, out.width='90%', fig.align='center', message=FALSE, warning=FALSE}
+if (!is.null(params$grafico) && file.exists(params$grafico)) {
+  knitr::include_graphics(params$grafico)
+} else {
+  cat("⚠️ No hay gráfico disponible para los parámetros seleccionados.")
+}
+```
+
+\vspace{0.5cm}
+
+### Notas de interpretación
+
+\fontsize{9}{11}\selectfont
+
+- La variación mensual se calcula como el cambio porcentual del precio promedio respecto al mes anterior.  
+- Valores positivos indican incrementos de precios, mientras que valores negativos reflejan reducciones.  
+- Este análisis permite visualizar patrones estacionales y posibles choques de mercado que afecten la formación de precios agropecuarios.  
+- La información es útil para el seguimiento de tendencias y la formulación de políticas públicas de abastecimiento y seguridad alimentaria.  
+
+\fontsize{8}{9}\selectfont
+\textcolor{mygreen}{Fuente: cálculos propios a partir del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.}\\
+\textcolor{mygreen}{Los precios corresponden a valores mayoristas por kilogramo de productos de primera calidad registrados en las centrales de abasto.}\\
+
+\AddToShipoutPictureBG*{
+  \put(0,20){\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+}

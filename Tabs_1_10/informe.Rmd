@@ -1,0 +1,95 @@
+---
+title: ' '
+params:
+  datos: NA
+  Text_: NA
+  plot: NA
+  subtitulo: NA
+  mensaje1: NA
+  alimento: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs} 
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{} 
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \usepackage{eso-pic}
+---
+
+
+```{r setup, include=FALSE,message=FALSE}
+# Instalamos librerias
+#tinytex::install_tinytex()
+#tinytex::tlmgr_install("caption")
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+#install.packages("xelatex")
+
+```
+
+<!-- Fecha -->
+\begin{flushright}
+\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\end{flushright}
+\section*{Parámetros con los cuales se generó el informe:}
+```{r,message=FALSE,warning=FALSE}
+  # Cargar el paquete knitr
+  library(knitr)
+  library(kableExtra)
+  library(xtable)
+
+  # Label para tipo: 
+
+  df <- data.frame(
+    "Parametro" = c( "Alimento:"),
+    "Valor" = c(ifelse(is.na(params$alimento) | params$alimento == "todo", "Todos los productos", params$alimento))
+  )
+
+# Crear la tabla con knitr::kable
+tabla_kable <- df %>%
+  knitr::kable(
+    col.names = NULL,  # No mostrar nombres de columnas
+    align = 'l',  # Alineación de las columnas
+    format = "latex",  # Formato de salida
+    booktabs = TRUE,  # No utilizar el estilo de las tablas del paquete booktabs
+    linesep = "",  # No agregar ninguna línea separadora
+    escape = FALSE
+  ) %>%
+   kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left", bootstrap_options = "borderless")   
+tabla_kable
+```
+<!-- Titulo del tablaro -->
+\fontsize{14}{14} \selectfont \textcolor{mygreen}{Distribución de la cantidad de productos que salen de Cundinamarca}\
+<!-- Subtitulo -->
+\fontsize{12}{12} \selectfont \textcolor{green2}{Descubre cómo se comporta la cantidad mensual de productos que salen de Cundinamarca según el SIPSA.}\
+<!-- Grafica -->
+```{r, out.width = "90%",warning=FALSE,message=FALSE}
+print(params$plot)
+```
+
+\fontsize{10}{10} \selectfont `r params$mensaje1`\
+
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Esta visualización muestra la distribución mensual de la cantidad de alimentos que salen del departamento de Cundinamarca, desagregada por año. Cada diagrama de caja y bigotes resume la variabilidad de los volúmenes mensuales de alimentos para cada año, permitiendo identificar diferencias en la mediana, la dispersión y la presencia de valores atípicos. El cuerpo de la caja representa el rango intercuartílico (del 25% al 75% de los valores observados), la línea central indica la mediana del volumen mensual, y los bigotes muestran la extensión de los valores típicos. Los puntos fuera de los bigotes corresponden a meses con niveles de abastecimiento inusualmente altos o bajos, que podrían estar asociados con variaciones estacionales, coyunturas de mercado o condiciones climáticas.}\
+
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

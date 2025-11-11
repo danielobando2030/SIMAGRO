@@ -1,0 +1,196 @@
+---
+title: " "
+params:
+  datos: NA
+  grafico: NA
+  producto: NA
+  anio: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- '\setmainfont{Prompt-Regular.ttf}'
+- \pagestyle{fancy}
+- \fancyfoot{}
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+- \usepackage{eso-pic}
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(htmlwidgets)
+library(webshot2)
+library(zoo)
+library(lubridate)
+library(stringr)
+
+try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
+
+df <- params$datos
+if (!is.null(df) && nrow(df) > 0) {
+  df <- df %>%
+    mutate(fecha = as.Date(fecha), anio = year(fecha))
+}
+```
+
+\begin{flushright}
+\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\end{flushright}
+
+\section*{Parámetros con los cuales se generó el informe}
+
+```{r params-tabla}
+df_params <- data.frame(
+  "Parámetro" = c("Producto:", "Año:"),
+  "Valor" = c(
+    ifelse(is.null(params$producto) || is.na(params$producto), "N/A", params$producto),
+    ifelse(is.null(params$anio) || is.na(params$anio), "N/A", params$anio)
+  )
+)
+
+df_params %>%
+  kable(col.names = NULL, align = "l", format = "latex", booktabs = TRUE, linesep = "", escape = FALSE) %>%
+  kable_styling(full_width = TRUE, latex_options = c("HOLD_position"), position = "left")
+```
+
+\fontsize{14}{14}\selectfont \textcolor{mygreen}{Bandas de precios mayoristas normalizados por producto}\
+
+\fontsize{12}{12}\selectfont \textcolor{green2}{Identificación de días con comportamientos atípicos en los mercados mayoristas}\
+
+```{r resumen, message=FALSE, warning=FALSE, results='asis'}
+if (!is.null(df) && nrow(df) > 0) {
+  promedio_precio <- mean(df$precio, na.rm = TRUE)
+  precio_max <- max(df$precio, na.rm = TRUE)
+  precio_min <- min(df$precio, na.rm = TRUE)
+  fecha_max <- df$fecha[which.max(df$precio)][1]
+  fecha_min <- df$fecha[which.min(df$precio)][1]
+  n_obs <- sum(!is.na(df$precio))
+  n_atipicos <- ifelse("estado" %in% names(df),
+                       sum(df$estado == "Atípico", na.rm = TRUE),
+                       NA_integer_)
+  
+  texto <- paste0(
+    "\\fontsize{10}{12}\\selectfont ",
+    "Durante el período analizado para el producto ",
+    "\\textbf{", params$producto, "} ",
+    "en el año \\textbf{", params$anio, "}, ",
+    "se registraron un total de \\textbf{", n_obs,
+    "} observaciones diarias de precios mayoristas. ",
+    "El precio promedio fue de \\textbf{$", format(round(promedio_precio, 0),
+    big.mark = ".", decimal.mark = ","), "}. ",
+    "El valor máximo se observó el \\textbf{", format(fecha_max, "%d de %B de %Y"),
+    "} con \\textbf{$", format(round(precio_max, 0), big.mark = ".", decimal.mark = ","), "}, ",
+    "y el mínimo el \\textbf{", format(fecha_min, "%d de %B de %Y"),
+    "} con \\textbf{$", format(round(precio_min, 0), big.mark = ".", decimal.mark = ","), "}. ",
+    if (!is.na(n_atipicos)) paste0(
+      "A partir de las bandas de ±2 desviaciones estándar, ",
+      "se identificaron \\textbf{", n_atipicos, "} días con precios considerados atípicos. ",
+      "Bajo una distribución normal, aproximadamente el \\textbf{95\\% de las observaciones} ",
+      "se espera que se encuentren dentro de estas bandas, por lo que los valores fuera de ellas ",
+      "representan casos estadísticamente poco frecuentes."
+    )
+  )
+  
+  writeLines(texto)
+  
+} else {
+  writeLines("\\fontsize{10}{12}\\selectfont No se dispone de información suficiente para el periodo y producto seleccionados.")
+}
+```
+
+### Visualización de bandas y precios normalizados
+
+```{r grafico, out.width='90%', fig.align='center', message=FALSE, warning=FALSE}
+if (!is.null(params$grafico) && file.exists(params$grafico)) {
+  tmp_png <- tempfile(fileext = ".png")
+  webshot2::webshot(params$grafico, file = tmp_png, vwidth = 1280, vheight = 720, delay = 1)
+  if (file.exists(tmp_png)) knitr::include_graphics(tmp_png)
+} else {
+  cat("No hay gráfico disponible para los parámetros seleccionados.")
+}
+```
+
+### Resumen mensual de precios normalizados y días atípicos
+
+```{r tabla-mensual, message=FALSE, warning=FALSE}
+if (!is.null(df) && nrow(df) > 0 && all(c("precio_norm","estado") %in% names(df))) {
+  tabla_mensual <- df %>%
+    mutate(Mes = factor(format(fecha, "%B"),
+                        levels = c("enero","febrero","marzo","abril","mayo","junio",
+                                   "julio","agosto","septiembre","octubre","noviembre","diciembre"))) %>%
+    group_by(Mes) %>%
+    summarise(
+      `Precio normalizado promedio` = mean(precio_norm, na.rm = TRUE),
+      `Precio normalizado mínimo` = min(precio_norm, na.rm = TRUE),
+      `Precio normalizado máximo` = max(precio_norm, na.rm = TRUE),
+      `Días atípicos` = sum(estado == "Atípico", na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    arrange(Mes) %>%
+    mutate(across(where(is.numeric), ~round(., 2)))
+
+  if (nrow(tabla_mensual) > 0) {
+    tabla_mensual %>%
+      kable(format = "latex", booktabs = TRUE, align = "lcccc",
+            caption = "Resumen mensual de precios normalizados y ocurrencia de días atípicos") %>%
+      kable_styling(latex_options = c("striped", "hold_position"), font_size = 9)
+  }
+}
+```
+
+### Días con precios atípicos
+
+```{r tabla-atipicos, message=FALSE, warning=FALSE}
+if (!is.null(df) && nrow(df) > 0 && "estado" %in% names(df)) {
+  dias_atipicos <- df %>%
+    filter(estado == "Atípico") %>%
+    arrange(fecha) %>%
+    mutate(Fecha = format(fecha, "%d de %B de %Y"),
+           `Precio observado` = paste0("$", format(round(precio, 0), big.mark = ".", decimal.mark = ","))) %>%
+    select(Fecha, `Precio observado`)
+
+  if (nrow(dias_atipicos) > 0) {
+    dias_atipicos %>%
+      kable(format = "latex", booktabs = TRUE, align = "lc",
+            caption = "Relación de días con precios atípicos según bandas de ±2 desviaciones estándar") %>%
+      kable_styling(latex_options = c("striped", "hold_position"), font_size = 9)
+  }
+}
+```
+
+### Notas de interpretación
+
+\fontsize{9}{11}\selectfont
+
+- Las bandas se construyen a partir de una media móvil de 20 días y ±2 desviaciones estándar.
+- Bajo una distribución normal, aproximadamente el **95 % de los valores** se espera que se encuentren dentro de este rango.
+- Los días atípicos se ubican fuera de las bandas, representando variaciones estadísticamente inusuales.
+- Este análisis permite identificar episodios de volatilidad o choques de precios poco comunes en los mercados mayoristas.
+
+\fontsize{8}{9}\selectfont
+\textcolor{mygreen}{Fuente: cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.}\\
+\textcolor{mygreen}{Los precios corresponden a valores mayoristas por kilogramo de productos de primera calidad registrados en las centrales de abasto.}\\
+\textcolor{mygreen}{Las bandas se derivan de una media móvil de 20 días y un umbral de ±2 desviaciones estándar, donde aproximadamente el 95 \% de los valores se mantienen dentro de este rango.}\\
+
+\AddToShipoutPictureBG*{
+  \put(0,20){\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+}

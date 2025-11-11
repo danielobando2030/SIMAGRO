@@ -1,0 +1,151 @@
+---
+title: "Distribución de precios por año y presentación"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+params:
+  datos: NA
+  grafico: NA
+  subgrupo: NA
+  presentacion: NA
+  logo_sup: NA
+  logo_inf: NA
+header-includes:
+  - \usepackage[utf8]{inputenc}
+  - \usepackage[T1]{fontenc}
+  - \usepackage[spanish,es-tabla]{babel}
+  - \usepackage{lmodern}
+  - \usepackage{booktabs}
+  - \usepackage[table]{xcolor}
+  - \usepackage{colortbl}
+  - \usepackage{float}
+  - \usepackage{graphicx}
+  - \definecolor{violetaFAO}{RGB}{123,31,162}
+  - \selectlanguage{spanish}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(htmlwidgets)
+library(webshot2)
+library(plotly)
+try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
+df <- params$datos
+```
+
+```{r logo_sup, echo=FALSE, results='asis'}
+if (!is.null(params$logo_sup) && file.exists(params$logo_sup)) {
+  cat(sprintf("\\begin{center}\\includegraphics[width=\\textwidth]{%s}\\end{center}\n", gsub("\\\\", "/", params$logo_sup)))
+}
+```
+
+---
+
+# \textcolor{violetaFAO}{\LARGE Distribución de precios por año}
+
+\textcolor{violetaFAO}{\large \textbf{Subgrupo: `r params$subgrupo` — Presentación: `r params$presentacion`}}  
+
+Este informe presenta la distribución de precios mayoristas para el subgrupo y presentación seleccionados.  
+Cada caja representa la variación de precios durante un año, mostrando los valores mínimos, máximos y la mediana.
+
+---
+
+# Visualización general
+
+```{r grafico, fig.align='center', out.width='95%'}
+if (inherits(params$grafico, "plotly")) {
+  tmp_png <- tempfile(fileext = ".png")
+  tmp_html <- tempfile(fileext = ".html")
+  htmlwidgets::saveWidget(as_widget(params$grafico), tmp_html, selfcontained = TRUE)
+  webshot2::webshot(tmp_html, tmp_png, vwidth = 1200, vheight = 800)
+  knitr::include_graphics(tmp_png)
+} else if (is.character(params$grafico) && file.exists(params$grafico)) {
+  knitr::include_graphics(params$grafico)
+} else {
+  cat("No hay gráfico disponible para los parámetros seleccionados.")
+}
+```
+
+---
+
+# Interpretación
+
+- Cada caja representa la dispersión de precios anuales del subgrupo seleccionado.  
+- La **línea central** muestra la mediana, mientras que los límites de la caja representan los cuartiles (Q1 y Q3).  
+- Los puntos fuera de la caja indican **valores atípicos**.  
+- Un rango más amplio indica mayor volatilidad de precios en el año correspondiente.
+
+---
+
+# Fuente y notas metodológicas
+
+\small
+Fuente: **Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)** – DANE.  
+Elaboración propia. Los precios corresponden a valores mayoristas por producto, subgrupo y presentación, en pesos colombianos.  
+\newline
+\newline
+_Informe generado automáticamente con la aplicación Shiny – FAO 2025._
+
+---
+
+# Estadísticas descriptivas por año
+
+```{r tabla_anual, echo=FALSE}
+if (!is.null(df) && nrow(df) > 0) {
+  tabla_anual <- df %>%
+    group_by(anio) %>%
+    summarise(
+      Mediana = median(precio, na.rm = TRUE),
+      Q1 = quantile(precio, 0.25, na.rm = TRUE),
+      Q3 = quantile(precio, 0.75, na.rm = TRUE),
+      Mínimo = min(precio, na.rm = TRUE),
+      Máximo = max(precio, na.rm = TRUE),
+      n = n()
+    ) %>%
+    mutate(across(where(is.numeric), ~round(., 2))) %>%
+    rename(
+      "Año" = anio,
+      "Observaciones" = n
+    )
+  
+  kable(tabla_anual, format = "latex", booktabs = TRUE, align = "ccccccc",
+        caption = "Estadísticas descriptivas de precios por año") %>%
+    kable_styling(latex_options = c("striped", "hold_position"))
+} else {
+  cat("No hay datos disponibles para generar la tabla anual.")
+}
+```
+
+\newpage
+
+# Productos más y menos costosos
+
+```{r tabla_extremos, echo=FALSE}
+if (!is.null(df) && nrow(df) > 0) {
+  tabla_extremos <- df %>%
+    group_by(municipio) %>%
+    summarise(precio_medio = mean(precio, na.rm = TRUE)) %>%
+    arrange(desc(precio_medio))
+  
+  top_3 <- head(tabla_extremos, 3) %>% mutate(Categoría = "Más costosos")
+  bottom_3 <- tail(tabla_extremos, 3) %>% mutate(Categoría = "Más económicos")
+  tabla_comb <- bind_rows(top_3, bottom_3) %>% arrange(desc(precio_medio))
+  
+  kable(tabla_comb, format = "latex", booktabs = TRUE, align = "lcc",
+        caption = "Productos y municipios con precios promedio extremos") %>%
+    kable_styling(latex_options = c("striped", "hold_position"))
+} else {
+  cat("No hay datos disponibles para generar la tabla de productos extremos.")
+}
+```
+
+---
+
+```{r logo_inf, echo=FALSE, results='asis'}
+if (!is.null(params$logo_inf) && file.exists(params$logo_inf)) {
+  cat(sprintf("\\begin{center}\\vspace{1cm}\\includegraphics[width=\\textwidth]{%s}\\end{center}\n", gsub("\\\\", "/", params$logo_inf)))
+}

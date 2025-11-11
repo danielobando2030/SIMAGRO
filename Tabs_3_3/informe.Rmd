@@ -1,0 +1,174 @@
+---
+title: " "
+params:
+  datos: NA
+  grafico: NA
+  producto: NA
+  anio: NA
+  ciudad_max: NA
+  ciudad_min: NA
+  precio_max: NA
+  precio_min: NA
+  resumen: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: true
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+#- '\setmainfont{Prompt-Regular.ttf}[Path=., BoldFont=Prompt-Black.ttf]'
+- \pagestyle{fancy}
+- \fancyfoot{}
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+- \usepackage{eso-pic}
+- \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(htmlwidgets)
+library(webshot2)
+library(plotly)
+library(kableExtra)
+library(stringr)
+
+try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
+
+df <- params$datos
+```
+
+\begin{flushright}
+\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\end{flushright}
+
+\fontsize{14}{14}\selectfont\textcolor{mygreen}{Análisis de precios de alimentos por ciudad}\
+
+\fontsize{12}{12}\selectfont\textcolor{green2}{Comparación de precios de alimentos entre ciudades respecto a Bogotá}\
+
+---
+
+### Parámetros de generación
+
+```{r}
+tabla_param <- data.frame(
+  "Parámetro" = c("Producto", "Año"),
+  "Valor"     = c(params$producto, params$anio)
+)
+
+tabla_param %>%
+  kable(format = "latex", booktabs = TRUE, align = "l", escape = FALSE) %>%
+  kable_styling(full_width = FALSE, latex_options = "HOLD_position")
+```
+
+---
+
+```{r resumen}
+if (!is.null(params$resumen)) {
+  cat(params$resumen)
+} else {
+  cat("No hay resumen disponible.")
+}
+```
+
+---
+
+### Visualización comparativa
+
+```{r grafico, out.width='95%', fig.align='center', message=FALSE, warning=FALSE}
+if (!is.null(params$grafico)) {
+  tryCatch({
+    tmp_html <- tempfile(fileext = ".html")
+    tmp_png  <- tempfile(fileext = ".png")
+    
+    htmlwidgets::saveWidget(plotly::as_widget(params$grafico), tmp_html, selfcontained = TRUE)
+    
+    suppressWarnings(
+      webshot2::webshot(tmp_html, file = tmp_png, vwidth = 1280, vheight = 720, delay = 0.5)
+    )
+    
+    if (file.exists(tmp_png)) {
+      knitr::include_graphics(tmp_png)
+    } else {
+      cat("⚠️ No se pudo generar la imagen del gráfico.")
+    }
+  }, error = function(e) {
+    cat("⚠️ Error al renderizar el gráfico: ", e$message)
+  })
+} else {
+  cat("No hay gráfico disponible.")
+}
+```
+
+---
+
+### Tabla de resultados principales
+
+```{r tabla, message=FALSE, warning=FALSE}
+tryCatch({
+  if (is.null(params$datos) || nrow(params$datos) == 0) {
+    cat("⚠️ No hay datos disponibles para mostrar en la tabla.")
+  } else {
+    df <- params$datos
+    
+    if (!all(c("ciudad", "comp") %in% names(df))) {
+      cat("⚠️ Las columnas 'ciudad' y 'comp' no se encuentran en los datos.")
+    } else {
+      df %>%
+        dplyr::select(ciudad, comp) %>%
+        dplyr::rename(
+          "Ciudad" = ciudad,
+          "Diferencia con Bogotá ($)" = comp
+        ) %>%
+        dplyr::mutate(
+          `Diferencia con Bogotá ($)` =
+            formatC(`Diferencia con Bogotá ($)`, big.mark = ",", digits = 0, format = "f")
+        ) %>%
+        head(8) %>%
+        kable(
+          format = "latex",
+          booktabs = TRUE,
+          align = "l",
+          caption = "Ciudades con mayor y menor diferencia respecto a Bogotá"
+        ) %>%
+        kable_styling(latex_options = c("striped", "hold_position"))
+    }
+  }
+}, error = function(e) {
+  cat("⚠️ Error al generar la tabla: ", e$message)
+})
+```
+
+---
+
+### Interpretación
+
+\fontsize{10}{10}\selectfont
+- Valores positivos indican precios **mayores que Bogotá**.  
+- Valores negativos reflejan precios **menores que Bogotá**.  
+- El tamaño del círculo representa la **variabilidad interna (desviación estándar)**.  
+- Las ciudades con valores extremos permiten identificar diferencias relevantes entre mercados.  
+
+\fontsize{8}{8}\selectfont\textcolor{mygreen}{Fuente: Cálculos propios con base en el Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.}\
+
+\fontsize{8}{8}\selectfont\textcolor{mygreen}{Bogotá se toma como referencia por ser el principal mercado mayorista del país.}\
+
+\fontsize{8}{8}\selectfont\textcolor{mygreen}{Informe generado automáticamente mediante la aplicación Shiny – FAO 2025.}\
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

@@ -1,0 +1,106 @@
+######
+# Author:       Luis Miguel García
+#               Laura Quintero
+#               Daniel Obando
+# First Edited: 2025/08/24
+# Last Editor:  2025/09/12
+# R version:    4.3.2
+######
+
+if (interactive()) {
+  rm(list=ls())
+}
+
+###############################
+##### Libraries ###############
+###############################
+
+pacman::p_load(readr, lubridate, dplyr, ggplot2, zoo, readxl,
+               glue,  tidyverse, gridExtra, corrplot, plotly,
+               shiny)
+options(scipen = 999)
+
+###############################
+##### Setting directories #####
+###############################
+
+###############################
+##### Load and process data ###
+###############################
+
+data <- readRDS("base_diaria_mayoristas_indices_bog_3_6.rds")
+
+data <- data[order(data$producto, data$fecha), ]
+
+visualizar_bandas_plotly <- function(data, producto_sel, anio_sel = NULL) {
+  
+  meses_es <- c("Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic")
+  
+  df <- data %>%
+    filter(producto == producto_sel) %>%
+    mutate(anio = year(fecha)) %>%
+    arrange(fecha) %>%
+    group_by(anio) %>%
+    mutate(
+      media_20 = rollapply(precio, width = 20, FUN = mean,
+                           align = "right", fill = NA, na.rm = TRUE),
+      sd_20    = rollapply(precio, width = 20, FUN = sd,
+                           align = "right", fill = NA, na.rm = TRUE),
+      precio_norm = precio - media_20,
+      banda_sup =  2 * sd_20,
+      banda_inf = -2 * sd_20,
+      estado = case_when(
+        is.na(precio_norm) ~ NA_character_,  
+        precio_norm > banda_sup | precio_norm < banda_inf ~ "Atípico",
+        TRUE ~ "Normal"
+      ),
+      label_fecha = paste0(day(fecha), "-", meses_es[month(fecha)])
+    ) %>%
+    ungroup()
+  
+  if (!is.null(anio_sel)) {
+    df <- df %>% filter(anio == anio_sel)
+  }
+  
+  df_plot <- df %>% filter(!is.na(estado))
+  
+  # Seleccionar un tick cada 10 días
+  fechas_ticks <- df_plot$fecha[seq(1, nrow(df_plot), by = 10)]
+  labels_ticks <- df_plot$label_fecha[seq(1, nrow(df_plot), by = 10)]
+  
+  fig <- plot_ly(df_plot, x = ~fecha) %>%
+    add_ribbons(ymin = ~banda_inf, ymax = ~banda_sup, 
+                fillcolor = 'rgba(128, 0, 128, 0.2)',
+                line = list(color = 'rgba(128,0,128,0)'), 
+                name = 'Banda ±2sd',
+                hoverinfo = "none",
+                showlegend = TRUE) %>%
+    add_lines(y = ~precio_norm, name = 'Precio normalizado', 
+              line = list(color = '#2c3e50'),
+              showlegend = TRUE) %>%
+    add_markers(y = ~precio_norm, 
+                name = 'Precio normalizado',
+                marker = list(color = ~ifelse(estado=="Atípico", "red", "#2980b9")),
+                text = ~paste("Fecha:", label_fecha,
+                              "<br>Precio normalizado:", round(precio_norm,2),
+                              "<br>Estado:", estado),
+                hoverinfo = "text",
+                showlegend = FALSE) %>%
+    layout(
+      title = NULL,
+      xaxis = list(
+        title = "Fecha",
+        tickangle = -45,
+        tickvals = fechas_ticks,
+        ticktext = labels_ticks
+      ),
+      yaxis = list(title = "Precio normalizado"),
+      hovermode = "closest",
+      legend = list(title = list(text=''))
+    )
+  
+  return(fig)
+}
+
+# Ejemplo
+visualizar_bandas_plotly(data, "Aguacate", 2014)

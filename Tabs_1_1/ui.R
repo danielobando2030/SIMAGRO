@@ -1,8 +1,9 @@
 # Proyecto FAO
 # Visualizacion de DATOS   - abastecimeinto en bogota 
 ################################################################################-
-#Autores: Cristian Daniel Obando, Luis Miguel Garcia
-#Fecha de creacion: 20/03/2024
+#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando,m Luis Miguel Garcia
 #Fecha de ultima modificacion: 10/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
@@ -91,7 +92,7 @@ ui <- fluidPage(
              plotly::plotlyOutput("grafico",height = "400px"),
              actionButton("descargar", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/Simonaa-Antioquia/Tableros/tree/83b0c073b699faab18e927642e2919f2aa0a1dd5/Abs1", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_1", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restrablecer",icon = icon("refresh")),
              downloadButton("report", "Generar informe")
@@ -108,23 +109,23 @@ ui <- fluidPage(
               #         style = "background-color: #094735; color: #FFFFFF;")
            ))
   ),
-  fluidRow(
-    column(12, align = "left",
-           HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-           <br>
-                Esta visualización muestra el ranking de los municipios de orígen de los alimentos que llegan a las principales centrales
-                de abasto de Bogotá, resaltando su participación porcentual en el volumen total de ingresos.<br>
-                <b>Local:</b> Productos reportados con origen de territorios del departamento de Cundinamarca.<br>
-                <b>Externo:</b> Productos reportados con origen fuera del departamento de Cundinamarca.
-                "),style = "font-size:12px; color:#4E4D4D; text-align:left;font-family: 'Prompt', sans-serif;"
-    )
-  ),
-  
-  # Logo institucional
-  fluidRow(
-    tags$div(
-      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),  
-      style = "width: 100%; margin:0; "  
-    )
+fluidRow(
+  column(12, align = "left",
+         HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+               <br>
+               Esta visualización muestra el porcentaje de alimentos enviados a Cundinamarca desde cada departamento, incluyendo productos de origen local. 
+               Permite apreciar la importancia de Cundinamarca como receptor de alimentos provenientes de otros territorios del país.<br>
+               Los departamentos en color gris indican la ausencia de reportes de ingresos de productos provenientes de esas áreas en las principales centrales de abasto.
+               "),
+         style = "font-size:12px; color:#4E4D4D; text-align:left; font-family: 'Prompt', sans-serif; margin-top:15px;"
   )
+),
+
+# Logo institucional
+fluidRow(
+  tags$div(
+    tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+    style = "width: 100%; margin: 0;"
+  )
+)
 )

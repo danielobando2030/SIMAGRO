@@ -1,0 +1,119 @@
+---
+title: " "
+params:
+  producto: NA
+  anio: NA
+  mes: NA
+  mensaje1: NA
+  mensaje2: NA
+  mapa_png: NA
+  tabla_datos: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+- \usepackage{float}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{}
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+- \usepackage{eso-pic}
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(knitr)
+library(dplyr)
+library(kableExtra)
+library(xtable)
+try({Sys.setlocale("LC_TIME","es_ES.UTF-8")}, silent = TRUE)
+```
+
+\begin{flushright}
+\textcolor{gray}{Informe en línea generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\end{flushright}
+
+\section*{Parámetros con los cuales se generó el informe:}
+
+```{r params-table, message=FALSE, warning=FALSE}
+opciones_Mes <- c("Enero" = 1, "Febrero" = 2, "Marzo" = 3, "Abril" = 4, "Mayo" = 5, 
+                  "Junio" = 6, "Julio" = 7, "Agosto" = 8, "Septiembre" = 9, "Octubre" = 10, 
+                  "Noviembre" = 11, "Diciembre" = 12)
+
+mes_label <- ifelse(is.na(params$mes) | !(params$mes %in% opciones_Mes), 
+                    "Todos los meses", names(opciones_Mes)[which(opciones_Mes == params$mes)])
+
+df <- data.frame(
+  "Parámetro" = c("Año:", "Mes:", "Producto:"),
+  "Valor" = c(ifelse(is.na(params$anio) | params$anio == "todo", "Todos los años", params$anio),
+              mes_label,
+              ifelse(is.na(params$producto) | params$producto == "todo", "Todos los productos", params$producto))
+)
+
+cat("\\begin{adjustbox}{max width=\\textwidth}")
+knitr::kable(
+  df,
+  col.names = NULL,
+  align = 'l',
+  format = "latex",
+  booktabs = TRUE,
+  longtable = TRUE,
+  escape = FALSE
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    latex_options = c("striped"),
+    position = "left"
+  )
+cat("\\end{adjustbox}")
+```
+
+\fontsize{14}{14} \selectfont \textcolor{mygreen}{Análisis de precios de alimentos por departamento}\
+
+\fontsize{12}{12} \selectfont \textcolor{green2}{Precios promedio de alimentos comparados con Bogotá D.C.}\
+
+\fontsize{10}{10} \selectfont `r params$mensaje1`\\
+\fontsize{10}{10} \selectfont `r params$mensaje2`\\
+
+# Mapa de diferencias de precios
+
+```{r, out.width="90%", fig.align="center", message=FALSE, warning=FALSE}
+if (!is.null(params$mapa_png)) knitr::include_graphics(params$mapa_png)
+```
+
+# Tabla de datos
+
+```{r, message=FALSE, warning=FALSE}
+if (!is.null(params$tabla_datos)) {
+  params$tabla_datos %>%
+    arrange(desc(comp)) %>%
+    mutate(
+      Departamento = stringr::str_to_title(stringr::str_to_lower(departamento)),
+      `Dif. vs Bogotá ($)` = format(round(comp), big.mark=".", decimal.mark=",")
+    ) %>%
+    select(`Código dpto` = cod_depto, Departamento, `Dif. vs Bogotá ($)`) %>%
+    kable(format = "latex", booktabs = TRUE, longtable = TRUE, align = "lrr") %>%
+    kable_styling(full_width = FALSE, latex_options = c("striped", "scale_down"))
+}
+```
+
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Los precios corresponden a valores mayoristas por kilogramo de producto de primera calidad en las principales centrales del país.}\\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{La comparación se realiza respecto a Bogotá D.C. como referencia nacional.}\\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Los departamentos en color gris indican ausencia de datos.}\\
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

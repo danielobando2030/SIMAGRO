@@ -1,0 +1,118 @@
+#Proyecto FAO
+#Procesamiento datos SIPSA
+################################################################################-
+#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 24/02/2024
+#Fecha de ultima modificacion: 24/02/2024
+################################################################################-
+# Limpiar el entorno de trabajo
+rm(list=ls())
+# Paquetes 
+################################################################################-
+library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)
+library(glue);library(tidyverse);library(gridExtra);library(corrplot);library(arrow)
+options(scipen = 999)
+################################################################################-
+
+
+Sale_cundinamarca_ANO_mes_alimento_completo=readRDS("Sale_cundinamarca_ANO_mes_alimento_completo_1_10.RDS")
+Sale_cundinamarca_ANO_mes_total_completo=readRDS("Sale_cundinamarca_ANO_mes_total_completo_1_10.RDS")
+
+
+filt1=!(Sale_cundinamarca_ANO_mes_alimento_completo$anio==2025&Sale_cundinamarca_ANO_mes_alimento_completo$mes==9)
+filt2=!(Sale_cundinamarca_ANO_mes_total_completo$anio==2025&Sale_cundinamarca_ANO_mes_total_completo$mes==9)
+Sale_cundinamarca_ANO_mes_alimento_completo=Sale_cundinamarca_ANO_mes_alimento_completo[filt1,]
+Sale_cundinamarca_ANO_mes_total_completo=Sale_cundinamarca_ANO_mes_total_completo[filt2,]
+
+Caja_y_Bigotes = function(ALIMENTO = NULL, formato = "numeric") {
+  # --- 1. Selección del dataset ---
+  if (!is.null(ALIMENTO)) {
+    BD <- subset(Sale_cundinamarca_ANO_mes_alimento_completo, producto == ALIMENTO)
+  } else {
+    BD <- Sale_cundinamarca_ANO_mes_total_completo
+  }
+  
+  # --- 2. Limpieza y transformación ---
+  BD$mes <- months(as.Date(paste0("2025-", BD$mes, "-01")))  
+  BD$suma_kg <- as.numeric(BD$suma_kg)
+  BD$anio <- as.factor(BD$anio)
+  BD <- BD[, c("anio", "suma_kg")]
+  names(BD) <- c("var1", "value")
+  BD <- BD[rowSums(is.na(BD)) == 0, ]
+  
+  # --- 3. Estadísticas resumidas ---
+  resumen <- BD %>%
+    group_by(var1) %>%
+    summarise(
+      mediana = median(value, na.rm = TRUE),
+      q1 = quantile(value, 0.25, na.rm = TRUE),
+      q3 = quantile(value, 0.75, na.rm = TRUE),
+      promedio = mean(value, na.rm = TRUE)
+    )
+  
+  BD <- left_join(BD, resumen, by = "var1")
+  
+  # --- 4. Función para formato de texto ---
+  f1 <- function(x, formato) {
+    if (formato == "percent") {
+      return(scales::percent(x, accuracy = 0.1, big.mark = ".", decimal.mark = ","))
+    } else if (formato == "dollar") {
+      return(scales::dollar(x, big.mark = ".", decimal.mark = ","))
+    } else {
+      return(format(round(x), big.mark = ".", small.mark = ","))
+    }
+  }
+  
+  # --- 5. Tooltip interactivo ---
+  BD$tooltip_text <- paste0(
+    "<b>Año:</b> ", BD$var1,
+    "<br><b>Valor:</b> ", f1(BD$value, formato),
+    "<br><b>Mediana:</b> ", f1(BD$mediana, formato),
+    "<br><b>Q1:</b> ", f1(BD$q1, formato),
+    "<br><b>Q3:</b> ", f1(BD$q3, formato),
+    "<br><b>Promedio:</b> ", f1(BD$promedio, formato)
+  )
+  
+  # --- 6. Gráfico base ggplot ---
+  graf <-  ggplot(BD, aes(x = var1, y = value, fill = var1)) +
+    geom_violin(color = "black", alpha = 0.8, width = 1, show.legend = FALSE) +
+    geom_boxplot(width = 0.25, color = "black", alpha = 0.7, outlier.shape = NA, show.legend = FALSE) +
+    geom_jitter(aes(text = tooltip_text), size = 1, color = "gray40", alpha = 0.4, width = 0.15, show.legend = FALSE) +
+    scale_fill_manual(
+      values = c(
+        "2013"="#1A4922","2014"="#2E7730","2015"="#0D8D38",
+        "2016"="#85A728","2017"="#AEBF22","2018"="#F2E203",
+        "2019"="#F1B709","2020"="#F39F06","2021"="#BE7E11",
+        "2022"="#08384D","2023"="#094B5C","2024"="#00596C",
+        "2025"="#006A75"
+      )
+    ) +
+    labs(fill = "Año", y = "Kilogramos",x="") +
+    theme_minimal(base_size = 13) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      plot.title = element_text(face = "bold", hjust = 0.5)
+    )
+  
+  
+  # --- 7. Versión interactiva con plotly ---
+  graf_plotly <- plotly::ggplotly(graf, tooltip = "text") %>%
+    plotly::layout(
+      hoverlabel = list(bgcolor = "white", font = list(size = 12)))
+S=BD[BD$var1==2025,][1,]    
+Texto=paste("En 2025, se puede observar que en el 25% de los meses se alcanza una cantidad cómo máximo de",format(S$q1,decimal.mark=",",big.mark="."),
+            "En el 50% de los meses se alcanza una cantidad cómo máximo de",format(S$mediana,decimal.mark=",",big.mark="."),
+            "En el 75% de los meses se alcanza ",format(S$q3,decimal.mark=",",big.mark="."))
+  # --- 8. Retorno ---
+  return(list(
+    grafico_plano = graf,
+    grafico_plotly = graf_plotly,
+    datos = BD,
+    Text_=Texto,
+    resumen = resumen
+  ))
+}
+
+Caja_y_Bigotes(ALIMENTO ="Repollo",formato="numeric")
+Caja_y_Bigotes(ALIMENTO =NULL,formato="numeric")

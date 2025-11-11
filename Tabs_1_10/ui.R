@@ -1,0 +1,140 @@
+# Proyecto FAO
+# Visualizacion de DATOS   - abastecimeinto en resto 
+################################################################################-
+#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 20/03/2024
+#Fecha de ultima modificacion: 23/04/2024
+################################################################################-
+# Limpiar el entorno de trabajo
+rm(list=ls())
+# Paquetes 
+################################################################################-
+library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)
+library(glue);library(tidyverse);library(gridExtra);library(corrplot);library(shiny); library(shinydashboard)
+options(scipen = 999)
+################################################################################-
+
+# Corremos el codigo "002_Indices_abastecimiento_Cundinamarca.R"
+source("1_10b_Indices_Distribución_de las_Cantidades_salen.R")
+
+
+ui <- fluidPage(
+  tags$head(
+    tags$title("Distribución de la cantidad mensual de productos que salen de Cundinamarca por año"),  
+    tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"), 
+    tags$style(HTML("
+      .main-header {
+        font-family: 'Prompt', sans-serif;
+        font-size: 40px;
+        color: #0D8D38;
+      }
+      .sub-header {
+        font-family: 'Prompt', sans-serif;
+        font-size: 20px;
+      }
+      .main-header_2 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 20px;
+        color: #0D8D38;
+      }
+      .sub-header2 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 15px;
+      }
+      .sub-header3 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 15px;
+      }
+      .center {
+        display: flex;
+        justify-content: center;
+      }
+      .scrollable-content {
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: auto;
+      }
+      
+    "))
+  ),
+    tags$h1("Distribución de la Cantidad de productos que salen de cundinamarca por mes", class = "main-header"),
+    tags$h1("Descubre cómo se comporta la cantidad mensual de productos que salen de Cundinamarca según el SIPSA.", class = "main-header_2"),  
+  div(
+    textOutput("subtitulo"),
+    class = "sub-header2",
+    style = "margin-bottom: 20px;"
+  ),  
+  div(
+      fluidRow(
+         column(3,
+               selectInput("producto", "Producto:",c("Todos los productos" = "todo", as.character(sort(unique(Sale_cundinamarca_ANO_mes_alimento_completo$producto)))))),
+      
+    ),
+  fluidRow(
+    column(9,
+           div(
+             plotly::plotlyOutput("grafico",height = "400px"),
+             actionButton("descargar", "Gráfica", icon = icon("download")),
+             downloadButton("descargarDatos", "Datos"),
+             shiny::a("GitHub", href="https://github.com/Simonaa-Antioquia/Tableros/tree/83b0c073b699faab18e927642e2919f2aa0a1dd5/Abs1", target="_blank",
+                      class = "btn btn-default shiny-action-button", icon("github")),
+             actionButton("reset", "Restablecer",icon = icon("refresh")),
+             downloadButton("report", "Generar informe")
+             #,
+             #tableOutput("vistaTabla") 
+           )),
+    column(3, 
+           div(
+             wellPanel(textOutput("mensaje1"),
+                       style = "background-color: #0D8D38; color: #FFFFFF;")#,
+             #wellPanel(textOutput("mensaje2"),
+              #         style = "background-color: #005A45; color: #FFFFFF;"),
+             #wellPanel(textOutput("mensaje3"),
+              #         style = "background-color: #094735; color: #FFFFFF;")
+           ))
+  ),
+  fluidRow(
+    column(12,
+           style = "margin-top: 2px;",
+           tags$div(
+             tags$div(
+               tags$h1("Distribución de la cantidad de productos que salen de Cundinamarca", 
+                       class = "main-header"),
+               
+               tags$p("Esta visualización muestra la distribución mensual de la cantidad de alimentos que salen del departamento de cundinamarca, desagregada por año.", 
+                      class = "sub-header2"),
+               
+               tags$p("Cada diagrama de caja y bigotes resume la variabilidad de los volúmenes mensuales de productos que salen de cundinamarca para cada año, permitiendo identificar diferencias en la mediana, la dispersión y la presencia de valores atípicos.",
+                      class = "sub-header2"),
+               
+               tags$p("El cuerpo de la caja representa el rango intercuartílico (del 25% al 75% de los valores observados), la línea central indica la mediana del volumen mensual, y los bigotes muestran la extensión de los valores típicos. Los puntos fuera de los bigotes corresponden a meses con niveles de abastecimiento inusualmente altos o bajos, que podrían estar asociados con variaciones estacionales, coyunturas de mercado o condiciones climáticas.",
+                      class = "sub-header2"),
+               
+               tags$p("Comparar los diagramas entre años permite analizar:",
+                      class = "sub-header2"),
+               
+               tags$ul(
+                 tags$li("Cambios en la mediana anual de abastecimiento."),
+                 tags$li("Aumentos o disminuciones en la variabilidad mensual."),
+                 tags$li("Presencia de valores extremos asociados con choques específicos en la oferta o la demanda.")
+               )
+             ),
+             
+             
+             tags$p("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).", class = "sub-header2", style = "margin-top: 3px;"),
+             tags$p(
+               "Esta visualización .",
+               class = "sub-header2",
+               style = "margin-top: 3px;"
+             )
+             
+           )
+    )
+  ),
+    fluidRow(
+    tags$div(
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),  
+      style = "width: 100%; margin:0;"  
+    )
+  )
+))

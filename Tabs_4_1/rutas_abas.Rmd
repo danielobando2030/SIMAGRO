@@ -1,0 +1,112 @@
+---
+title: "Mapa de rutas de abastecimiento - FAO 2025"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+params:
+  datos: NA
+  grafico: NA
+  anio: NA
+  mes: NA
+  producto: NA
+header-includes:
+  - \usepackage[utf8]{inputenc}
+  - \usepackage[T1]{fontenc}
+  - \usepackage[spanish,es-tabla]{babel}
+  - \usepackage{lmodern}
+  - \usepackage{booktabs}
+  - \usepackage[table]{xcolor}
+  - \usepackage{colortbl}
+  - \usepackage{float}
+  - \definecolor{violetaFAO}{RGB}{123,31,162}
+  - \selectlanguage{spanish}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(htmlwidgets)
+library(webshot2)
+library(leaflet)
+try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
+df <- params$datos
+```
+
+---
+
+# \textcolor{violetaFAO}{\LARGE Rutas de abastecimiento agropecuario}
+
+\textcolor{violetaFAO}{\large \textbf{Año: `r params$anio` — Mes: `r params$mes` — Producto: `r params$producto`}}  
+
+Este informe presenta las principales rutas de abastecimiento para el producto seleccionado.  
+Las rutas se ponderan según su **importancia relativa**, medida como la participación del flujo (en kilogramos) de cada municipio origen en el total mensual.
+
+---
+
+# Visualización general
+
+```{r grafico, fig.align='center', out.width='95%'}
+if (inherits(params$grafico, "leaflet")) {
+  tmp_html <- tempfile(fileext = ".html")
+  tmp_png  <- tempfile(fileext = ".png")
+  htmlwidgets::saveWidget(params$grafico, tmp_html, selfcontained = TRUE)
+  webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
+  knitr::include_graphics(tmp_png)
+} else if (is.character(params$grafico) && file.exists(params$grafico)) {
+  knitr::include_graphics(params$grafico)
+} else {
+  cat("No hay mapa disponible para los parámetros seleccionados.")
+}
+```
+
+---
+
+# Interpretación
+
+- Los colores más oscuros indican rutas con **mayor importancia relativa** en el abastecimiento.  
+- Las líneas más gruesas representan **mayor volumen de carga transportado**.  
+- Las rutas parten desde los municipios de origen hacia los principales centros de consumo o acopio.  
+- Este análisis permite identificar los **nodos logísticos más relevantes** y la concentración de flujos.
+
+---
+
+# Fuente y notas metodológicas
+
+\small
+Fuente: **Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)** – DANE.  
+Elaboración propia. Los datos reflejan las rutas estimadas mediante coordenadas OSRM y ponderadas por volúmenes mensuales transportados.  
+\newline
+\newline
+_Informe generado automáticamente con la aplicación Shiny – FAO 2025._
+
+---
+
+# Principales rutas del mes
+
+```{r tabla_rutas, echo=FALSE}
+if (!is.null(df) && nrow(df) > 0) {
+  tabla_top <- df %>%
+    arrange(desc(importancia_ruta)) %>%
+    select(mpio_origen, depto_origen, distancia, importancia_ruta) %>%
+    head(10) %>%
+    mutate(
+      importancia_ruta = round(importancia_ruta * 100, 2),
+      distancia = round(distancia, 1)
+    ) %>%
+    rename(
+      "Municipio origen" = mpio_origen,
+      "Departamento" = depto_origen,
+      "Distancia (km)" = distancia,
+      "Importancia (%)" = importancia_ruta
+    )
+  
+  kable(tabla_top, format = "latex", booktabs = TRUE, align = "lccc",
+        caption = "Top 10 rutas de abastecimiento por importancia relativa") %>%
+    kable_styling(latex_options = c("striped", "hold_position"))
+} else {
+  cat("No hay datos disponibles para generar la tabla de rutas.")
+}
+```

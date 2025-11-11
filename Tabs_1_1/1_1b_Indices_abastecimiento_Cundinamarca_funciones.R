@@ -1,8 +1,9 @@
 # Proyecto FAO
 # Visualizacion de DATOS   - abastecimeinto en bogota 
 ################################################################################-
-#Autores: Cristian Daniel Obando Arbeláez, Luis Miguel Garcia
-#Fecha de creacion: 20/03/2024
+#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando,m Luis Miguel Garcia
 #Fecha de ultima modificacion: 10/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
@@ -167,7 +168,7 @@ importancia <- function(tipo, Año = NULL, Mes = NULL, municipios = 10, Producto
 }
 
 
-importancia(1,2023)
+#importancia(1,2023)
 #importancia(2,2023,1)
 #importancia(3,2023,1,15,"lechuga batavia")
 #importancia(1,Año = 2023, Producto = "lechuga batavia")

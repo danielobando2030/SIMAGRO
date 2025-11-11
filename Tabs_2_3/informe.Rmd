@@ -1,0 +1,112 @@
+---
+title: ' '
+params:
+  tipo: NA
+  anio: NA
+  subtitulo: NA
+  plot: NA
+  mensaje1: NA
+  mensaje2: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+header-includes:
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}  
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mygreen}{RGB}{26,73,34}
+- \definecolor{gray}{RGB}{128,128,128}
+- \definecolor{green2}{RGB}{13,141,56}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{} 
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \usepackage{eso-pic}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+---
+
+
+```{r , include=FALSE,warning=FALSE,message=FALSE}
+# Instalamos librerias
+#tinytex::install_tinytex()
+#tinytex::tlmgr_install("caption")
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+#install.packages("xelatex")
+```
+<!-- Fecha -->
+\begin{flushright}
+\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\end{flushright}
+\section*{Parámetros con los cuales se generó el informe:}
+```{r,warning=FALSE,message=FALSE}
+  # Cargar el paquete knitr
+  library(knitr)
+  library(kableExtra)
+  library(xtable)
+
+# Label para tipo: 
+opciones_Tipo <- list("Anual" = 1, "Mensual" = 0)
+
+tipo_label <- ifelse(is.na(params$tipo) | !(params$tipo %in% opciones_Tipo), "Todos los años", names(opciones_Tipo)[which(opciones_Tipo == params$tipo)])
+
+# Si params$anio es NULL, NA o vacío, asignar un valor predeterminado
+if (is.null(params$anio) || is.na(params$anio) || params$anio == ""|| params$anio == "todo") {
+  anio <- "Todos los años"
+} else {
+  anio <- params$anio
+}
+  
+df <- data.frame(
+  "Parametro" = c("Tipo:", "Año:"),
+  "Valor" = c(tipo_label, anio)
+)
+  
+
+
+# Crear la tabla con knitr::kable
+tabla_kable <- df %>%
+  knitr::kable(
+    col.names = NULL,  # No mostrar nombres de columnas
+    align = 'l',  # Alineación de las columnas
+    format = "latex",  # Formato de salida
+    booktabs = TRUE,  # No utilizar el estilo de las tablas del paquete booktabs
+    linesep = "",  # No agregar ninguna línea separadora
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left", bootstrap_options = "borderless")  # Estilo de la tabla con bordes blancos y cuadrícula completa
+
+# Imprimir la tabla con knitr::kable
+tabla_kable
+
+```
+<!-- Titulo del tablaro -->
+\fontsize{14}{14} \selectfont \textcolor{mygreen}{Índice de diversidad de alimentos}\
+<!-- Subtitulo -->
+\fontsize{12}{12} \selectfont \textcolor{green2}{Análisis de variedad de los alimentos que ingresan a las principales centrales de abasto de Cundinamarca.}\
+<!-- Subtitulo dinamico -->
+\fontsize{10}{10} \selectfont `r params$subtitulo`\
+```{r, out.width = "90%", fig.align = "center", warning=FALSE}
+print(params$plot)
+```
+\fontsize{10}{10} \selectfont `r params$mensaje1`\
+\fontsize{10}{10} \selectfont `r params$mensaje2`\
+
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.}\newline
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{La fórmula del índice de Herfindahl-Hirschman es: $IHH = \sum_{i=1}^{n}S_{i}^{2}$ donde $S_{i}$ es la participación que tiene cada producto en el volumen total de alimentos que ingresan a las principales centrales de abasto de Cundinamarca.}\newline
+
+
+\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+
+
