@@ -147,5 +147,9 @@ graficar_rutas <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
 ################################################################################-
 # Ejemplo de uso directo (fuera de Shiny)
 ################################################################################-
-mapa <- graficar_rutas(data_merged, Año = "2024", Mes = "11", Producto = "Maracuyá")
-mapa
+#mapa <- graficar_rutas(data_merged, Año = "2024", Mes = "11", Producto = "Maracuyá")
+#mapa
+
+
+
+

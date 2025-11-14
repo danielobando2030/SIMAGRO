@@ -20,7 +20,7 @@ options(encoding = "UTF-8")
 # Cargar función y base de datos
 ################################################################################-
 
-source("3_3b_funcion_elasticidad.R")  # Contiene: data y grafico_producto_anual()
+#source("3_3b_funcion_elasticidad.R")  # Contiene: data y grafico_producto_anual()
 
 ################################################################################-
 # SERVER

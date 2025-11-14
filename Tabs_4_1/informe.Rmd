@@ -1,0 +1,120 @@
+---
+title: " "
+params:
+  datos: NA
+  grafico: NA
+  anio: NA
+  mes: NA
+  producto: NA
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes: |
+  \usepackage{float}
+  \usepackage{arydshln}
+  \usepackage{tabu}
+  \usepackage[table]{xcolor}
+  \usepackage{colortbl}
+  \usepackage{fontspec}
+  \usepackage{booktabs}
+  \usepackage{fancyhdr}
+  \usepackage{graphicx}
+  \definecolor{mygreen}{RGB}{19,65,116}
+  \definecolor{MYGREEN}{RGB}{19,65,116}
+  \definecolor{gray}{RGB}{78,77,77}
+  \setmainfont{Prompt-Regular.ttf}[Path=./]
+  \pagestyle{fancy}
+  \fancyfoot{}
+  \setlength{\headheight}{2cm}
+  \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  \usepackage{eso-pic}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(htmlwidgets)
+library(webshot2)
+
+df <- params$datos
+anio <- params$anio
+mes  <- params$mes
+producto <- params$producto
+```
+
+\begin{flushright}
+\textcolor{mygreen}{Informe generado el: `r format(Sys.Date(), "%d %B %Y")`}
+\end{flushright}
+
+# \textcolor{mygreen}{\Large Parámetros del informe}
+
+```{r}
+parametros <- data.frame(
+  "Parámetro" = c("Año", "Mes", "Producto"),
+  "Valor"     = c(anio, mes, producto)
+)
+
+kable(parametros, format = "latex", booktabs = TRUE, align = "ll") %>%
+  kable_styling(full_width = FALSE, latex_options = "HOLD_position")
+```
+
+# \textcolor{mygreen}{\Large Mapa de rutas de abastecimiento}
+
+```{r grafico_png, fig.align='center', out.width='95%'}
+if (inherits(params$grafico, "leaflet")) {
+  tmp_html <- tempfile(fileext = ".html")
+  tmp_png  <- tempfile(fileext = ".png")
+  htmlwidgets::saveWidget(params$grafico, tmp_html, selfcontained = TRUE)
+  webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
+  knitr::include_graphics(tmp_png)
+} else {
+  cat("No se pudo generar el mapa.")
+}
+```
+
+\small
+\textcolor{gray}{\textbf{Fuente:} Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA). Cálculos propios.}
+
+---
+
+# \textcolor{mygreen}{\Large Principales rutas del mes}
+
+```{r tabla_rutas, echo=FALSE}
+if (!is.null(df) && nrow(df) > 0) {
+
+  tabla_top <- df %>%
+    arrange(desc(importancia_ruta)) %>%
+    select(mpio_origen, depto_origen, distancia, importancia_ruta) %>%
+    head(10) %>%
+    mutate(
+      distancia = round(distancia, 1),
+      importancia_ruta = round(importancia_ruta * 100, 2)
+    ) %>%
+    rename(
+      "Municipio origen" = mpio_origen,
+      "Departamento" = depto_origen,
+      "Distancia (km)" = distancia,
+      "Importancia (%)" = importancia_ruta
+    )
+
+  kable(
+    tabla_top, format = "latex", booktabs = TRUE,
+    caption = "Top 10 rutas de abastecimiento por importancia relativa"
+  ) %>%
+    kable_styling(latex_options = c("striped", "HOLD_position"))
+
+} else {
+  cat("No hay datos disponibles para generar la tabla.")
+}
+```
+
+\AddToShipoutPictureBG*{
+\put(0,0){
+\parbox[b][3cm][b]{\paperwidth}{
+\includegraphics[width=\paperwidth]{www/logo_2.png}
+}}
+}

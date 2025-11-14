@@ -107,10 +107,10 @@ cun_en_col<-function(Año = NULL, Mes = NULL, Producto = NULL){
   max_val <- max(abs(na.omit(mapa$columna_porcentaje)))
   
   valores_sin_na <- na.omit(mapa$columna_porcentaje)
-  my_palette_sin_na <- colorNumeric(palette = c("#F2E203", "#1A4922"), domain = valores_sin_na)
+  my_palette_sin_na <- colorNumeric(palette = c("#D3E7FF", "#134174"), domain = valores_sin_na)
   
   # Crear una paleta de colores personalizada
-  my_palette <- colorNumeric(palette = colorRampPalette(c("#F2E203", "#1A4922"))(length(unique(mapa$columna_porcentaje))), domain = c(min_val,max_val),  na.color = "#C5C7C6")
+  my_palette <- colorNumeric(palette = colorRampPalette(c("#D3E7FF", "#134174"))(length(unique(mapa$columna_porcentaje))), domain = c(min_val,max_val),  na.color = "#C5C7C6")
   
   # Crear el mapa interactivo
   p <- leaflet(mapa) %>%
@@ -146,7 +146,7 @@ cun_en_col<-function(Año = NULL, Mes = NULL, Producto = NULL){
 
     p_plano <-ggplot() +
     geom_sf(data = mapa, aes(fill = columna_porcentaje)) +
-    scale_fill_gradient(low = "#F2E203", high = "#0D8D38", na.value = "#C5C7C6", name = "Porcentaje") +
+    scale_fill_gradient(low = "#D3E7FF", high = "#134174", na.value = "#C5C7C6", name = "Porcentaje") +
     labs(title = " ") +
     theme_minimal() +
     theme(

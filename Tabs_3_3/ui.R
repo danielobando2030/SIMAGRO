@@ -10,7 +10,7 @@ library(shiny)
 library(plotly)
 library(dplyr)
 library(lubridate)
-
+source("3_3b_funcion_elasticidad.R") 
 # Datos cargados desde la función
 productos <- sort(unique(data$producto))
 anios <- sort(unique(year(data$mes_y_ano)))

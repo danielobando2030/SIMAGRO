@@ -1,9 +1,9 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# SERVER - Huella de Carbono (versión estable sin errores validate)
+# SERVER - Huella de Carbono (versión estable funcional, adaptada del antiguo)
 ################################################################################-
 # Autores: Luis Miguel García, Juliana Lalinde, Laura Quintero, Germán Angulo
-# Fecha: 10/11/2025
+# Fecha: 12/11/2025
 ################################################################################-
 
 rm(list = ls())
@@ -29,33 +29,25 @@ options(scipen = 999)
 
 server <- function(input, output, session) {
   
-  # ------------------------------------------------------------
-  # 1. Inicialización
-  # ------------------------------------------------------------
-  observe({
-    updateSelectInput(session, "anio", selected = 2024)
-    updateSelectInput(session, "mes", selected = "12")
-  })
-  
-  # ------------------------------------------------------------
-  # 2. Base filtrada
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # 1. Base filtrada
+  # ------------------------------------------------------------------
   data_filtrada <- reactive({
     req(input$anio, input$mes)
     df <- data %>%
       mutate(mes = as.numeric(mes)) %>%
-      filter(anio == as.numeric(input$anio), mes == as.numeric(input$mes))
-    
+      filter(anio == as.numeric(input$anio),
+             mes == as.numeric(input$mes))
     if (nrow(df) == 0) return(NULL)
     df
   })
   
-  # ------------------------------------------------------------
-  # 3. Resultado principal
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # 2. Resultado principal
+  # ------------------------------------------------------------------
   resultado <- reactive({
     df <- data_filtrada()
-    if (is.null(df) || nrow(df) == 0) return(NULL)
+    if (is.null(df)) return(NULL)
     
     grafico_plotly <- graficar_treemap_producto(df, input$anio, input$mes)
     
@@ -68,8 +60,6 @@ server <- function(input, output, session) {
       ) %>%
       arrange(desc(total_co2)) %>%
       mutate(porcentaje = 100 * total_co2 / sum(total_co2, na.rm = TRUE))
-    
-    if (nrow(resumen) == 0) return(NULL)
     
     top_cat <- resumen$categoria[1]
     top_pct <- round(resumen$porcentaje[1], 1)
@@ -87,32 +77,28 @@ server <- function(input, output, session) {
     )
   })
   
-  # ------------------------------------------------------------
-  # 4. Gráfico principal
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # 3. Render del gráfico
+  # ------------------------------------------------------------------
   output$grafico <- renderPlotly({
     res <- resultado()
-    if (is.null(res) || is.null(res$grafico_plotly)) {
-      plotly::plot_ly() %>% layout(title = "Sin datos disponibles")
-    } else {
-      res$grafico_plotly
-    }
+    if (is.null(res) || is.null(res$grafico_plotly))
+      return(plotly::plot_ly() %>% layout(title = "Sin datos disponibles"))
+    res$grafico_plotly
   })
   
-  # ------------------------------------------------------------
-  # 5. Panel lateral (Top emisores)
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # 4. Panel lateral (Top emisores)
+  # ------------------------------------------------------------------
   output$top5_emisores <- renderUI({
     res <- resultado()
-    if (is.null(res) || is.null(res$resumen)) return(HTML("<p>No hay datos disponibles.</p>"))
-    
+    if (is.null(res)) return(HTML("<p>No hay datos disponibles.</p>"))
     resumen <- res$resumen %>%
       head(5) %>%
       mutate(
         pct_fmt = paste0(round(porcentaje, 1), "%"),
         co2_fmt = format(round(total_co2, 1), big.mark = ".", decimal.mark = ",")
       )
-    
     HTML(paste0(
       "<div style='background-color:#f3e8ff; border-left:5px solid #6a1b9a;
                    padding:12px; border-radius:8px;'>",
@@ -122,20 +108,20 @@ server <- function(input, output, session) {
     ))
   })
   
-  # ------------------------------------------------------------
-  # 6. Texto interpretativo
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # 5. Texto interpretativo
+  # ------------------------------------------------------------------
   output$mensaje1 <- renderText({
     res <- resultado()
-    if (is.null(res) || is.null(res$mensaje1)) return("Sin información disponible.")
+    if (is.null(res)) return("Sin información disponible.")
     res$mensaje1
   })
   
-  # ------------------------------------------------------------
-  # 7. Descargas
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
+  # 6. Descargas
+  # ------------------------------------------------------------------
   
-  # CSV
+  # Datos CSV
   output$descargarDatos <- downloadHandler(
     filename = function() glue("emisiones_{input$anio}_{input$mes}.csv"),
     content = function(file) {
@@ -144,7 +130,7 @@ server <- function(input, output, session) {
     }
   )
   
-  # PNG del gráfico
+  # Gráfico PNG
   output$descargarGraf <- downloadHandler(
     filename = function() glue("grafico_emisiones_{input$anio}_{input$mes}.png"),
     content = function(file) {
@@ -156,63 +142,42 @@ server <- function(input, output, session) {
     }
   )
   
-  # PDF con logos y gráfico embebido
+  # ------------------------------------------------------------------
+  # 7. Generación de informe PDF (modelo antiguo adaptado)
+  # ------------------------------------------------------------------
   output$report <- downloadHandler(
     filename = function() glue("informe_huella_carbono_{input$anio}_{input$mes}.pdf"),
     contentType = "application/pdf",
     content = function(file) {
-      tryCatch({
-        tmp_dir <- tempdir()
-        tmp_rmd <- file.path(tmp_dir, "informe.Rmd")
-        tmp_html <- tempfile(fileext = ".html")
-        tmp_png  <- file.path(getwd(), "grafico_tmp.png")
-        
-        # Copiar el Rmd
-        if (!file.exists("informe.Rmd")) stop("No se encuentra informe.Rmd")
-        file.copy("informe.Rmd", tmp_rmd, overwrite = TRUE)
-        
-        # Guardar gráfico en PNG
-        res <- resultado()
-        if (is.null(res) || is.null(res$grafico_plotly)) stop("Sin gráfico disponible.")
-        htmlwidgets::saveWidget(as_widget(res$grafico_plotly), tmp_html, selfcontained = TRUE)
-        webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
-        
-        # Copiar logos
-        logo_sup_tmp <- file.path(tmp_dir, "logo_3.png")
-        logo_inf_tmp <- file.path(tmp_dir, "logo_2.png")
-        file.copy("www/logo_3.png", logo_sup_tmp, overwrite = TRUE)
-        file.copy("www/logo_2.png", logo_inf_tmp, overwrite = TRUE)
-        
-        # Renderizar PDF
-        out_pdf <- file.path(tmp_dir, "informe_tmp.pdf")
-        rmarkdown::render(
-          input = tmp_rmd,
-          output_file = out_pdf,
-          params = list(
-            datos = res$datos,
-            resumen = res$resumen,
-            mensaje1 = res$mensaje1,
-            grafico = tmp_png,
-            anio = input$anio,
-            mes = input$mes,
-            logo_sup = logo_sup_tmp,
-            logo_inf = logo_inf_tmp
-          ),
-          envir = new.env(parent = globalenv())
-        )
-        
-        file.copy(out_pdf, file, overwrite = TRUE)
-        
-      }, error = function(e) {
-        showNotification(paste("Error al generar el informe:", e$message),
-                         type = "error", duration = NULL)
-      })
+      res <- resultado()
+      if (is.null(res)) stop("No hay datos para generar el informe.")
+      
+      # Guardar gráfico
+      tmp_html <- tempfile(fileext = ".html")
+      tmp_png  <- "grafico_tmp.png"
+      htmlwidgets::saveWidget(as_widget(res$grafico_plotly), tmp_html, selfcontained = TRUE)
+      webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
+      
+      # Renderizar PDF (idéntico al server antiguo)
+      rmarkdown::render(
+        input = "informe.Rmd",
+        output_file = file,
+        params = list(
+          datos = res$datos,
+          resumen = res$resumen,
+          mensaje1 = res$mensaje1,
+          grafico = tmp_png,
+          anio = input$anio,
+          mes = input$mes
+        ),
+        envir = new.env(parent = globalenv())
+      )
     }
   )
   
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
   # 8. Reset filtros
-  # ------------------------------------------------------------
+  # ------------------------------------------------------------------
   observeEvent(input$reset, {
     updateSelectInput(session, "anio", selected = 2024)
     updateSelectInput(session, "mes", selected = "12")

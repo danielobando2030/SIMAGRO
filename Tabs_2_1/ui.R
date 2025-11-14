@@ -26,7 +26,7 @@ ui <- fluidPage(
       .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
+        color: #743639;
       }
       .sub-header {
         font-family: 'Prompt', sans-serif;
@@ -35,15 +35,17 @@ ui <- fluidPage(
       .main-header_2 {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
-        color: #0D8D38;
+        color: #743639;
       }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .sub-header3 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .center {
         display: flex;
@@ -88,7 +90,7 @@ ui <- fluidPage(
              plotly::plotlyOutput("grafico",height = "400px"),
              actionButton("descargar", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/Simonaa-Antioquia/Tableros/tree/83b0c073b699faab18e927642e2919f2aa0a1dd5/Abs1", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_2_1", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restablecer",icon = icon("refresh")),
              downloadButton("report", "Generar informe")
@@ -98,7 +100,7 @@ ui <- fluidPage(
     column(3, 
            div(
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;")#,
+                       style = "background-color: #BC222A; color: #FFFFFF;")#,
              #wellPanel(textOutput("mensaje2"),
               #         style = "background-color: #005A45; color: #FFFFFF;"),
              #wellPanel(textOutput("mensaje3"),
@@ -106,24 +108,24 @@ ui <- fluidPage(
            ))
   ),
   fluidRow(
-    column(12,
-           style = "margin-top: 2px;",
-           tags$div(
-             tags$p("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).", class = "sub-header2", style = "margin-top: 3px;"),
-             tags$p(
-               "Esta visualización muestra el porcentaje acumulado de municipios que envían sus productos a Cundinamarca. 
-  Cuanto más cercana esté la curva a la línea de 45°, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios.",
-               class = "sub-header2",
-               style = "margin-top: 3px;"
-             )
-             
-           )
+    column(
+      12,
+      align = "left",
+      HTML("
+      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+
+      Esta visualización muestra el porcentaje acumulado de municipios que envían sus productos a Cundinamarca.  
+      Cuanto más cercana esté la curva a la línea de 45°, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios.
+    "),
+      style = "font-size:12px; color:#4E4D4D; text-align:left; 
+             font-family:'Prompt', sans-serif; margin-top:20px;"
     )
-  ),
-    fluidRow(
+  )
+  ,
+  fluidRow(
     tags$div(
-      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),  
-      style = "width: 100%; margin:0;"  
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
     )
   )
 ))

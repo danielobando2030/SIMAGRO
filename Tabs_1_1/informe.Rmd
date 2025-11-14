@@ -25,7 +25,9 @@ header-includes:
 - \usepackage{booktabs} 
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mybrown}{RGB}{78,77,77}
+- \definecolor{mygreen}{RGB}{19,65,116}
+- \definecolor{gray}{RGB}{78,77,77}
+- \definecolor{green2}{RGB}{19,65,116}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -33,7 +35,7 @@ header-includes:
 - \usepackage{adjustbox}
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
 - \usepackage{eso-pic}
 ---
 
@@ -50,9 +52,9 @@ library(knitr)
 
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
-\section*{\textcolor{mybrown}{Parámetros con los cuales se generó el informe:}}
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 ```{r,message=FALSE,warning=FALSE}
   # Cargar el paquete knitr
   library(knitr)
@@ -85,21 +87,21 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mybrown}{Municipios proveedores de alimentos para Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{mygreen}{Municipios proveedores de alimentos para Cundinamarca}\
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre los principales municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
+\fontsize{12}{12} \selectfont \textcolor{green2}{Descubre los principales municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
 <!-- Grafica -->
 ```{r, out.width = "90%",warning=FALSE,message=FALSE}
 print(params$plot)
 ```
 \newline
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
+\fontsize{8}{8} \selectfont \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
 \newline
 
-\fontsize{10}{10} \selectfont \textcolor{mybrown}`r params$mensaje1`
+\fontsize{10}{10} \selectfont \textcolor{gray}`r params$mensaje1`
 
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el ranking de los municipios de orígen de los alimentos que llegan a las principales centrales de abasto de Bogotá, resaltando su participación porcentual en el volumen total de ingresos.}\
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Local:} Productos reportados con origen de territorios del departamento de Cundinamarca.}\
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Externo:} Productos reportados con origen fuera del departamento de  Cundinamarca.}\
+\fontsize{8}{8} \selectfont \textcolor{gray}{Esta visualización muestra el ranking de los municipios de orígen de los alimentos que llegan a las principales centrales de abasto de Bogotá, resaltando su participación porcentual en el volumen total de ingresos.}\
+\fontsize{8}{8} \selectfont \textcolor{gray}{\textbf{Local:} Productos reportados con origen de territorios del departamento de Cundinamarca.}\
+\fontsize{8}{8} \selectfont \textcolor{gray}{\textbf{Externo:} Productos reportados con origen fuera del departamento de  Cundinamarca.}\
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

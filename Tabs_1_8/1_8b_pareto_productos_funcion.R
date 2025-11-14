@@ -99,11 +99,11 @@ pareto_graf<-function(pareto,año=NULL, Mes=NULL, sitio=NULL){
   posicion_80 <- min(df_filtrado$producto[df_filtrado$acumulado_total == acumulado])  # Encuentra el valor mínimo donde se alcanza el 80%
  if(nrow(df) > 0){
   plot <- ggplot(df_filtrado, aes(x = reorder(producto, -total_sum), y = total_sum)) +
-    geom_bar(stat = "identity", fill = "#0D8D38", aes(text = tooltip_text1)) +
-    geom_line(aes(y = acumulado_total * total_sum_total), color = "#F39F06", group = 1) +
-    geom_point(aes(y = acumulado_total * total_sum_total, text = tooltip_text2), color = "#F39F06", group = 1) +
+    geom_bar(stat = "identity", fill = "#2A4E61", aes(text = tooltip_text1)) +
+    geom_line(aes(y = acumulado_total * total_sum_total), color = "#0087CF", group = 1) +
+    geom_point(aes(y = acumulado_total * total_sum_total, text = tooltip_text2), color = "#0087CF", group = 1) +
     xlab("") + 
-    geom_vline(xintercept = posicion_80, color = "#00909C", linetype = "dashed") +
+    geom_vline(xintercept = posicion_80, color = "#1877AA", linetype = "dashed") +
     ylab("Miles de toneladas") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1),

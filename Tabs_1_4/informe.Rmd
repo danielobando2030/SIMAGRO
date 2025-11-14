@@ -21,9 +21,7 @@ header-includes:
 - \usepackage{booktabs}  
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
+- \definecolor{mybrown}{RGB}{78,77,77}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -31,7 +29,7 @@ header-includes:
 - \usepackage{adjustbox}
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 - \usepackage{eso-pic}
 ---
 
@@ -46,7 +44,7 @@ library(knitr)
 ```
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
 \section*{Parámetros con los cuales se generó el informe:}
@@ -89,17 +87,17 @@ tabla_kable
 ```
 
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Destino de los alimentos de origen cundinamarques}\
-\fontsize{12}{11} \selectfont \textcolor{green2}{Descubre las principales ciudades receptores de alimentos con origen Cundinamarca según el SIPSA.}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Destino de los alimentos de origen cundinamarques}\
+\fontsize{12}{11} \selectfont \textcolor{mybrown}{Descubre las principales ciudades receptores de alimentos con origen Cundinamarca según el SIPSA.}\
 <!-- Grafica -->
 ```{r, out.width = "95%", fig.align = "center", warning=FALSE, message=FALSE}
 print(params$plot)
 ```
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Solo se tienen en cuenta las principales ciudades con centros de acopio en las que se recolecta información para el SIPSA.}\newline
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Esta visualización muestra el ranking  de destinos de los alimentos con origen Cundinamarca, resaltando el porcentaje de volumen de productos que llegan a cada centro de abasto según SIPSA}\newline
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Solo se tienen en cuenta las principales ciudades con centros de acopio en las que se recolecta información para el SIPSA.}\newline
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el ranking  de destinos de los alimentos con origen Cundinamarca, resaltando el porcentaje de volumen de productos que llegan a cada centro de abasto según SIPSA}\newline
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

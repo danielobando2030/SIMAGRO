@@ -29,9 +29,7 @@ header-includes:
 - \usepackage{booktabs}  # Agregar esta línea
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
+- \definecolor{mybrown}{RGB}{78,77,77}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -40,7 +38,7 @@ header-includes:
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
 - \usepackage{eso-pic}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 ---
 
 
@@ -54,7 +52,7 @@ library(knitr)
 ```
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
 \section*{Parámetros con los cuales se generó el informe:}
@@ -96,24 +94,25 @@ tabla_kable
 ```
 
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Análisis de Pareto del flujo de alimentos en Cundinamarca}\
-\fontsize{12}{12} \selectfont \textcolor{green2}{Productos principales por volumen en flujo de alimentos en Cundinamarca.}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Análisis de Pareto del flujo de alimentos en Cundinamarca}\
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Productos principales por volumen en flujo de alimentos en Cundinamarca.}\
 <!-- Subtitulo -->
 \fontsize{10}{10} \selectfont `r params$subtitulo`\
 <!-- Grafica -->
 ```{r, out.width = "80%", fig.align = "center", warning=FALSE,message=FALSE}
 print(params$plot)
 ```
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
 
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 
 \fontsize{10}{10} \selectfont `r params$mensaje3`\
 
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Se muestran los alimentos que reunen aproximadamente el 85\% del acumulado.}\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.}\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Entradas externas: Productos reportados con origen fuera del departamento de  Cundinamarca.}\
+
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Se muestran los alimentos que reunen aproximadamente el 85\% del acumulado.}\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.}\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Entradas externas: Productos reportados con origen fuera del departamento de  Cundinamarca.}\
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
 

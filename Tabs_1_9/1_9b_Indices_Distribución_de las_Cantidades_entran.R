@@ -79,12 +79,21 @@ Caja_y_Bigotes = function(ALIMENTO = NULL, formato = "numeric") {
     geom_jitter(aes(text = tooltip_text), size = 1, color = "gray40", alpha = 0.4, width = 0.15, show.legend = FALSE) +
     scale_fill_manual(
       values = c(
-        "2013"="#1A4922","2014"="#2E7730","2015"="#0D8D38",
-        "2016"="#85A728","2017"="#AEBF22","2018"="#F2E203",
-        "2019"="#F1B709","2020"="#F39F06","2021"="#BE7E11",
-        "2022"="#08384D","2023"="#094B5C","2024"="#00596C",
-        "2025"="#006A75"
+        "2013" = "#0087CF",
+        "2014" = "#007AB8",
+        "2015" = "#006EA2",
+        "2016" = "#00628C",
+        "2017" = "#005776",
+        "2018" = "#004C61",
+        "2019" = "#00414D",
+        "2020" = "#00363A",
+        "2021" = "#002C28",
+        "2022" = "#66B7E0",
+        "2023" = "#4DAADD",
+        "2024" = "#339DD9",
+        "2025" = "#1A91D5"
       )
+      
     ) +
     labs(fill = "Año", y = "Kilogramos",x="") +
     theme_minimal(base_size = 13) +

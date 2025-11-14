@@ -76,7 +76,7 @@ ui <- fluidPage(
     class = "sub-header2",
     style = "margin-bottom: 20px;"
   ),
-  #div(class = "scrollable-content",
+  div(class = "scrollable-content",
       fluidRow(
         column(4,
                selectInput("anio", "Año", c("Todos los años" = "todo", sort(as.character(unique(cundinamarca$anio)))))),
@@ -84,14 +84,14 @@ ui <- fluidPage(
                selectInput("mes", "Mes", c("Todos los meses" = "todo", "Enero" = 1, "Febrero" = 2, "Marzo" = 3, "Abril" = 4, "Mayo" = 5, "Junio" = 6, "Julio" = 7, "Agosto" = 8, "Septiembre" = 9, "Octubre" = 10, "Noviembre" = 11, "Diciembre" = 12), selected="")),
         column(4,
                selectInput("producto", "Producto",c("Todos los productos" = "todo", sort(as.character(unique(cundinamarca$producto))))))
-      ),#),
+      )),
   div(
     fluidRow(
       column(9,
              leafletOutput("grafico",  height = "500px"),
              downloadButton("descargar_", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/PlasaColombia-Antioquia/Tableros/tree/8d5220f3bec2898e21495993520e1d8637e6b5d4/Abs2", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_2", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restablecer", icon = icon("refresh")),
              downloadButton("report", "Generar informe")

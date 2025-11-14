@@ -21,24 +21,27 @@ ui <- fluidPage(
        .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
+        color: #266486;
        }
         .main-header_2 {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
-        color: #0D8D38;
+        color: #266486;
       }
       .sub-header {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
+        color: #4E4D4D;
       }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .sub-header3 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .center {
         display: flex;
@@ -82,7 +85,7 @@ ui <- fluidPage(
              plotly::plotlyOutput("grafico",height = "400px"),
              actionButton("descargar", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/PlasaColombia-Antioquia/Tableros/tree/8d5220f3bec2898e21495993520e1d8637e6b5d4/Abs8", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_8", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restrablecer",icon = icon("refresh")),
               downloadButton("report", "Generar informe")
@@ -91,27 +94,30 @@ ui <- fluidPage(
     column(3, 
            div(
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;"),
+                       style = "background-color: #0087CF; color: #FFFFFF;"),
              wellPanel(textOutput("mensaje3"),
-                       style = "background-color: #005A45; color: #FFFFFF;")
+                       style = "background-color: #2A4E61; color: #FFFFFF;")
            ))
   ),
   
   fluidRow(
-    column(12,
-           style = "margin-top: 2px;",
-           tags$div(tags$p("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).",
-                           tags$br(),"Para efectos visuales solo se muestra en el tablero los alimentos que representan aproximadamente el 85% del volumen total acumulado.",
-                           tags$br(),"Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.",
-                           tags$br(),"Entradas externas: Productos reportados con origen fuera del departamento de  Cundinamarca."
-                           , class = "sub-header2"), style = "margin-top: 20px;")
-                           )
-  ),
+    column(
+      12,
+      align = "left",
+      HTML("
+      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      Para efectos visuales solo se muestra en el tablero los alimentos que representan aproximadamente el 85% del volumen total acumulado.<br>
+      Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.<br>
+      Entradas externas: Productos reportados con origen fuera del departamento de Cundinamarca.
+    "),
+      style ="font-size:12px; color:#4E4D4D; text-align:left; font-family:'Prompt', sans-serif; margin-top:20px;"
+  )
+),
   
   fluidRow(
     tags$div(
-      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),  
-      style = "width: 100%; margin:0;"  
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
     )
   )
 )

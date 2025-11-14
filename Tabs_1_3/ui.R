@@ -41,20 +41,22 @@ ui <- fluidPage(
       .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
+        color: #134174;
       }
        .main-header_2 {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
-        color: #0D8D38;
+        color: #134174;
       }
       .sub-header {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
+        color: #134174;
       }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+         color: #4E4D4D;
       }
     "))
   ),
@@ -80,7 +82,7 @@ ui <- fluidPage(
              leafletOutput("grafico"),# width = "500px", height = "500px"),
              downloadButton("descargar_", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/PlasaColombia-cundinamarca/Tableros/tree/8d5220f3bec2898e21495993520e1d8637e6b5d4/Abs3", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_3", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restablecer", icon = icon("refresh")),
              downloadButton("report", "Generar informe")
@@ -88,25 +90,31 @@ ui <- fluidPage(
       ),
       column(3, 
              wellPanel(textOutput("mensaje2"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;"),
+                       style = "background-color: #134174; color: #FFFFFF;"),
            
              
       )
     ),
-    tags$div(tags$p(#"Cada porcentaje es lo que cada departamento recibe de Cundinamarca del total de productos que ingresan a este.",
-                    #tags$br(),
-                    "Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).",
-                    tags$br(),"Esta visualización muestra la contribución de Cundinamarca al abastecimiento de otros departamentos. Los porcentajes representan la proporción del volumen que se registra en las principales centrales de abasto de cada departamento con origen Cundinamarca en relación con el total del volumen recibido.",
-                    tags$br(),"La comparación se realiza entre ciudades, para una mejor comprensión visual se considera todo el departamento.",
-                    tags$br(),"Los departamentos en color gris indican la ausencia de reportes de ingresos de productos provenientes de Cundinamarca.",
-                    class = "sub-header2"), style = "margin-top: 20px;")
-  ),
-  br(),
-  br(),
-  br(),
-  tags$div(
-    tags$img(src = 'logo_2.png', style = "width: 100vw;"),
-    style = "position: absolute; bottom: 0; width: 100%;"
+    fluidRow(
+      column(12, align = "left",
+             HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+               <br>
+               Esta visualización muestra la contribución de Cundinamarca al abastecimiento de otros departamentos. 
+               Los porcentajes representan la proporción del volumen registrado en las principales centrales de abasto de cada departamento con origen en Cundinamarca, 
+               en relación con el total del volumen recibido.<br>
+               La comparación se realiza entre ciudades, y para una mejor comprensión visual se considera todo el departamento.<br>
+               Los departamentos en color gris indican la ausencia de reportes de ingresos de productos provenientes de Cundinamarca."),
+             style = "font-size:12px; color:#4E4D4D; text-align:left; font-family: 'Prompt', sans-serif; margin-top:15px;"
+      )
     )
+    
+  ),
+
+  fluidRow(
+    tags$div(
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
+    )
+  )
   ) 
 )

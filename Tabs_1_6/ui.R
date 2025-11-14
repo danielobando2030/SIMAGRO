@@ -25,6 +25,7 @@ ui <- fluidPage(
       #grafico {
              display: block;
              margin: auto;
+             color: #266486;
            }
       .selectize-dropdown {
       z-index: 10000 !important;
@@ -32,7 +33,7 @@ ui <- fluidPage(
      .main-header_2 {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
-        color: #0D8D38;
+        color: #266486;
       }
       body {
         overflow-x: hidden;
@@ -40,15 +41,17 @@ ui <- fluidPage(
       .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
+        color: #266486;
       }
       .sub-header {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
+        color: #4E4D4D;
       }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
     "))
   ),
@@ -76,26 +79,34 @@ ui <- fluidPage(
              highchartOutput("grafico",height = "300px"),
              downloadButton("descargar_", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/PlasaColombia-Antioquia/Tableros/tree/8d5220f3bec2898e21495993520e1d8637e6b5d4/Abs6", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_6", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restablecer", icon = icon("refresh")),
              downloadButton("report", "Generar informe")
       ),
       column(2, 
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;"),
+                       style = "background-color: #0087CF; color: #FFFFFF;"),
              wellPanel(textOutput("mensaje2"),
-                      style = "background-color: #005A45; color: #FFFFFF;")
+                      style = "background-color: #2A4E61; color: #FFFFFF;")
           
       )
     ),
-    tags$div(tags$p(" ",
-                    tags$br(),"Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).",
-                    tags$br(),"Solo se muestran los productos que representan al menos un 0,5% del volumen total de productos de origen cundinamarques reportado en las centrales de abasto del SIPSA.", class = "sub-header2"), style = "margin-top: 20px;")
-  ),
-  tags$div(
-    tags$img(src = 'logo_2.png', style = "width: 100vw;"),
-    style = "position: absolute; bottom: 0; width: 100%;"
+    fluidRow(
+      column(
+        12,
+        align = "left",
+        HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+         <br>
+         Solo se muestran los productos que representan al menos un 0,5% del volumen total de productos de origen cundinamarqués reportado en las centrales de abasto del SIPSA."),
+        style = "font-size:12px; color:#4E4D4D; text-align:left; font-family:'Prompt', sans-serif; margin-top:20px;"
+      )
+    )),
+  fluidRow(
+    tags$div(
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
     )
+  )
   ) 
 )

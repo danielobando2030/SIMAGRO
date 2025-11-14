@@ -19,28 +19,29 @@ ui <- fluidPage(
     tags$title("Índice de concentración alimentaria"),
     tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"),
     tags$style(HTML("
-    
-       .main-header {
+      .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
-       }
-       .main-header_2 {
-        font-family: 'Prompt', sans-serif;
-        font-size: 20px;
-        color: #0D8D38;
+        color: #743639;
       }
       .sub-header {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
       }
+      .main-header_2 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 20px;
+        color: #743639;
+      }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .sub-header3 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .center {
         display: flex;
@@ -51,6 +52,7 @@ ui <- fluidPage(
         overflow-x: hidden;
         height: auto;
       }
+      
     ")),
     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML")
   ),
@@ -83,7 +85,7 @@ ui <- fluidPage(
              plotly::plotlyOutput("grafico1",height = "400px"),
              downloadButton("descargar_", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/Simonaa-Antioquia/Tableros/tree/main/Pre1", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_2_3", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restablecer", icon = icon("refresh")),
              downloadButton("report", "Generar informe")
@@ -92,25 +94,35 @@ ui <- fluidPage(
     column(3, 
            div(
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;"),
+                       style = "background-color: #BC222A; color: #FFFFFF;"),
              wellPanel(uiOutput("mensaje2"),
-                       style = "background-color: #005A45; color: #FFFFFF;"))
+                       style = "background-color: #983136; color: #FFFFFF;"))
   )),
   
   fluidRow(
-    column(12,
-           style = "margin-top: 2px;",
-           tags$div(
-             tags$p("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)", 
-                    tags$br(),"Este gráfico se calcula con base en el índice de Herfindahl-Hirschman"
-                    , class = "sub-header2", style = "margin-top: 3px;"),
-             tags$div(style = "text-align: left;", 
-                      tags$p("La fórmula del índice de Herfindahl-Hirschman es:", class = "sub-header2", style = "margin-top: 3px;"),
-                      tags$script(HTML('MathJax.Hub.Queue(["Typeset", MathJax.Hub, "mathjax-output"])')),
-                      tags$div(id = "mathjax-output", HTML("$$IHH = \\sum_{i=1}^{n} s_i^2$$"))
-             ),
-             tags$p(HTML("Donde S<sub>i</sub> es la participación que tiene cada producto en el volumen total de alimentos que ingresan a las principales centrales de abasto de Cundinamarca."), class = "sub-header2", style = "margin-top: 3px;"),
-           ) 
+    column(
+      12,
+      align = "left",
+      HTML("
+      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+
+      Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.<br><br>
+
+      <b>La fórmula del índice de Herfindahl-Hirschman es:</b><br><br>
+
+      $$IHH = \\sum_{i=1}^{n} s_i^2$$
+
+      <br>
+
+      Donde S<sub>i</sub> es la participación que tiene cada producto en el volumen total de alimentos que ingresan a las principales centrales de abasto de Cundinamarca.
+      
+      <script>
+        MathJax.Hub.Queue([\"Typeset\", MathJax.Hub]);
+      </script>
+    "),
+      style = "font-size:12px; color:#4E4D4D; 
+             text-align:left; font-family:'Prompt', sans-serif; 
+             margin-top:20px;"
     )
   ),
   

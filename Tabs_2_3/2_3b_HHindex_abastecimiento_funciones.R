@@ -40,11 +40,11 @@ plot_data <- function(tipo, anio = NULL) {
     # Crear un gráfico de tiempo
     data$tooltip_text <- paste("Año: ", data$year , "<br> IHH:" , round(data$IHH,1))
     p_plano <- ggplot(data, aes_string(x = "date_col", y = "IHH")) +
-      geom_line(color = "#2E7730") +
+      geom_line(color = "#983136") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
       labs(x = "Fecha", y = " ") +
       theme_minimal() +  
-      scale_color_manual(values = "#2E7730") + 
+      scale_color_manual(values = "#983136") + 
       theme(text = element_text( size = 16)) + 
       scale_x_continuous(
         breaks = data$year
@@ -66,11 +66,11 @@ plot_data <- function(tipo, anio = NULL) {
     }
     # Crear un gráfico de tiempo
     p_plano <- ggplot(data, aes_string(x = "date_col", y = "IHH")) +
-      geom_line(color = "#2E7730") +
+      geom_line(color = "#983136") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
       labs(x = "Fecha", y = " ") +
       theme_minimal() +  # Usar un tema minimalista
-      scale_color_manual(values = "#2E7730") +  # Establecer el color de la línea
+      scale_color_manual(values = "#983136") +  # Establecer el color de la línea
       theme(text = element_text( size = 12))+
       scale_x_date(date_breaks = "4 month", date_labels = "%Y-%m") +  # Establecer el formato de fecha
       theme(axis.text.x = element_text(angle = 90, hjust = 1))

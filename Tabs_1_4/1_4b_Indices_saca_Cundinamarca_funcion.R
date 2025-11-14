@@ -209,8 +209,11 @@ importancia <- function(Año = NULL, Mes = NULL, municipios = 10, Producto = NUL
   # Generar una paleta de N colores
   #N <- municipios
   #col_palette <- color_func(N)
-  col_palette <- c("#1A4922", "#2E7730", "#0D8D38", "#85A728", "#AEBF22", "#F2E203", "#F1B709", "#F39F06", "#BE7E11",
-                   "#08384D", "#094B5C", "#00596C", "#006A75", "#007A71", "#00909C", "#0088BB", "#007CC3", "#456ABB")
+  col_palette <-c(
+    "#0F2F52", "#134174", "#1B5A9B", "#2371C2", "#3A8DE1", "#63A4F3",
+    "#8BB8F7", "#B3CCFA", "#D9E4FF", "#A8C2E0", "#6F94B8", "#466B90",
+    "#2B4E73", "#1D3C5A", "#0E2940", "#5E3C74", "#8B4FA0", "#C07DD2"
+  )
 
   
     df$tooltip_text <- paste("Ciudad destino: ", df$mpio_destino, "<br>Porcentaje: ", round(df$columna_porcentaje*100,digits = 1),"%")

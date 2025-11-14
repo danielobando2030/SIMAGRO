@@ -93,8 +93,8 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
 
   
     graf <- ggplot(Salida, aes(x=one_cum, y=Part_cum)) +
-      geom_line(aes(group = 1, text = tooltip_text), color =  "#456ABB", size = 1.2)+ # curva de Lorenz
-    geom_abline(intercept=0, slope=1, linetype="dashed", color="#0D8D38") + # línea de igualdad
+      geom_line(aes(group = 1, text = tooltip_text), color =  "#983136", size = 1.2)+ # curva de Lorenz
+    geom_abline(intercept=0, slope=1, linetype="dashed", color="#743639") + # línea de igualdad
       #geom_segment(aes(x=coord_x, xend=coord_x, y=0, yend=coord_y), 
       #           linetype="dotted", color="gray40") +
     #geom_segment(aes(x=0, xend=coord_x, y=coord_y, yend=coord_y), 
@@ -109,7 +109,7 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
     # texto Gini
     annotate("text", x=0.1, y=0.85, 
              label=paste0("Gini = ", round(gini, 3)), 
-             hjust=0, size=5, color="darkgreen", fontface="bold") +
+             hjust=0, size=5, color="#4F3032", fontface="bold") +
     # etiquetas y escalas
     labs(x="Proporción acumulada de Municipios de origen",
          y="Proporción acumulada kilogramos") +

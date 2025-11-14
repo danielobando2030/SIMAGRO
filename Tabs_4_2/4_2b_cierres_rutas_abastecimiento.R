@@ -86,66 +86,52 @@ data_cierres_final <- data_cierres_final %>%
 
 graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
   
-  # 1. Filtrar por año, mes y producto
+  # 1. Filtrar
   if (!is.null(Año)) df <- df %>% filter(anio == Año)
   if (!is.null(Mes)) df <- df %>% filter(mes == Mes)
   if (!is.null(Producto)) df <- df %>% filter(producto == Producto)
   
   # 2. Evitar duplicados
-  df <- df %>%
-    distinct(codigo_mpio_destino, codigo_mpio_origen, .keep_all = TRUE)
+  df <- df %>% distinct(codigo_mpio_destino, codigo_mpio_origen, .keep_all = TRUE)
+  if (nrow(df) == 0) return(NULL)
   
-  if (nrow(df) == 0) {
-    message("No hay datos disponibles para los filtros aplicados.")
-    return(NULL)
-  }
+  # 3. Grosor
+  df <- df %>% mutate(grosor = scales::rescale(as.numeric(prop_region_producto), to = c(1, 10)))
   
-  # 3. Escalar grosor según la proporción regional
-  df <- df %>%
-    mutate(grosor = scales::rescale(as.numeric(prop_region_producto), to = c(1, 10)))
-  
-  # 4. Asignar color según región
-  df <- df %>%
-    mutate(
-      color_region = case_when(
-        region_geo == "Noroccidente"  ~ "#e31a1c",
-        region_geo == "Nororiente"    ~ "#ff7f00",
-        region_geo == "Norte"         ~ "#6a3d9a",
-        region_geo == "Oriente"       ~ "#1f78b4",
-        region_geo == "Suroriente"    ~ "#b2df8a",
-        region_geo == "Sur"           ~ "#b15928",
-        region_geo == "Suroccidente"  ~ "#a6cee3",
-        region_geo == "Occidente"     ~ "#33a02c",
-        TRUE                          ~ "#999999"
-      )
+  # 4. Colores
+  df <- df %>% mutate(
+    color_region = case_when(
+      region_geo == "Noroccidente"  ~ "#e31a1c",
+      region_geo == "Nororiente"    ~ "#ff7f00",
+      region_geo == "Norte"         ~ "#6a3d9a",
+      region_geo == "Oriente"       ~ "#1f78b4",
+      region_geo == "Suroriente"    ~ "#b2df8a",
+      region_geo == "Sur"           ~ "#b15928",
+      region_geo == "Suroccidente"  ~ "#a6cee3",
+      region_geo == "Occidente"     ~ "#33a02c",
+      TRUE                          ~ "#999999"
     )
+  )
   
-  # 5. Asegurar que todo sea texto
-  df <- df %>%
-    mutate(across(everything(), as.character))
+  # 5. Asegurar texto
+  df <- df %>% mutate(across(everything(), as.character))
   
-  # 6. Parsear rutas desde la cadena
-  rutas_list <- map(df$routes_coords_str, function(coords_str) {
+  # 6. Parsear coordenadas
+  rutas_list <- purrr::map(df$routes_coords_str, function(coords_str) {
     if (is.na(coords_str) || coords_str == "") return(NULL)
-    coords <- str_split(coords_str, ";")[[1]]
-    mat <- do.call(rbind, str_split(coords, ","))
+    coords <- stringr::str_split(coords_str, ";")[[1]]
+    mat <- do.call(rbind, stringr::str_split(coords, ","))
     suppressWarnings(matrix(as.numeric(mat), ncol = 2, byrow = FALSE))
   })
   
-  # 7. Crear título dinámico (y convertirlo en character plano)
-  titulo <- paste0(
-    ifelse(!is.null(Producto), paste0("Producto: ", Producto, " | "), ""),
-    ifelse(!is.null(Año), paste0("Año: ", Año, " | "), ""),
-    ifelse(!is.null(Mes), paste0("Mes: ", Mes), "")
-  )
-  titulo_html <- as.character(paste0("<strong>", titulo, "</strong>"))
+  # *** 7. ELIMINADO: no crear ningún título ***
   
-  # 8. Crear mapa base sin objetos HTML (para evitar is.character error)
+  # 8. Mapa SIN título ni objetos HTML que generen espacio
   map <- leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
     addTiles()
   
-  # 9. Añadir líneas válidas
-  valid_idx <- which(!map_lgl(rutas_list, is.null))
+  # 9. Añadir líneas
+  valid_idx <- which(!purrr::map_lgl(rutas_list, is.null))
   for (i in valid_idx) {
     coords <- rutas_list[[i]]
     lbl_text <- sprintf(
@@ -169,14 +155,11 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
   }
   
   # 10. Leyenda
-  legend_colors <- as.character(unique(df$color_region))
-  legend_labels <- as.character(unique(df$region_geo))
-  
   map <- map %>%
     addLegend(
       position = "bottomright",
-      colors = legend_colors,
-      labels = legend_labels,
+      colors = unique(df$color_region),
+      labels = unique(df$region_geo),
       title = "Regiones geográficas",
       opacity = 0.9
     )

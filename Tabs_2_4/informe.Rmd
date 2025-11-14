@@ -22,9 +22,7 @@ header-includes:
 - \usepackage{booktabs}  
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
+- \definecolor{mybrown}{RGB}{78,77,77}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -33,7 +31,7 @@ header-includes:
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
 - \usepackage{eso-pic}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 ---
 
 
@@ -47,7 +45,7 @@ library(knitr)
 ```
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 \section*{Parámetros con los cuales se generó el informe:}
 ```{r,warning=FALSE,message=FALSE}
@@ -102,20 +100,21 @@ tabla_kable
 
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Índice de diversidad de origen de los alimentos}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Índice de diversidad de origen de los alimentos}\
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{green2}{Análisis de la variedad de territorios conectados por el flujo de alimentos desde su origen hasta los pricipales centros de abasto de Cundinamarca.}\
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Análisis de la variedad de territorios conectados por el flujo de alimentos desde su origen hasta los pricipales centros de abasto de Cundinamarca.}\
 <!-- Subtitulo dinamico -->
 \fontsize{10}{10} \selectfont `r params$subtitulo`\
 ```{r, out.width = "95%", fig.height=4, fig.align = "center", warning=FALSE}
 print(params$plot)
 ```
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 \fontsize{10}{10} \selectfont `r params$mensaje2`\
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.}\newline
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{La fórmula del índice de Herfindahl-Hirschman es: $\sum_{i=1}^{n} S_{i}^2$ donde $S_{i}$ es la participación que tiene cada origen en el total de volumen de alimentos que ingresan a las centrales.}\newline
+
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.}\newline
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{La fórmula del índice de Herfindahl-Hirschman es: $\sum_{i=1}^{n} S_{i}^2$ donde $S_{i}$ es la participación que tiene cada origen en el total de volumen de alimentos que ingresan a las centrales.}\newline
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

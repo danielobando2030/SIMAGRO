@@ -1,5 +1,5 @@
 ---
-title: "Huella de carbono por grupo y producto"
+title: ' '
 params:
   datos: NA
   resumen: NA
@@ -18,21 +18,21 @@ header-includes:
 - \usepackage{tabu}
 - \usepackage{xcolor}
 - \usepackage{fontspec}
-- \usepackage{booktabs} 
+- \usepackage{booktabs}
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{19,65,116}
-- \definecolor{gray}{RGB}{78,77,77}
-- \definecolor{green2}{RGB}{19,65,116}
-- "\\setmainfont{Prompt-Regular.ttf}"
-- \pagestyle{fancy}
-- \fancyfoot{} 
 - \usepackage{colortbl}
 - \usepackage{adjustbox}
+- \usepackage{eso-pic}
+- \definecolor{mygreen}{RGB}{19,65,116}
+- \definecolor{MYGREEN}{RGB}{19,65,116}
+- \definecolor{gray}{RGB}{78,77,77}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{}
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
-- \usepackage{eso-pic}
+- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -43,7 +43,6 @@ library(dplyr)
 library(glue)
 ```
 
-<!-- Fecha -->
 \begin{flushright}
 \textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
@@ -73,11 +72,13 @@ df_params %>%
 # \textcolor{mygreen}{Huella de carbono por grupo y producto}
 
 \fontsize{12}{12}\selectfont
-\textcolor{gray}{Este informe presenta la distribución de la huella de carbono (en toneladas de CO₂) asociada al transporte y abastecimiento de productos agropecuarios durante el período seleccionado. El gráfico tipo *treemap* muestra la participación relativa de cada grupo y producto dentro del total de emisiones estimadas.}
+\textcolor{gray}{
+Este informe presenta la distribución de la huella de carbono (en toneladas de CO₂) asociada al transporte y abastecimiento de productos agropecuarios durante el período seleccionado. El gráfico tipo *treemap* muestra la participación relativa de cada grupo y producto dentro del total de emisiones estimadas.
+}
 
 \medskip
 
-\textcolor{green2}{`r if (!is.null(params$mensaje1)) params$mensaje1 else ""`}
+\textcolor{mygreen}{`r if (!is.null(params$mensaje1)) params$mensaje1 else ""`}
 
 ---
 
@@ -117,7 +118,9 @@ if (!is.null(params$grafico) && file.exists(params$grafico)) {
 \medskip
 
 \fontsize{10}{10}\selectfont
-\textcolor{gray}{Los grupos en tonos más oscuros representan mayor peso en la huella total, mientras que los tonos claros corresponden a productos de menor participación. Los valores incluyen estimaciones por transporte, volumen y distancia promedio recorrida.}
+\textcolor{gray}{
+Los grupos en tonos más oscuros representan mayor peso en la huella total, mientras que los tonos claros corresponden a productos de menor participación. Los valores incluyen estimaciones por transporte, volumen y distancia promedio recorrida.
+}
 
 ---
 
@@ -126,7 +129,7 @@ if (!is.null(params$grafico) && file.exists(params$grafico)) {
 \fontsize{9}{9}\selectfont
 \textcolor{gray}{
 Las estimaciones se basan en factores de conversión provenientes de:
-\textit{IPCC (2006, 2019)}, \textit{DEFRA (2023)} y \textit{FAO (2022) – Global Livestock Environmental Assessment Model (GLEAM) 2.0}.
+\textit{IPCC (2006, 2019)}, \textit{DEFRA (2023)} y \textit{FAO (2022) – Global Livestock Environmental Assessment Model (GLEAM) 2.0).
 }
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

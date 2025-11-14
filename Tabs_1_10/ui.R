@@ -26,24 +26,27 @@ ui <- fluidPage(
       .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
+        color: #266486;
       }
       .sub-header {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
+        color: #4E4D4D;
       }
       .main-header_2 {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
-        color: #0D8D38;
+        color: #266486;
       }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .sub-header3 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
       .center {
         display: flex;
@@ -76,7 +79,7 @@ ui <- fluidPage(
              plotly::plotlyOutput("grafico",height = "400px"),
              actionButton("descargar", "Gráfica", icon = icon("download")),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/Simonaa-Antioquia/Tableros/tree/83b0c073b699faab18e927642e2919f2aa0a1dd5/Abs1", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_10", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restablecer",icon = icon("refresh")),
              downloadButton("report", "Generar informe")
@@ -86,7 +89,7 @@ ui <- fluidPage(
     column(3, 
            div(
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;")#,
+                       style = "background-color: #0087CF; color: #FFFFFF;")#,
              #wellPanel(textOutput("mensaje2"),
               #         style = "background-color: #005A45; color: #FFFFFF;"),
              #wellPanel(textOutput("mensaje3"),
@@ -94,47 +97,37 @@ ui <- fluidPage(
            ))
   ),
   fluidRow(
-    column(12,
-           style = "margin-top: 2px;",
-           tags$div(
-             tags$div(
-               tags$h1("Distribución de la cantidad de productos que salen de Cundinamarca", 
-                       class = "main-header"),
-               
-               tags$p("Esta visualización muestra la distribución mensual de la cantidad de alimentos que salen del departamento de cundinamarca, desagregada por año.", 
-                      class = "sub-header2"),
-               
-               tags$p("Cada diagrama de caja y bigotes resume la variabilidad de los volúmenes mensuales de productos que salen de cundinamarca para cada año, permitiendo identificar diferencias en la mediana, la dispersión y la presencia de valores atípicos.",
-                      class = "sub-header2"),
-               
-               tags$p("El cuerpo de la caja representa el rango intercuartílico (del 25% al 75% de los valores observados), la línea central indica la mediana del volumen mensual, y los bigotes muestran la extensión de los valores típicos. Los puntos fuera de los bigotes corresponden a meses con niveles de abastecimiento inusualmente altos o bajos, que podrían estar asociados con variaciones estacionales, coyunturas de mercado o condiciones climáticas.",
-                      class = "sub-header2"),
-               
-               tags$p("Comparar los diagramas entre años permite analizar:",
-                      class = "sub-header2"),
-               
-               tags$ul(
-                 tags$li("Cambios en la mediana anual de abastecimiento."),
-                 tags$li("Aumentos o disminuciones en la variabilidad mensual."),
-                 tags$li("Presencia de valores extremos asociados con choques específicos en la oferta o la demanda.")
-               )
-             ),
-             
-             
-             tags$p("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).", class = "sub-header2", style = "margin-top: 3px;"),
-             tags$p(
-               "Esta visualización .",
-               class = "sub-header2",
-               style = "margin-top: 3px;"
-             )
-             
-           )
+    column(
+      12,
+      align = "left",
+      HTML("
+      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+
+      <span style='font-size:20px; font-weight:600;'>Distribución de la cantidad de productos que salen de Cundinamarca</span><br><br>
+
+      Esta visualización muestra la distribución mensual de la cantidad de alimentos que salen del departamento de Cundinamarca, desagregada por año.<br><br>
+
+      Cada diagrama de caja y bigotes resume la variabilidad de los volúmenes mensuales de productos que salen de Cundinamarca para cada año, 
+      permitiendo identificar diferencias en la mediana, la dispersión y la presencia de valores atípicos.<br><br>
+
+      El cuerpo de la caja representa el rango intercuartílico (del 25% al 75% de los valores observados), la línea central indica la mediana del volumen mensual, 
+      y los bigotes muestran la extensión de los valores típicos. Los puntos fuera de los bigotes corresponden a meses con niveles de abastecimiento 
+      inusualmente altos o bajos, que podrían estar asociados con variaciones estacionales, coyunturas de mercado o condiciones climáticas.<br><br>
+
+      Comparar los diagramas entre años permite analizar:<br>
+      <ul>
+        <li>Cambios en la mediana anual de abastecimiento.</li>
+        <li>Aumentos o disminuciones en la variabilidad mensual.</li>
+        <li>Presencia de valores extremos asociados con choques específicos en la oferta o la demanda.</li>
+      </ul>
+    "),
+      style = "font-size:12px; color:#4E4D4D; text-align:left; font-family:'Prompt', sans-serif; margin-top:20px;"
     )
   ),
-    fluidRow(
+  fluidRow(
     tags$div(
-      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),  
-      style = "width: 100%; margin:0;"  
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
     )
   )
 ))

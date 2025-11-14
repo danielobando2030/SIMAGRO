@@ -22,9 +22,7 @@ header-includes:
 - \usepackage{booktabs}  
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
+- \definecolor{mybrown}{RGB}{78,77,77}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -32,7 +30,7 @@ header-includes:
 - \usepackage{adjustbox}
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 - \usepackage{eso-pic}
 ---
 
@@ -47,7 +45,7 @@ library(knitr)
 ```
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 \section*{Parámetros con los cuales se generó el informe:}
 ```{r,warning=FALSE,message=FALSE}
@@ -83,19 +81,20 @@ tabla_kable
 
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Cundinamarca y su importancia en la recepción de alimentos}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Cundinamarca y su importancia en la recepción de alimentos}\
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{green2}{Descubre la importancia de Cundinamarca como receptor de alimentos desde otros departamentos del país.}\
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre la importancia de Cundinamarca como receptor de alimentos desde otros departamentos del país.}\
 <!-- Subtitulo dinamico -->
 \fontsize{10}{10} \selectfont `r params$subtitulo`\
 ```{r, out.width = "90%", fig.align = "center", warning=FALSE, message=FALSE}
 print(params$plot)
 ```
-\fontsize{10}{10} \selectfont `r params$mensaje1`\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Esta visualización muestra el porcentaje de alimentos enviados a Cundinamarca desde cada departamento, incluyendo productos de origen local. Permite apreciar la importancia de Cundinamarca como receptor de alimentos provenientes de otros territorios del país}\newline 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Los departamentos en color gris indican la ausencia de reportes de ingresos de productos provenientes de esas áreas en las principales centrales de abasto.}\newline
+\fontsize{10}{10} \selectfont `r params$mensaje1`\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el porcentaje de alimentos enviados a Cundinamarca desde cada departamento, incluyendo productos de origen local. Permite apreciar la importancia de Cundinamarca como receptor de alimentos provenientes de otros territorios del país}\newline 
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Los departamentos en color gris indican la ausencia de reportes de ingresos de productos provenientes de esas áreas en las principales centrales de abasto.}\newline
+
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
 

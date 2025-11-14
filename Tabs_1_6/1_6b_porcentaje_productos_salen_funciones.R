@@ -76,8 +76,10 @@ salen_prod<-function(año = NULL, Mes = NULL, depto = NULL){
                   ifelse(is.null(Mes),"",paste0(" en el mes ", Mes)), ifelse(is.null(depto),"",paste0(" provenientes de ", depto)))
   
   #col_palette <- c("#1A4922", "#0088BB", "#007CC3", "#456ABB")
-  low_color <- "#2E7730"
-  high_color <- "#007CC3"
+
+  low_color <- "#0087CF"
+  high_color <- "#2A4E61"
+  
   if(nrow(df)==0){
   p<-  print("No hay datos disponibles")
   p_plano <- NULL

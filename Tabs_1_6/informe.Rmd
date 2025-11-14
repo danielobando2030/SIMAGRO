@@ -24,9 +24,7 @@ header-includes:
 - \usepackage{booktabs}  
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
+- \definecolor{mybrown}{RGB}{78,77,77}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -34,7 +32,7 @@ header-includes:
 - \usepackage{adjustbox}
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth}
 - \usepackage{eso-pic}
 ---
 
@@ -52,7 +50,7 @@ library(knitr)
 ```
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 \section*{Parámetros con los cuales se generó el informe:}
 ```{r,warning=FALSE,message=FALSE}
@@ -90,9 +88,9 @@ tabla_kable
 
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Cundinamarca en los mercados: Principales productos por volumen}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Cundinamarca en los mercados: Principales productos por volumen}\
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{green2}{Principales productos de Cundinamarca en otros mercados: volumen y composición de la 
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Principales productos de Cundinamarca en otros mercados: volumen y composición de la 
 canasta.}\
 <!-- Subtitulo dinamico -->
 \fontsize{10}{10} \selectfont `r params$subtitulo`\
@@ -103,7 +101,7 @@ print(params$plot)
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 \fontsize{10}{10} \selectfont `r params$mensaje2`\
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Solo se muestran los productos que representan al menos un 0,5\% del volumen total de productos de origen cundinamarques reportado en las centrales de abasto del SIPSA.}\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Solo se muestran los productos que representan al menos un 0,5\% del volumen total de productos de origen cundinamarques reportado en las centrales de abasto del SIPSA.}\
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

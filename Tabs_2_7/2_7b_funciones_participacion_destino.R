@@ -28,8 +28,12 @@
   
 # Funcion 
 
-col_palette <- c("#1A4922", "#2E7730", "#0D8D38", "#85A728", "#AEBF22", "#F2E203", "#F1B709", "#F39F06", "#BE7E11",
-                 "#08384D", "#094B5C", "#00596C", "#006A75", "#007A71", "#00909C", "#0088BB", "#007CC3", "#456ABB")
+  col_palette <-  c(
+    "#983136", "#8A2C30", "#7C272B", "#6F2226", "#611D21", "#53181C",
+    "#451317", "#370E12", "#2A090D",
+    "#B34348", "#C0595C", "#CD6F71",
+    "#DA8586", "#E79B9B", "#F4B1B0",
+    "#F8C6C5", "#FBDAD9", "#FDEDED")
 
 
 grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados = "") {
@@ -71,7 +75,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
     # Comprueba si df$fecha está vacío o contiene valores no numéricos
     df$tooltip_text <- paste("Año: ", df$fecha , "<br> GINI:" , round(df$GINI,1))  
     p_plano<-ggplot(df, aes(x = fecha, y = GINI)) +
-        geom_line(color = "#2E7730") +
+        geom_line(color = "#983136") +
         geom_point(aes(text = tooltip_text), size = 1e-8) +
         labs(x = "Fecha", y = " ") +
         scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha))) +
@@ -103,7 +107,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
     df$mes_nombre <- nombres_meses[df$month]
     df$tooltip_text <- paste("Año:", df$year ,"<br> Mes:",df$mes_nombre, "<br> GINI:" , round(df$GINI,1))
    p_plano<- ggplot(df, aes(x = fecha, y = GINI)) +
-      geom_line(color = "#2E7730") +
+      geom_line(color = "#983136") +
      geom_point(aes(text = tooltip_text), size = 1e-8) +
       labs(x = "Fecha", y = " ") +
       theme_minimal()  +

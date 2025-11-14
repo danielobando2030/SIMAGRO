@@ -22,8 +22,24 @@ data_mensual_producto<-readRDS("neto_mensual_producto_1_7.RDS")%>%
   mutate(fecha = floor_date(as.Date(as.yearmon(fecha, "%Y-%m"), frac = 1), "month"))
 data_anual_producto<-readRDS("neto_anual_producto_1_7.RDS")
 
-col_palette <- c("#1A4922", "#2E7730", "#0D8D38", "#85A728", "#AEBF22", "#F2E203", "#F1B709", "#F39F06", "#BE7E11",
-                 "#08384D", "#094B5C", "#00596C", "#006A75", "#007A71", "#00909C", "#0088BB", "#007CC3", "#456ABB")
+col_palette <- c("#0087CF",
+                   "#007AB8",
+                   "#006EA2",
+                   "#00628C",
+                   "#005776",
+                   "#004C61",
+                   "#00414D",
+                   "#00363A",
+                   "#002C28",
+                   "#66B7E0",
+                   "#4DAADD",
+                   "#339DD9",
+                   "#1A91D5",
+                   "#007FD1",
+                   "#0093DA",
+                   "#33A7E1",
+                   "#66BCE8",
+                   "#99D0EF")
 
 
 

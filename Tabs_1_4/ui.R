@@ -39,20 +39,22 @@ ui <- fluidPage(
       .main-header {
         font-family: 'Prompt', sans-serif;
         font-size: 40px;
-        color: #0D8D38;
+        color: #134174;
       }
        .main-header_2 {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
-        color: #0D8D38;
+        color: #134174;
         }
       .sub-header {
         font-family: 'Prompt', sans-serif;
         font-size: 20px;
+        color: #4E4D4D;
       }
       .sub-header2 {
         font-family: 'Prompt', sans-serif;
         font-size: 15px;
+        color: #4E4D4D;
       }
     "))
   ),
@@ -82,25 +84,33 @@ ui <- fluidPage(
              plotlyOutput("grafico",height = "400px"),
              downloadButton("descargar", "Gráfica"),
              downloadButton("descargarDatos", "Datos"),
-             shiny::a("GitHub", href="https://github.com/PlasaColombia-Antioquia/Tableros/tree/8d5220f3bec2898e21495993520e1d8637e6b5d4/Abs4", target="_blank",
+             shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_4", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
              actionButton("reset", "Restrablecer",icon = icon("refresh")),
              downloadButton("report", "Generar informe")
       ),
       column(3, 
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #0D8D38; color: #FFFFFF;")
+                       style = "background-color: #134174; color: #FFFFFF;")
       
       )
     ),
-    tags$div(tags$p("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).",
-                    tags$br(),"Solo se tienen en cuenta las principales ciudades con centros de acopio en las que se recolecta información para el SIPSA.",
-                    tags$br(),"Esta visualización muestra el ranking  de destinos de los alimentos con origen Cundinamarca, resaltando el porcentaje de volumen de productos que llegan a cada centro de abasto según SIPSA."
-, class = "sub-header2"), style = "margin-top: 20px;")
-  ),
-  tags$div(
-    tags$img(src = 'logo_2.png', style = "width: 100vw;"),
-    style = "position: absolute; bottom: 0; width: 100%;"
+    fluidRow(
+      column(12, align = "left",
+             HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+               <br>
+               Solo se tienen en cuenta las principales ciudades con centros de acopio en las que se recolecta información para el SIPSA.<br>
+               Esta visualización muestra el ranking de destinos de los alimentos con origen en Cundinamarca, 
+               resaltando el porcentaje del volumen de productos que llegan a cada centro de abasto según el SIPSA."),
+             style = "font-size:12px; color:#4E4D4D; text-align:left; font-family: 'Prompt', sans-serif; margin-top:15px;"
+      )
     )
+  ),
+fluidRow(
+  tags$div(
+    tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+    style = "width: 100%; margin: 0;"
+  )
+  
   ) 
-)
+))

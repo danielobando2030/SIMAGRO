@@ -24,9 +24,7 @@ header-includes:
 - \usepackage{booktabs} 
 - \usepackage{fancyhdr}
 - \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
+- \definecolor{mybrown}{RGB}{78,77,77}
 - "\\setmainfont{Prompt-Regular.ttf}"
 - \pagestyle{fancy}
 - \fancyfoot{} 
@@ -34,7 +32,7 @@ header-includes:
 - \usepackage{adjustbox}
 - \setlength{\headheight}{2cm}
 - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth} 
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 - \usepackage{eso-pic}
 ---
 
@@ -51,7 +49,7 @@ library(knitr)
 
 <!-- Fecha -->
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 \section*{Parámetros con los cuales se generó el informe:}
 ```{r,message=FALSE,warning=FALSE}
@@ -84,18 +82,19 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Diversidad de proveedores de alimentos para Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Diversidad de proveedores de alimentos para Cundinamarca}\
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{green2}{Descubre el nivel de dependencia de los municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre el nivel de dependencia de los municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
 <!-- Grafica -->
 ```{r, out.width = "90%",warning=FALSE,message=FALSE}
 print(params$plot)
 ```
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
 
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Esta visualización muestra el porcentaje acumulado de municipios que envían sus productos a Cundinamarca. Cuanto más cercana esté la curva a la línea de 45$^{\circ}$, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios.}\
+
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el porcentaje acumulado de municipios que envían sus productos a Cundinamarca. Cuanto más cercana esté la curva a la línea de 45$^{\circ}$, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios.}\
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
