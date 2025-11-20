@@ -1,6 +1,6 @@
 ################################################################################-
 # UI – diseño estilo FAO (paneles ROJOS como módulo 3_9, botones sin fondo)
-################################################################################-|
+################################################################################-
 
 mes_nombre_a_numero <- c(
   "Enero"="01","Febrero"="02","Marzo"="03","Abril"="04","Mayo"="05",
@@ -22,7 +22,6 @@ ui <- fluidPage(
     tags$style(HTML("
       body { font-family:'Prompt', sans-serif; background-color:#fafafa; }
 
-      /* TITULOS */
       .main-header { 
         font-size: 40px; 
         color:#743639; 
@@ -40,29 +39,33 @@ ui <- fluidPage(
         margin-bottom:20px;
       }
 
-      /* PANEL ROJO OSCURO */
-      .panel-rojo-oscuro {
-        background-color:#8A171C !important;
-        color:white !important;
-        font-weight:bold;
-        border-radius:8px;
-        padding:15px;
-        margin-bottom:15px;
+      .panel-981338 {
+        background-color: #981338 !important;
+        color: white !important;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      
+      .panel-332728 {
+        background-color: #332728 !important;
+        color: white !important;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      
+      .panel-4F3032 {
+        background-color: #4F3032 !important;
+        color: white !important;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
       }
 
-      /* PANEL ROJO CLARO */
-      .panel-rojo-claro {
-        background-color:#BC222A !important;
-        color:white !important;
-        font-weight:bold;
-        border-radius:8px;
-        padding:15px;
-        margin-bottom:15px;
-      }
-
-      /* ------------------------------------------
-         BOTONES SIN FONDO (estilo FAO limpio)
-         ------------------------------------------ */
       .btn-faoc,
       .shiny-action-button,
       .shiny-download-link {
@@ -76,7 +79,6 @@ ui <- fluidPage(
         margin-right:6px !important;
       }
 
-      /* hover */
       .btn-faoc:hover,
       .shiny-action-button:hover,
       .shiny-download-link:hover {
@@ -86,80 +88,60 @@ ui <- fluidPage(
     "))
   ),
   
-  # ---------------- TITULOS ----------------
-  tags$h1("Mapa de rutas de abastecimiento por región", class="main-header"),
-  tags$h1("Visualización de rutas desde municipios origen hacia el destino seleccionado",
+  tags$h1("Mapa de rutas de abastecimiento por municipio", class="main-header"),
+  tags$h1("Visualización de rutas de abastecimiento desde el municipio de origen",
           class="main-header_2"),
   
-  # ---------------- FILTROS ----------------
   fluidRow(
-    column(
-      4,
-      selectInput("anio", "Año:", choices = c())
-    ),
-    column(
-      4,
-      selectInput("mes", "Mes:", choices = meses_nombres, selected="Diciembre")
-    ),
-    column(
-      4,
-      selectInput("producto", "Producto:", choices = c())
-    )
+    column(4, selectInput("anio", "Año:", choices = c())),
+    column(4, selectInput("mes", "Mes:", choices = meses_nombres, selected="Diciembre")),
+    column(4, selectInput("producto", "Producto:", choices = c()))
   ),
   
   br(),
   
-  # ---------------- MAPA + PANEL DERECHO ----------------
   fluidRow(
-    
-    # MAPA
     column(
       9,
       leafletOutput("grafico", height=480),
       br(),
       actionButton("descargar", "Gráfica", icon=icon("download"), class="btn-faoc"),
       downloadButton("descargarDatos", "Datos", class="btn-faoc"),
-      a("GitHub",
-        href="https://github.com/danielobando2030/SIMAGRO",
-        target="_blank",
-        class="btn-faoc",
-        icon("github")),
+      a("GitHub", href="https://github.com/danielobando2030/SIMAGRO",
+        target="_blank", class="btn-faoc", icon("github")),
       actionButton("reset2", "Restablecer", icon=icon("refresh"), class="btn-faoc"),
       downloadButton("descargarPDF", "Generar informe", class="btn-faoc")
     ),
     
-    # PANEL DERECHO (dos tonos rojos estilo 3_9)
     column(
       3,
       
-      div(class="panel-rojo-oscuro",
-          div(class="stat-title","Municipio con mayor importancia"),
+      div(class="panel-981338",
+          div("Municipio con mayor importancia"),
           div(textOutput("region_mas_importante"))
       ),
       
-      div(class="panel-rojo-claro",
-          div(class="stat-title","Municipio con menor importancia"),
+      div(class="panel-332728",
+          div("Municipio con menor importancia"),
           div(textOutput("region_menos_importante"))
       ),
       
-      div(class="panel-rojo-claro",
-          div(class="stat-title","Mensaje interpretativo"),
-          div(textOutput("mensaje1"))
+      # PANEL 3: SOLO EL MENSAJE — SIN TÍTULO
+      div(class="panel-4F3032",
+          div(textOutput("mensaje_interpretativo"))
       )
     )
   ),
   
   br(),
   
-  # ---------------- FUENTE ----------------
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del SIPSA."),
+      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
       style="font-size:12px; color:#4E4D4D; font-family:'Prompt';"
     )
   ),
   
-  # ---------------- LOGO FINAL ----------------
-  div(img(src="logo_2.png", style="width:100%; margin-top:20px;"))
+  div(img(src="logo_4.png", style="width:100%; margin-top:20px;"))
 )

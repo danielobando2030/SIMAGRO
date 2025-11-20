@@ -148,27 +148,81 @@ server <- function(input, output, session) {
   # -----------------------------------------------------------
   # Informe PDF
   # -----------------------------------------------------------
+  escape_latex <- function(x) {
+    x <- as.character(x)
+    x <- stringr::str_replace_all(x, "%", "\\\\%")
+    x <- stringr::str_replace_all(x, "_", "\\\\_")
+    x <- stringr::str_replace_all(x, "\\$", "\\\\$")
+    x <- stringr::str_replace_all(x, "#", "\\\\#")
+    x <- stringr::str_replace_all(x, "\\{", "\\\\{")
+    x <- stringr::str_replace_all(x, "\\}", "\\\\}")
+    x
+  }
+  
   output$descargarPDF <- downloadHandler(
     filename = function(){
       paste0("informe_rutas_", input$anio, "_", mes_nombre_a_numero[input$mes], "_", input$producto, ".pdf")
     },
     content = function(file){
+      
       res <- resultado()
+      df <- res$datos
+      
+      # MENSAJE 1 — mayor
+      mensaje1 <- {
+        top <- df %>% group_by(mpio_origen) %>%
+          summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
+          arrange(desc(valor)) %>% slice_head(n=1)
+        
+        if(nrow(top)==0) "—"
+        else paste0(
+          str_to_title(str_to_lower(top$mpio_origen)),
+          " (", sprintf('%.1f%%', top$valor*100), ")"
+        )
+      }
+      
+      # MENSAJE 2 — menor
+      mensaje2 <- {
+        bottom <- df %>% 
+          filter(importancia_ruta > 0) %>%
+          group_by(mpio_origen) %>%
+          summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
+          arrange(valor) %>% slice_head(n=1)
+        
+        if(nrow(bottom)==0) "—"
+        else paste0(
+          str_to_title(str_to_lower(bottom$mpio_origen)),
+          " (", sprintf('%.1f%%', bottom$valor*100), ")"
+        )
+      }
+      
+      # MENSAJE 3 — municipios
+      mensaje3 <- {
+        n_mpios <- df %>% 
+          filter(importancia_ruta > 0) %>%
+          summarise(n=n_distinct(mpio_origen)) %>% pull(n)
+        
+        if(n_mpios==0) "No se registran municipios aportando este alimento."
+        else paste0("Este alimento es abastecido por ", n_mpios, " municipios diferentes.")
+      }
+      
       rmarkdown::render(
         "informe.Rmd",
         output_file = file,
         params = list(
-          datos=res$datos,
-          grafico=res$grafico_leaf,
-          anio=input$anio,
-          mes=mes_nombre_a_numero[input$mes],
-          producto=input$producto
+          datos       = df,
+          grafico_png = grafico_plano(),
+          anio        = input$anio,
+          mes         = mes_nombre_a_numero[input$mes],
+          producto    = input$producto,
+          mensaje1    = escape_latex(mensaje1),
+          mensaje2    = escape_latex(mensaje2),
+          mensaje3    = escape_latex(mensaje3)
         ),
         envir = new.env(parent=globalenv())
       )
     }
   )
-  
   # -----------------------------------------------------------
   # Estadísticas laterales (con formato corregido)
   # -----------------------------------------------------------
@@ -210,20 +264,24 @@ server <- function(input, output, session) {
     paste0(nombre, " (", sprintf("%.1f%%", bottom$valor*100), ")")
   })
   
-  output$mensaje1 <- renderText({
+  output$mensaje_interpretativo <- renderText({
     res <- resultado()
     if (is.character(res)) return("—")
     
-    top <- res$datos %>%
-      group_by(mpio_origen) %>%
-      summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
-      arrange(desc(valor)) %>%
-      slice_head(n=1)
+    df <- res$datos
     
-    nombre <- str_to_title(str_to_lower(top$mpio_origen))
+    # Número de municipios distintos que aportan (con importancia > 0)
+    n_mpios <- df %>%
+      filter(importancia_ruta > 0) %>%
+      summarise(n = n_distinct(mpio_origen)) %>%
+      pull(n)
     
-    paste0(nombre, " aporta la mayor proporción del abastecimiento de ", 
-           input$producto, ".")
+    if (n_mpios == 0) {
+      return("No se registran municipios aportando este alimento.")
+    }
+    
+    paste0("Este alimento es abastecido por ", n_mpios, 
+           " municipios diferentes.")
   })
 }
 

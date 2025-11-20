@@ -1,187 +1,174 @@
 ---
-title: " "
+title: ' '
 params:
+  anio: NA
   datos: NA
   grafico: NA
-  temporalidad: NA
-  variable: NA
-  anio: NA
-  producto: NA
-  promedio: NA
-  fecha_max: NA
-  fecha_min: NA
-  prod_mas_volatil: NA
-  promedio_cambio: NA
-  mes_max: NA
-  valor_max: NA
+  mensaje_altas: NA
+  mensaje_bajas: NA
+
 output:
   pdf_document:
     latex_engine: xelatex
-    toc: false
+
 header-includes:
-- \usepackage{float}
-- \usepackage{booktabs}
-- \usepackage{xcolor}
-- \usepackage{fontspec}
-- \usepackage{fancyhdr}
-- \usepackage{graphicx}
-- \usepackage{colortbl}
-- \usepackage{adjustbox}
-- \usepackage{longtable}
-- \usepackage{multirow}
-- \usepackage{caption}
-- \definecolor{violetaFAO}{RGB}{123,31,162}
-- \definecolor{grisFAO}{RGB}{80,80,80}
-- \definecolor{verdeFAO}{RGB}{26,150,65}
-- \definecolor{rojoFAO}{RGB}{215,25,28}
-- \setmainfont{Prompt-Regular.ttf}
-- \pagestyle{fancy}
-- \fancyhead{}
-- \fancyfoot{}
-- \setlength{\headheight}{2cm}
-- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{violetaFAO}\hrule width\headwidth height\headrulewidth}
-- \usepackage{eso-pic}
+  - \usepackage{float}
+  - \usepackage{arydshln}
+  - \usepackage{graphicx}
+  - \usepackage{xcolor}
+  - \usepackage{fontspec}
+  - \usepackage{booktabs}
+  - \usepackage{fancyhdr}
+  - \usepackage{eso-pic}
+  - \usepackage{colortbl}
+  - \usepackage{adjustbox}
+  - \setmainfont{Prompt-Regular.ttf}
+
+  - \definecolor{mygreen}{RGB}{78,77,77}
+  - \definecolor{MYGREEN}{RGB}{78,77,77}
+  - \definecolor{grayA}{RGB}{78,77,77}
+  - \definecolor{green2}{RGB}{78,77,77}
+
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  - \setlength{\headheight}{2cm}
 ---
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
 library(knitr)
 library(kableExtra)
-library(dplyr)
-library(stringr)
-library(htmlwidgets)
-library(webshot2)
-library(plotly)
-try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
-df <- params$datos
-```
+
+```        
 
 \begin{flushright}
-\textcolor{grisFAO}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
-# \textcolor{violetaFAO}{\LARGE Parámetros con los cuales se generó el informe}
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-```{r params-tabla, message=FALSE, warning=FALSE}
+
+```{r tabla_parametros, results='asis'}
+library(stringr)
+
+
+# -------------------------------------------
+# Función para escapar caracteres LaTeX básicos
+# -------------------------------------------
+escape_latex <- function(x) {
+  x <- as.character(x)
+  x <- str_replace_all(x, "_", "\\\\_")
+  x <- str_replace_all(x, "%", "\\\\%")
+  x <- str_replace_all(x, "\\$", "\\\\$")
+  x <- str_replace_all(x, "#", "\\\\#")
+  x <- str_replace_all(x, "\\{", "\\\\{")
+  x <- str_replace_all(x, "\\}", "\\\\}")
+  x
+}
+
+# -------------------------------------------
+# Función para escapar texto dentro de \textcolor
+# -------------------------------------------
+escape_textcolor <- function(x) {
+  x <- as.character(x)
+  x <- str_replace_all(x, "%", "\\\\%")
+  x <- str_replace_all(x, "_", "\\\\_")
+  x <- str_replace_all(x, "\\$", "\\\\$")
+  x <- str_replace_all(x, "#", "\\\\#")
+  x <- str_replace_all(x, "\\{", "\\\\{")
+  x <- str_replace_all(x, "\\}", "\\\\}")
+  x
+}
+
+# Construir tabla (solo Año, porque este módulo no usa otros filtros)
 df_params <- data.frame(
-  "Parámetro" = c("Temporalidad:", "Variable:", "Año:", "Producto:"),
-  "Valor" = c(
-    ifelse(is.na(params$temporalidad), "N/A", params$temporalidad),
-    ifelse(is.na(params$variable), "N/A", params$variable),
-    ifelse(is.na(params$anio), "N/A", params$anio),
-    ifelse(is.na(params$producto), "N/A", params$producto)
-  )
+  Parámetro = "Año",
+  Valor     = ifelse(is.null(params$anio), "No especificado", params$anio),
+  stringsAsFactors = FALSE
 )
 
-knitr::kable(df_params, col.names = NULL, format = "latex", booktabs = TRUE, align = 'l') %>%
-  kable_styling(latex_options = c("hold_position"))
+# Impresión estilo FAO (sin floats)
+cat("\\begingroup\n")
+cat("\\small\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
+cat("\\toprule\n")
+
+cat(
+  escape_latex(df_params$Parámetro), " & ",
+  escape_latex(df_params$Valor), " \\\\\n",
+  sep = ""
+)
+
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{adjustbox}\n")
+cat("\\endgroup\n")
 ```
+\begingroup
+\fontsize{14}{14}\selectfont
+\textcolor{mygreen}{Correlaciones entre precios}
+\par
+\fontsize{12}{12}\selectfont
+\textcolor{mygreen}{Descubre }
+\par
+\endgroup
+
+```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics(params$grafico)
+```
+
+\vspace{0.3cm}
+
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\endgroup
+
+\vspace{0.4cm}
+
+\begingroup
+\fontsize{12}{14}\selectfont
+\textcolor{mygreen}{\textbf{Correlaciones más altas:}}
+\endgroup
+
+\vspace{0.15cm}
+
+\begingroup
+\fontsize{10}{12}\selectfont
+\textcolor{grayA}{`r escape_textcolor(params$mensaje_altas)`}
+\endgroup
 
 \vspace{0.5cm}
 
-# \textcolor{violetaFAO}{\LARGE Correlación de precios mayoristas entre productos}
+\begingroup
+\fontsize{12}{14}\selectfont
+\textcolor{mygreen}{\textbf{Correlaciones más bajas:}}
+\endgroup
 
-\fontsize{11}{13}\selectfont
-El presente informe muestra las correlaciones entre los precios mayoristas de los principales productos agropecuarios registrados en la central de abastecimiento de Bogotá.  
-Una correlación positiva cercana a **1** indica que los precios de ambos productos tienden a moverse en la misma dirección, mientras que una correlación negativa sugiere que los precios se mueven en sentidos opuestos.
+\vspace{0.15cm}
 
----
+\begingroup
+\fontsize{10}{12}\selectfont
+\textcolor{grayA}{`r escape_textcolor(params$mensaje_bajas)`}
+\endgroup
 
-# \textcolor{violetaFAO}{Visualización de la matriz de correlación}
+\vspace{0.25cm}
 
-```{r grafico, out.width='90%', fig.align='center'}
-if (inherits(params$grafico, "plotly")) {
-  tmp_png <- tempfile(fileext = ".png")
-  tmp_html <- tempfile(fileext = ".html")
-  htmlwidgets::saveWidget(as_widget(params$grafico), tmp_html, selfcontained = TRUE)
-  webshot2::webshot(tmp_html, tmp_png, vwidth = 1200, vheight = 800)
-  knitr::include_graphics(tmp_png)
-} else if (is.character(params$grafico) && file.exists(params$grafico)) {
-  knitr::include_graphics(params$grafico)
-} else {
-  cat("⚠️ No hay gráfico disponible para los parámetros seleccionados.")
-}
-```
+
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{grayA}{Este gráfico muestra la correlación de los precios mayoristas como referencia para Bogotá y Cundinamarca. Donde un valor cercano a 1 indica que los dos productos se mueven en la misma dirección, y valores cercanos a -1 indican que los precios alimentos tienden a moverse de manera contraria.}
+\endgroup
 
 \newpage
 
-# \textcolor{violetaFAO}{Principales correlaciones}
-
-```{r top5, results='asis'}
-if (!is.null(df) && nrow(df) > 0) {
-  suppressMessages({
-    cor_df <- as.data.frame(as.table(df)) %>%
-      filter(Var1 != Var2) %>%
-      mutate(
-        Var1 = as.character(Var1),
-        Var2 = as.character(Var2),
-        pair = paste(pmin(Var1, Var2), pmax(Var1, Var2), sep = "_")
-      ) %>%
-      distinct(pair, .keep_all = TRUE)
-    
-    top5 <- cor_df %>% arrange(desc(Freq)) %>% head(5)
-    low5 <- cor_df %>% arrange(Freq) %>% head(5)
-  })
-  
-  cat("\\begin{flushleft}\n")
-  cat("\\textcolor{violetaFAO}{\\textbf{Top 5 correlaciones más altas:}}\\\\[6pt]\n")
-  for (i in seq_len(nrow(top5))) {
-    cat(paste0("\\textcolor{verdeFAO}{• ", top5$Var1[i], " – ", top5$Var2[i],
-               ": }\\textbf{", sprintf('%.2f', top5$Freq[i]), "}\\\\\n"))
-  }
-  cat("\\vspace{0.4cm}\n")
-  cat("\\textcolor{violetaFAO}{\\textbf{Top 5 correlaciones más bajas:}}\\\\[6pt]\n")
-  for (i in seq_len(nrow(low5))) {
-    cat(paste0("\\textcolor{rojoFAO}{• ", low5$Var1[i], " – ", low5$Var2[i],
-               ": }\\textbf{", sprintf('%.2f', low5$Freq[i]), "}\\\\\n"))
-  }
-  cat("\\end{flushleft}\n")
-} else {
-  cat("No hay datos suficientes para calcular correlaciones destacadas.")
-}
-```
-
-\newpage
-
-# \textcolor{violetaFAO}{Matriz numérica de correlaciones}
-
-```{r tabla, results='asis'}
-if (!is.null(df) && nrow(df) > 0) {
-  num_cols <- ncol(df)
-  bloques <- split(seq_len(num_cols), ceiling(seq_along(seq_len(num_cols)) / 5))
-  n_bloques <- length(bloques)
-  
-  for (b in seq_along(bloques)) {
-    sub_df <- df[, bloques[[b]], drop = FALSE]
-    sub_df <- round(sub_df, 2)
-    
-    kable(sub_df, format = "latex", booktabs = TRUE, align = "c",
-          caption = paste("Matriz de correlaciones (bloque", b, "de", n_bloques, ")")) %>%
-      kable_styling(latex_options = c("striped", "hold_position")) %>%
-      row_spec(0, bold = TRUE, color = "white", background = "violetaFAO") %>%
-      print()
-    
-    if (b < n_bloques) cat("\n\\newpage\n")
-  }
-} else {
-  cat("No hay datos disponibles para generar la tabla.")
-}
-```
-
-\newpage
-
-# \textcolor{violetaFAO}{Notas metodológicas y fuente}
-
-\fontsize{9}{11}\selectfont
-- Las correlaciones se calculan mediante el coeficiente de Pearson, utilizando precios promedio mensuales.  
-- Solo se consideran productos con información completa durante el año analizado.  
-- Los resultados reflejan la estructura de co-movimientos de precios en el mercado mayorista.  
-\vspace{0.4cm}
-
-\textcolor{violetaFAO}{\textbf{Fuente:}} Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.  
-Elaboración propia, FAO 2025.
+\vspace*{6cm}
 
 \AddToShipoutPictureBG*{
-  \put(0,20){\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
 }

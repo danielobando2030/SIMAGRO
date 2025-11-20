@@ -22,7 +22,7 @@ header-includes:
   - \usepackage{eso-pic}
   - \usepackage{adjustbox}
   - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{255,221,0}
+  - \definecolor{mygreen}{RGB}{78,77,77}
   - \definecolor{grayA}{RGB}{78,77,77}
   - \pagestyle{fancy}
   - \fancyhead{}
@@ -123,7 +123,7 @@ if (!is.null(params$mensaje1) && nzchar(params$mensaje1)) {
 \endgroup
 
 \AddToShipoutPictureBG*{
-  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
 }
 
 

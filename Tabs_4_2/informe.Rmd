@@ -26,7 +26,7 @@ header-includes:
   - \usepackage{colortbl}
   - \usepackage{adjustbox}
   - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{224,9,20}
+  - \definecolor{mygreen}{RGB}{78,77,77}
   - \definecolor{grayA}{RGB}{78,77,77}
   - \pagestyle{fancy}
   - \fancyfoot{}
@@ -143,7 +143,7 @@ Esta visualización permite ver las rutas más importantes por donde se transpor
 \vspace*{4cm}
 
 \AddToShipoutPictureBG*{
-  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
 }
 
 

@@ -110,6 +110,7 @@ server <- function(input, output, session) {
       paste0("informe_correlacion_", anio_sel, ".pdf")
     },
     content = function(file) {
+      
       res <- resultado_correlacion()
       g <- res$grafico
       m <- res$matriz
@@ -118,6 +119,35 @@ server <- function(input, output, session) {
       if (!is.null(m) && !is.matrix(m)) m <- as.matrix(m)
       mode(m) <- "numeric"
       
+      # ---- Extraer top 5 correlaciones (ya limpiadas) ----
+      cor_tab <- as.data.frame(as.table(m)) %>%
+        filter(Var1 != Var2) %>%
+        mutate(
+          Var1 = as.character(Var1),
+          Var2 = as.character(Var2),
+          pair = paste(pmin(Var1, Var2), pmax(Var1, Var2), sep = "_")
+        ) %>%
+        distinct(pair, .keep_all = TRUE)
+      
+      top5_pos <- cor_tab %>% arrange(desc(Freq)) %>% slice_head(n = 5)
+      top5_neg <- cor_tab %>% arrange(Freq) %>% slice_head(n = 5)
+      
+      # ---- Crear mensajes para el PDF ----
+      mensaje_altas <- paste(
+        apply(top5_pos, 1, function(x) {
+          glue("{x[['Var1']]} – {x[['Var2']]}: {sprintf('%.2f', as.numeric(x[['Freq']]))}")
+        }),
+        collapse = "\n"
+      )
+      
+      mensaje_bajas <- paste(
+        apply(top5_neg, 1, function(x) {
+          glue("{x[['Var1']]} – {x[['Var2']]}: {sprintf('%.2f', as.numeric(x[['Freq']]))}")
+        }),
+        collapse = "\n"
+      )
+      
+      # ---- Carpeta temporal ----
       tmp_dir <- tempfile("informe_corr_")
       dir.create(tmp_dir)
       
@@ -126,29 +156,32 @@ server <- function(input, output, session) {
       tmp_rmd  <- file.path(getwd(), "informe.Rmd")
       tmp_pdf  <- file.path(tmp_dir, "informe_correlacion.pdf")
       
-      # Guardar gráfico Plotly como PNG
+      # ---- Guardar gráfico Plotly como PNG ----
       htmlwidgets::saveWidget(as_widget(g), tmp_html, selfcontained = TRUE)
       Sys.sleep(1.2)
       webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
       
-      # Renderizar directamente (no usar callr)
+      # ---- Render PDF ----
       rmarkdown::render(
         input = tmp_rmd,
         output_format = rmarkdown::pdf_document(latex_engine = "xelatex", toc = FALSE),
         output_file = tmp_pdf,
         params = list(
-          datos   = m,
-          grafico = tmp_png,
-          anio    = if (!is.null(input$anio)) input$anio else max(data$anio)
+          datos          = m,
+          grafico        = tmp_png,
+          anio           = if (!is.null(input$anio)) input$anio else max(data$anio),
+          mensaje_altas  = mensaje_altas,
+          mensaje_bajas  = mensaje_bajas
         ),
         envir = new.env(parent = globalenv()),
         clean = TRUE
       )
       
+      # ---- Copiar PDF final ----
       if (file.exists(tmp_pdf)) {
         file.copy(tmp_pdf, file, overwrite = TRUE)
       } else {
-        stop("⚠️ No se generó el PDF final. Verifica que TinyTeX esté correctamente instalado.")
+        stop("⚠️ No se generó el PDF final. Revisa TinyTeX.")
       }
     }
   )

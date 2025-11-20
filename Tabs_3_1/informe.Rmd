@@ -15,7 +15,6 @@ params:
   mes_max: NA
   valor_max: NA
 
-  # 🔥 NUEVOS PARÁMETROS PARA LOS TRES TEXTOS 🔥
   mensaje_volatil: NA
   mensaje_promedio: NA
   mensaje_mesanual: NA
@@ -36,10 +35,10 @@ header-includes:
   - \usepackage{colortbl}
   - \usepackage{adjustbox}
   - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{255,221,0}
-  - \definecolor{MYGREEN}{RGB}{255,221,0}
+  - \definecolor{mygreen}{RGB}{78,77,77}
+  - \definecolor{MYGREEN}{RGB}{78,77,77}
   - \definecolor{grayA}{RGB}{78,77,77}
-  - \definecolor{green2}{RGB}{255,221,0}
+  - \definecolor{green2}{RGB}{78,77,77}
   - \pagestyle{fancy}
   - \fancyfoot{}
   - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
@@ -190,6 +189,13 @@ knitr::include_graphics(params$grafico)
 \textcolor{grayA}{Este gráfico muestra la evolución de los precios mayoristas como referencia para Bogotá y Cundinamarca.}
 \endgroup
 
+\newpage
+
+\vspace*{6cm}
+
+\AddToShipoutPictureBG*{
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
+}
 
 
 

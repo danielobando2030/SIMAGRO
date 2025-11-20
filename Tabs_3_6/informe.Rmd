@@ -27,7 +27,7 @@ header-includes:
   - \usepackage{adjustbox}
 
   - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{255,221,0}
+  - \definecolor{mygreen}{RGB}{78,77,77}
   - \definecolor{grayA}{RGB}{78,77,77}
 
   - \pagestyle{fancy}
@@ -117,7 +117,7 @@ cat(params$lista_atipicos)
 \endgroup
 
 \AddToShipoutPictureBG*{
-  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
 }
 
 

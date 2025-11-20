@@ -155,7 +155,7 @@ ui <- fluidPage(
   br(),
   fluidRow(
     div(
-      img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      img(src = 'logo_4.png', style = "width: 100%; margin: 0;"),
       style = "width: 100%; margin: 0;"
     )
   )

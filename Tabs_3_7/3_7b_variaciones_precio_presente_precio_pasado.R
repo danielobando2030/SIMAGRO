@@ -81,7 +81,7 @@ calc_cambio_mensual <- function(data, producto, anio) {
               hoverinfo = "none") %>%
     
     layout(
-      title = list(text = NULL),   # 🔥 ELIMINA TITULOS AUTOMÁTICOS
+      title = list(text = NULL),   # ELIMINA TITULOS AUTOMÁTICOS
       xaxis = list(
         title = "Mes",
         tickvals = df$mes_y_ano,

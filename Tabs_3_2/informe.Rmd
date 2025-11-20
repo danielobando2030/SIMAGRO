@@ -27,10 +27,10 @@ header-includes:
   - \usepackage{colortbl}
   - \usepackage{adjustbox}
   - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{255,221,0}
-  - \definecolor{MYGREEN}{RGB}{255,221,0}
+  - \definecolor{mygreen}{RGB}{78,77,77}
+  - \definecolor{MYGREEN}{RGB}{78,77,77}
   - \definecolor{grayA}{RGB}{78,77,77}
-  - \definecolor{green2}{RGB}{255,221,0}
+  - \definecolor{green2}{RGB}{78,77,77}
   - \pagestyle{fancy}
   - \fancyfoot{}
   - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
@@ -69,24 +69,30 @@ df_params <- data.frame(
   )
 )
 
-cat("\\small\\n")
-cat("\\begin{adjustbox}{width=1\\textwidth}\\n")
-cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\\n")
-cat("\\toprule\\n")
+cat("\\begingroup\n")
+cat("\\small\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
+cat("\\toprule\n")
 
 for (i in 1:nrow(df_params)) {
-  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\
-", sep="")
+  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\n", sep = "")
 }
 
-cat("\\bottomrule\\n")
-cat("\\end{tabular}\\n")
-cat("\\end{adjustbox}\\n")
-cat("\\normalsize\\n")
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{adjustbox}\n")
+cat("\\endgroup\n")
 ```
 
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Diferencias de precios de alimentos con Bogotá}\\
-\fontsize{12}{12} \selectfont \textcolor{mygreen}{Descubre los departamentos donde hay mayores y menores diferencias de precios en los alimentos con Bogotá y Cundinamarca}\\
+\begingroup
+\fontsize{14}{14}\selectfont
+\textcolor{mygreen}{Diferencias de precios de alimentos con Bogotá}
+\par
+\fontsize{12}{12}\selectfont
+\textcolor{mygreen}{Descubre los departamentos donde hay mayores y menores diferencias de precios en los alimentos con Bogotá y Cundinamarca}
+\par
+\endgroup
 
 ```{r, out.width="90%",warning=FALSE,message=FALSE}
 knitr::include_graphics(params$mapa_png)
@@ -117,5 +123,5 @@ knitr::include_graphics(params$mapa_png)
 \endgroup
 
 \AddToShipoutPictureBG*{
-  \includegraphics[width=\\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
 }
