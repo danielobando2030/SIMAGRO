@@ -1,8 +1,9 @@
 #Proyecto FAO
 ################################################################################
-#Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 28/03/2024
-#Fecha de ultima modificacion: 28/03/2024
+#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando,m Luis Miguel Garcia
+#Fecha de ultima modificacion: 10/11/2025
 ################################################################################
 # Paquetes 
 ################################################################################
@@ -55,8 +56,8 @@ ui <- fluidPage(
       
     "))
   ),
-  tags$h1("Análisis de Pareto del flujo de alimentos en Cundinamarca", class = "main-header"),
-  tags$h1("Productos principales por volumen en flujo de alimentos en Cundinamarca.", class = "main-header_2"),
+  tags$h1("Principales productos por volumen en el abastecimiento desde y hacia Cundinamarca", class = "main-header"),
+  tags$h2("Vizualiza los productos con mayor participación en el abastecimiento de alimentos desde y hacia Cundinamarca", class = "main-header_2"),
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -105,8 +106,7 @@ ui <- fluidPage(
       12,
       align = "left",
       HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
-      Para efectos visuales solo se muestra en el tablero los alimentos que representan aproximadamente el 85% del volumen total acumulado.<br>
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
       Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.<br>
       Entradas externas: Productos reportados con origen fuera del departamento de Cundinamarca.
     "),

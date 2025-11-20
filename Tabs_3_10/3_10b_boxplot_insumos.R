@@ -25,7 +25,7 @@ options(scipen = 999)
 ##############################
 
 base_precios <- readRDS("data_precios_insumos_3_10.rds") 
-head(base_precios)
+
 
 # ---- Función ----
 boxplot_interactivo <- function(data, presentacion_sel, subgrupo_sel) {
@@ -63,6 +63,7 @@ boxplot_interactivo <- function(data, presentacion_sel, subgrupo_sel) {
     mutate(
       hover = paste0(
         "<b>Año:</b> ", anio, "<br>",
+        "<b>Precio:</b> ",precio,"<br>",
         "<b>Mediana:</b> ", format(round(mediana, 0), big.mark = ".", decimal.mark = ","), "<br>",
         "<b>Q1:</b> ", format(round(q1, 0), big.mark = ".", decimal.mark = ","), "<br>",
         "<b>Q3:</b> ", format(round(q3, 0), big.mark = ".", decimal.mark = ","), "<br>",
@@ -73,38 +74,51 @@ boxplot_interactivo <- function(data, presentacion_sel, subgrupo_sel) {
         "<b>Número de observaciones:</b> ", n
       )
     )
-  
-  # Crear boxplot interactivo
-  fig <- plot_ly(
-    data = data_filtrada,
-    x = ~factor(anio, levels = all_years),
-    y = ~precio,
-    type = "box",
-    boxpoints = "all",
-    jitter = 0.3,
-    pointpos = -1.8,
-    fillcolor = 'rgba(186, 85, 211, 0.5)',   # púrpura claro
-    line = list(color = 'rgba(75, 0, 130, 1)', width = 2),  # bordes púrpura oscuro
-    marker = list(color = 'rgba(75, 0, 130, 0.5)', size = 4),
-    median = list(color = 'rgba(75, 0, 130, 1)', width = 3),
-    text = ~hover,
-    hoverinfo = "text"
-  ) %>%
-    layout(
-      title = paste0("Distribución de precios por año<br>",
-                     subgrupo_sel, " | ", presentacion_sel),
-      xaxis = list(title = "Año", categoryorder = "array", categoryarray = all_years),
-      yaxis = list(title = "Precio"),
-      plot_bgcolor = "white",
-      paper_bgcolor = "white"
+
+
+      graf <-  ggplot(data_filtrada, aes(x = factor(anio, levels = all_years), y = precio, fill = factor(anio, levels = all_years))) +
+    geom_violin(color = "black", alpha = 0.8, width = 1, show.legend = FALSE) +
+    geom_boxplot(width = 0.25, color = "black", alpha = 0.7, outlier.shape = NA, show.legend = FALSE) +
+    geom_jitter(aes(text = hover), size = 1, color = "gray40", alpha = 0.4, width = 0.15, show.legend = FALSE) +
+    scale_fill_manual(
+      values = c(
+        "2013" = "#0087CF",
+        "2014" = "#007AB8",
+        "2015" = "#006EA2",
+        "2016" = "#00628C",
+        "2017" = "#005776",
+        "2018" = "#004C61",
+        "2019" = "#00414D",
+        "2020" = "#00363A",
+        "2021" = "#002C28",
+        "2022" = "#66B7E0",
+        "2023" = "#4DAADD",
+        "2024" = "#339DD9",
+        "2025" = "#1A91D5"
+      )
+    ) +
+    labs(fill = "Año", y = "Peso",x="") +
+    theme_minimal(base_size = 13) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      plot.title = element_text(face = "bold", hjust = 0.5)
     )
   
-  return(fig)
+  
+  # --- 7. Versión interactiva con plotly ---
+  graf_plotly <- plotly::ggplotly(graf, tooltip = "text") %>%
+    plotly::layout(
+      hoverlabel = list(bgcolor = "white", font = list(size = 12)))
+  
+  
+
+  return(graf_plotly)
 }
 
 
-boxplot_interactivo(
-  data = base_precios,
-  presentacion_sel = "1 litro",
-  subgrupo_sel = "Fungicidas"
-)
+#boxplot_interactivo(
+#  data = base_precios,
+#  presentacion_sel = "1 litro",
+#  subgrupo_sel = "Fungicidas"
+#)

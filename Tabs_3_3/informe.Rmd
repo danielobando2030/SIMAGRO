@@ -1,174 +1,133 @@
----
-title: " "
+--- 
+title: ' '
 params:
-  datos: NA
-  grafico: NA
   producto: NA
   anio: NA
-  ciudad_max: NA
-  ciudad_min: NA
-  precio_max: NA
-  precio_min: NA
-  resumen: NA
+  mes: NA
+  mensaje1: NA
+  mensaje2: NA
+  mapa_png: NA
+  tabla_datos: NA
+  logo_sup: NA
+  logo_inf: NA
+  datos: NA
+  plot: NA
+
 output:
   pdf_document:
     latex_engine: xelatex
-    keep_tex: true
+
 header-includes:
-- \usepackage{float}
-- \usepackage{arydshln}
-- \usepackage{tabu}
-- \usepackage{xcolor}
-- \usepackage{fontspec}
-- \usepackage{booktabs}
-- \usepackage{fancyhdr}
-- \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
-#- '\setmainfont{Prompt-Regular.ttf}[Path=., BoldFont=Prompt-Black.ttf]'
-- \pagestyle{fancy}
-- \fancyfoot{}
-- \usepackage{colortbl}
-- \usepackage{adjustbox}
-- \setlength{\headheight}{2cm}
-- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
-- \usepackage{eso-pic}
-- \usepackage[utf8]{inputenc}
+  - \usepackage{float}
+  - \usepackage{arydshln}
+  - \usepackage{graphicx}
+  - \usepackage{xcolor}
+  - \usepackage{fontspec}
+  - \usepackage{booktabs}
+  - \usepackage{fancyhdr}
+  - \usepackage{eso-pic}
+  - \usepackage{colortbl}
+  - \usepackage{adjustbox}
+  - \setmainfont{Prompt-Regular.ttf}
+  - \definecolor{mygreen}{RGB}{255,221,0}
+  - \definecolor{MYGREEN}{RGB}{255,221,0}
+  - \definecolor{grayA}{RGB}{78,77,77}
+  - \definecolor{green2}{RGB}{255,221,0}
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  - \setlength{\headheight}{2cm}
 ---
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(dplyr)
-library(ggplot2)
 library(knitr)
-library(htmlwidgets)
-library(webshot2)
-library(plotly)
 library(kableExtra)
-library(stringr)
-
-try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
-
-df <- params$datos
 ```
 
 \begin{flushright}
-\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
-\fontsize{14}{14}\selectfont\textcolor{mygreen}{Análisis de precios de alimentos por ciudad}\
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-\fontsize{12}{12}\selectfont\textcolor{green2}{Comparación de precios de alimentos entre ciudades respecto a Bogotá}\
-
----
-
-### Parámetros de generación
-
-```{r}
-tabla_param <- data.frame(
-  "Parámetro" = c("Producto", "Año"),
-  "Valor"     = c(params$producto, params$anio)
+```{r, results='asis'}
+# Meses en español
+opciones_mes <- c(
+  "Enero"=1,"Febrero"=2,"Marzo"=3,"Abril"=4,"Mayo"=5,"Junio"=6,
+  "Julio"=7,"Agosto"=8,"Septiembre"=9,"Octubre"=10,"Noviembre"=11,"Diciembre"=12
 )
 
-tabla_param %>%
-  kable(format = "latex", booktabs = TRUE, align = "l", escape = FALSE) %>%
-  kable_styling(full_width = FALSE, latex_options = "HOLD_position")
-```
+# Para este módulo 3_3 NO se usa mes -> valor institucional estándar
+mes_label <- "Todos los meses"
 
----
+# Para el producto seleccionados en el dashboard
+prod_label <- params$producto
 
-```{r resumen}
-if (!is.null(params$resumen)) {
-  cat(params$resumen)
-} else {
-  cat("No hay resumen disponible.")
+# Año seleccionado
+anio_label <- ifelse(params$anio == "todos", "Todos los años", params$anio)
+
+# Armar data frame FAO
+df_params <- data.frame(
+  Parámetro = c("Año", "Mes", "Alimento"),
+  Valor = c(anio_label, mes_label, prod_label)
+)
+
+# Render FAO oficial (sin floats)
+cat("\\begingroup\n")
+cat("\\small\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
+cat("\\toprule\n")
+
+for (i in 1:nrow(df_params)) {
+  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\n", sep="")
 }
+
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{adjustbox}\n")
+cat("\\endgroup\n")
 ```
 
----
+\begingroup
+\fontsize{14}{14}\selectfont
+\textcolor{mygreen}{Elasticidad de precios}
+\par
+\fontsize{12}{12}\selectfont
+\textcolor{mygreen}{Descubre las diferentes elasticidades de precios y alimentos
+mes a mes en Bogotá y Cundinamarca}
+\par
+\endgroup
 
-### Visualización comparativa
-
-```{r grafico, out.width='95%', fig.align='center', message=FALSE, warning=FALSE}
-if (!is.null(params$grafico)) {
-  tryCatch({
-    tmp_html <- tempfile(fileext = ".html")
-    tmp_png  <- tempfile(fileext = ".png")
-    
-    htmlwidgets::saveWidget(plotly::as_widget(params$grafico), tmp_html, selfcontained = TRUE)
-    
-    suppressWarnings(
-      webshot2::webshot(tmp_html, file = tmp_png, vwidth = 1280, vheight = 720, delay = 0.5)
-    )
-    
-    if (file.exists(tmp_png)) {
-      knitr::include_graphics(tmp_png)
-    } else {
-      cat("⚠️ No se pudo generar la imagen del gráfico.")
-    }
-  }, error = function(e) {
-    cat("⚠️ Error al renderizar el gráfico: ", e$message)
-  })
-} else {
-  cat("No hay gráfico disponible.")
-}
+```{r grafico, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
+knitr::include_graphics(params$plot)
 ```
 
----
+\vspace{0.2cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\endgroup
 
-### Tabla de resultados principales
 
-```{r tabla, message=FALSE, warning=FALSE}
-tryCatch({
-  if (is.null(params$datos) || nrow(params$datos) == 0) {
-    cat("⚠️ No hay datos disponibles para mostrar en la tabla.")
-  } else {
-    df <- params$datos
-    
-    if (!all(c("ciudad", "comp") %in% names(df))) {
-      cat("⚠️ Las columnas 'ciudad' y 'comp' no se encuentran en los datos.")
-    } else {
-      df %>%
-        dplyr::select(ciudad, comp) %>%
-        dplyr::rename(
-          "Ciudad" = ciudad,
-          "Diferencia con Bogotá ($)" = comp
-        ) %>%
-        dplyr::mutate(
-          `Diferencia con Bogotá ($)` =
-            formatC(`Diferencia con Bogotá ($)`, big.mark = ",", digits = 0, format = "f")
-        ) %>%
-        head(8) %>%
-        kable(
-          format = "latex",
-          booktabs = TRUE,
-          align = "l",
-          caption = "Ciudades con mayor y menor diferencia respecto a Bogotá"
-        ) %>%
-        kable_styling(latex_options = c("striped", "hold_position"))
-    }
-  }
-}, error = function(e) {
-  cat("⚠️ Error al generar la tabla: ", e$message)
-})
-```
+\vspace{0.2cm}
 
----
-
-### Interpretación
-
+\begingroup
 \fontsize{10}{10}\selectfont
-- Valores positivos indican precios **mayores que Bogotá**.  
-- Valores negativos reflejan precios **menores que Bogotá**.  
-- El tamaño del círculo representa la **variabilidad interna (desviación estándar)**.  
-- Las ciudades con valores extremos permiten identificar diferencias relevantes entre mercados.  
+\textcolor{grayA}{`r enc2utf8(params$mensaje1)`}
+\endgroup
 
-\fontsize{8}{8}\selectfont\textcolor{mygreen}{Fuente: Cálculos propios con base en el Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.}\
+\vspace{0.25cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{grayA}{Esta visualizaición permite ver la elasticidad precio-cantidades, la cual se calcula como la variación porcentual del precio dividida por la variación porcentual de la cantidad ofertada.}
+\endgroup
 
-\fontsize{8}{8}\selectfont\textcolor{mygreen}{Bogotá se toma como referencia por ser el principal mercado mayorista del país.}\
+\AddToShipoutPictureBG*{
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+}
 
-\fontsize{8}{8}\selectfont\textcolor{mygreen}{Informe generado automáticamente mediante la aplicación Shiny – FAO 2025.}\
 
-\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

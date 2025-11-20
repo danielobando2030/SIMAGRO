@@ -1,9 +1,9 @@
 # Proyecto FAO
 # Visualizacion de DATOS   - abastecimeinto en resto 
 ################################################################################-
-#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 20/03/2024
-#Fecha de ultima modificacion: 23/04/2024
+#Autores: Cristian Daniel Obando,m Luis Miguel Garcia
+#Fecha de creacion: 09/11/2025
+#Fecha de ultima modificacion: 10/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())
@@ -20,7 +20,6 @@ source("1_9b_Indices_Distribución_de las_Cantidades_entran.R")
 
 ui <- fluidPage(
   tags$head(
-    tags$title("Distribución de la cantidad mensual de productos que entran a Bogotá por año"),  
     tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"), 
     tags$style(HTML("
       .main-header {
@@ -60,8 +59,7 @@ ui <- fluidPage(
       
     "))
   ),
-    tags$h1("Cantidad de productos que entran a Bogotá por mes", class = "main-header"),
-    tags$h1("Descubre cómo se comporta la cantidad mensual de productos que entrán a Bogotá según el SIPSA.", class = "main-header_2"),  
+    tags$h1("Distribución del volumen mensual de alimentos que entran a Bogotá por año", class = "main-header"),
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -101,28 +99,15 @@ ui <- fluidPage(
       12,
       align = "left",
       HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
+     <p>Esta visualización muestra cómo varía mes a mes el volumen de alimentos que llegan a Bogotá, separada por años.</p>
+<ul>
+  <li><strong>Mediana:</strong> el valor típico de cada año (la línea en el centro).</li>
+  <li><strong>Percentil 25% y 75%:</strong> los bordes de la caja muestran el punto por debajo del cual está el 25% de los meses y el punto por debajo del cual está el 75% de los meses. Es decir, la caja agrupa al 50% central de los meses.</li>
+  <li><strong>Variación mensual:</strong> el tamaño de la caja indica qué tan parejos o dispersos fueron los volúmenes dentro del año.</li>
+</ul>
 
-      <span style='font-size:20px; font-weight:600;'>Distribución de la cantidad de productos que entran a Bogotá</span><br><br>
-
-      Esta visualización muestra la distribución mensual de la cantidad de alimentos que ingresan a la ciudad de Bogotá, desagregada por año.<br><br>
-
-      Cada diagrama de caja y bigotes resume la variabilidad de los volúmenes mensuales de abastecimiento para cada año, permitiendo identificar diferencias 
-      en la mediana, la dispersión y la presencia de valores atípicos.<br><br>
-
-      El cuerpo de la caja representa el rango intercuartílico (del 25% al 75% de los valores observados), la línea central indica la mediana del volumen mensual, 
-      y los bigotes muestran la extensión de los valores típicos. Los puntos fuera de los bigotes corresponden a meses con niveles de abastecimiento 
-      inusualmente altos o bajos, que podrían estar asociados con variaciones estacionales, coyunturas de mercado o condiciones climáticas.<br><br>
-
-      Comparar los diagramas entre años permite analizar:<br>
-      <ul>
-        <li>Cambios en la mediana anual de abastecimiento.</li>
-        <li>Aumentos o disminuciones en la variabilidad mensual.</li>
-        <li>Presencia de valores extremos asociados con choques específicos en la oferta o la demanda.</li>
-      </ul>
-
-      En conjunto, el gráfico facilita una lectura rápida de la estabilidad y tendencia del abastecimiento alimentario hacia Bogotá a lo largo del tiempo.
-    "),
+<p>Comparando las cajas entre años puedes ver si los niveles y la variación del abastecimiento cambiaron con el tiempo.</p>"),
       style = "font-size:12px; color:#4E4D4D; text-align:left; font-family:'Prompt', sans-serif; margin-top:20px;"
     )
   ),

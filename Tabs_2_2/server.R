@@ -105,8 +105,7 @@ server <- function(input, output, session) {
     if(nrow(res$datos) == 0){
       values$subtitulo <- "No hay datos disponibles"
     }else{
-    values$subtitulo= "Esta visualización muestra el porcentaje acumulado de municipios que reciben sus productos a Cundinamarca. 
-  Cuanto más cercana esté la curva a la línea de 45°, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios." 
+    values$subtitulo= "Si la curva se aleja de la diagonal, aumenta la dependencia de pocos municipios para el envió de los productos; si se acerca, el aporte es más distribuido." 
       
     } 
     #else {
@@ -130,7 +129,17 @@ output$mensaje1 <- renderText({
   if (nrow(resultado_data$datos) == 0) {
     validate("No hay información disponible")
   } else {
-    values$mensaje1 <- paste("Se obtiene un coeficiente gini de",round(resultado_data$gini_,2),". Esta es una medida de dependencia en la que valores cercanos a 1 indican dependencia de unos pocos mercados (municipios) y valores cercanos a cero la dependencia es igual con todos los mercados (municipios)")
+    values$mensaje1 <- paste(
+      "Se obtiene un coeficiente de Gini de", round(resultado_data$gini_, 2), ". ",
+      "Esta medida refleja el nivel de concentración o dependencia del mercado: ",
+      "valores cercanos a 0 indican una distribución equilibrada entre los municipios, ",
+      "mientras que valores cercanos a 1 señalan una alta concentración en pocos municipios. ",
+      "Según su valor, la dependencia es ",
+      ifelse(resultado_data$gini_ < 0.30, "baja",
+             ifelse(resultado_data$gini_ < 0.60, "media", "alta")),
+      "."
+    )
+    
    
   return(values$mensaje1)
   }

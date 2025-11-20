@@ -130,7 +130,7 @@ values <- reactiveValues(subtitulo = NULL, mensaje1 = NULL, mensaje2 = NULL)
     resultado <- resultado()
     porcentaje_max_1<-resultado$porcentaje_max
     dpto_max <- resultado$dpto_max
-    values$mensaje2 <-(paste0("Para el producto y periodo de tiempo  seleccionado, " ,dpto_max, " recibió el ",porcentaje_max_1, "% del total de volumen registrado con origen Cundinamarca." ))
+    values$mensaje2 <-(paste0("Para el producto y periodo de tiempo  seleccionado, " ,dpto_max, " recibió el ",porcentaje_max_1, "% del volumen total de la producción registrada en Cundinamarca." ))
     return(values$mensaje2)
      })
 

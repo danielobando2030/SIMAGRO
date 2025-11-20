@@ -101,18 +101,23 @@ server <- function(input, output, session) {
     updateSelectInput(session, "mes", selected = "todo")
     updateSelectInput(session, "producto", selected = "todo")
   })
-  
-  
-  # Mensajes
-  values <- reactiveValues(mensaje1 = NULL)
+# Mensajes
+
+values <- reactiveValues(mensaje1 = NULL)
   output$mensaje1 <- renderText({
     resultado_data <- resultado()
     if (nrow(resultado_data$datos) == 0) {
-      validate("No hay información disponible")
-    } else {
-      values$mensaje1<- (paste0("El ", round(resultado_data$porcentaje_max, digits = 1), "% de los productos procedentes de municipios de Cundinamarca tienen como destino los principales centros de abasto de ", resultado_data$lugar_max, "."))
-    }
-    return(values$mensaje1)
+    validate("No hay información disponible")
+} else if(input$producto=="todo"){
+
+values$mensaje1<- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", round(resultado_data$porcentaje_max, digits = 1), "% del volumen registrado de los productos procedentes de municipios de Cundinamarca tienen como destino los principales centros de abasto de ", resultado_data$lugar_max, "."))
+
+}else if(input$producto!="todo"){
+
+values$mensaje1<- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", round(resultado_data$porcentaje_max, digits = 1), "% del volumen registrado de ", input$producto," procedentes de municipios de Cundinamarca tienen como destino los principales centros de abasto de ", resultado_data$lugar_max, "."))
+  
+}
+return(values$mensaje1)
   })
 
   

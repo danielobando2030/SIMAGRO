@@ -3,7 +3,7 @@
 #               Laura Quintero
 #               Daniel Obando
 # First Edited: 2025/08/24
-# Last Editor:  2025/09/12
+# Last Editor:  2025/11/xx
 # R version:    4.3.2
 ######
 
@@ -38,7 +38,7 @@ data_comparacion                        <- readRDS("data_comparacion_3_4.rds")
 diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = NULL) {
   
   city_colors <- c(
-    "#800080", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#DBC21F", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
     "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22",
     "#17becf", "#aec7e8", "#ffbb78", "#98df8a", "#ff9896",
     "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7"
@@ -69,7 +69,7 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
           text = "❌ Sin datos disponibles para los criterios seleccionados",
           xref = "paper", yref = "paper",
           showarrow = FALSE,
-          font = list(size = 18, color = "#800080")
+          font = list(size = 18, color = "#DBC21F")
         ),
         xaxis = list(visible = FALSE),
         yaxis = list(visible = FALSE)
@@ -126,9 +126,12 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
     )
   )
   
+  # ---- Eliminar duplicados explícitamente ----
+  df <- df %>% distinct(ciudad, .keep_all = TRUE)
+  
   # ---- Colores ----
   df$color <- city_colors[seq_len(nrow(df))]
-  df$color[df$ciudad == "Bogotá"] <- "#800080"
+  df$color[df$ciudad == "Bogotá"] <- "#DBC21F"
   
   # ---- Gráfico ----
   p <- plot_ly(
@@ -146,28 +149,60 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
     hoverinfo = "text"
   )
   
-  # ---- Etiquetas intercaladas ----
-  offset_y <- 0.05
+  # ---- Espaciado (AUMENTADO) ----
+  # ---- Espaciado dinámico ----
+  offset_y_base <- 0.1   # antes 0.08, ahora MUCHO más separado
+  
+  bogota_mostrada <- FALSE
+  
   for (i in seq_len(nrow(df))) {
-    y_pos <- ifelse(i %% 2 == 0, 1 - offset_y, 1 + offset_y)
+    
+    ciudad_i <- df$ciudad[i]
+    
+    # offset adicional según tamaño del círculo (más grande = más separación)
+    offset_extra <- df$marker_size[i] / 400   # escala suave
+    offset_total <- offset_y_base + offset_extra
+    
+    # --- Etiqueta de Bogotá SOLO UNA VEZ ---
+    if (ciudad_i == "Bogotá") {
+      if (!bogota_mostrada) {
+        p <- p %>% add_annotations(
+          x = df$comp[i],
+          y = 1 + offset_total + 0.03,
+          text = ciudad_i,
+          showarrow = FALSE,
+          textangle = 90,
+          font = list(size = 13, family = "Prompt", color = "#333333")
+        )
+        bogota_mostrada <- TRUE
+      }
+      next
+    }
+    
+    # --- Resto de ciudades ---
+    y_pos <- ifelse(i %% 2 == 0, 1 - offset_total, 1 + offset_total)
+    
     p <- p %>% add_annotations(
       x = df$comp[i],
       y = y_pos,
-      text = df$ciudad[i],
+      text = ciudad_i,
       showarrow = FALSE,
       textangle = 90,
-      font = list(size = 11, family = "Prompt", color = "#333333")
+      font = list(size = 12, family = "Prompt", color = "#333333")
     )
   }
+  
   
   # ---- Línea base ----
   p <- p %>% layout(
     title = NULL,
     xaxis = list(title = "", showticklabels = TRUE, showline = FALSE, zeroline = FALSE),
-    yaxis = list(visible = FALSE, range = c(0.75, 1.25)),
+    yaxis = list(visible = FALSE, range = c(0.60, 1.40)),   # más espacio vertical
     shapes = list(
       list(
-        type = "line", x0 = 0, x1 = 0, y0 = 0, y1 = 2,
+        type = "line", 
+        x0 = 0, x1 = 0,
+        y0 = 0, y1 = 2,
         line = list(color = "#E0E0E0", width = 1.5, dash = "dot")
       )
     )
@@ -179,12 +214,12 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
   ciudad_max <- df$ciudad[which.max(df$comp)]
   ciudad_min <- df$ciudad[which.min(df$comp)]
   
-  list(
+  return(list(
     grafico    = p,
     datos      = df,
     precio_max = precio_max,
     precio_min = precio_min,
     ciudad_max = ciudad_max,
     ciudad_min = ciudad_min
-  )
+  ))
 }

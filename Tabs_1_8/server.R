@@ -116,11 +116,12 @@ server <- function(input, output, session) {
     porcent_prod <- round(res$porcent_prod,digits = 1)
     acumulado <- res$acumulado
     prod_neces <- res$prod_neces
-    values$subtitulo <- (paste0("Aproximadamente el 80% del volumen total que ",
+    "Para los filtros seleccionados, aproximadamente el 80% del volumen total se concentra en {N} productos, que representan el {X%} del total de productos registrados"
+    values$subtitulo <- (paste0("Para los filtros seleccionados, aproximadamente el 80% del volumen total de alimentos que ",
                                 ifelse(input$algo=="Neto_entra", " ingresa ",
                                        ifelse(input$algo == "Neto_sale"," sale ",
                                               ifelse(input$algo == "Neto_entra_local"," ingresa local "," ingresa externo "))),
-                                "se concentran en ", prod_neces," productos (",porcent_prod,"% del total de productos)"))}
+                                "se concentran en ", prod_neces," productos que representa el ",porcent_prod,"% del total de productos registrados."))}
     return(values$subtitulo)
   })
   
@@ -130,24 +131,12 @@ server <- function(input, output, session) {
   values <- reactiveValues(mensaje1 = NULL, mensaje2 = NULL, mensaje3 = NULL)
   
   output$mensaje1 <- renderText({
-    values$mensaje1 <- "El análisis de pareto identifica los productos más significativos en el abastecimiento, aquellos que representan el 80% o más del total del volumen de alimentos en un espacio o tiempo determinado."
+    values$mensaje1 <- "Este gráfico ordena los alimentos según su volumen y muestra cómo se acumula el total. La línea vertical indica el punto en el que se alcanza alrededor del 80 % del volumen acumulado. El producto que aparece cuando pasas el cursor sobre ese punto es el que completa ese porcentaje y define cuántos productos concentran la mayor parte del volumen en el periodo seleccionado."
     values$mensaje1
   })
   
   output$mensaje2 <- renderText({
-    res <- resultado()
-    if(nrow(res$datos) == 0){
-      values$mensaje2 <- ""
-    } else {
-      prod_neces <- res$prod_neces
-      acumulado <- round(res$acumulado,digits = 1)
-      
-      if(prod_neces == 1){
-        values$mensaje2 <- "Solo se cuenta con un alimento"
-      } else {
-        values$mensaje2 <- paste0("Se necesitaron ", prod_neces, " alimentos para llegar al ", acumulado, "%")
-      }
-    }
+    values$mensaje2 <- "El gráfico permite identificar cuáles son los alimentos que más pesan en el abastecimiento asociado a Cundinamarca. Cada barra representa un producto y su altura muestra el volumen; la línea acumulada indica qué proporción del volumen total se va sumando producto a producto, para las entradas (locales o externas) o las salidas, según los filtros seleccionados."
     values$mensaje2
   })
   

@@ -123,9 +123,9 @@ output$subtitulo <- renderText({
       porcentaje_max <- res$porcentaje_max
       dpto_max <- res$dpto_max
       if (input$producto == "todo") {
-        values$subtitulo <- (paste0("Cundinamarca es uno de los principales receptores de ", dpto_max," con un procentaje de ", porcentaje_max ,"%."))
+        values$subtitulo <- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", porcentaje_max ,"%. de la producción de alimentos reportada en ",dpto_max, " van hacia Cundinamarca"))
       } else if (input$producto != "todo") {
-        values$subtitulo <- (paste0("Cundinamarca es uno de los principales receptores de ", dpto_max," con un procentaje de ", porcentaje_max ,"%."))
+        values$subtitulo <- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", porcentaje_max ,"%. de la producción de ",input$producto," reportada en ",dpto_max, " van hacia Cundinamarca"))
       }
     }
   }
@@ -142,7 +142,7 @@ output$mensaje1 <- renderText({
   }else {
   porcentaje_max <- res$porcentaje_max_1
   dpto_max <- res$dpto_max
-  values$mensaje1 <- (paste0("El ", res$porcentaje_max_1, "% del volumen total",ifelse(input$producto == "todo"," de alimentos que reportan como origen los territorios de Cundinamarca",paste0(" de ",input$producto," que reportan como origen los territorios de Cundinamarca"))," llega a las principales centrales de abasto de Bogotá."))}}
+  values$mensaje1 <- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", res$porcentaje_max_1, "% de la producción ",ifelse(input$producto == "todo"," de alimentos reportado en el propio Cundinamarca",paste0(" de ",input$producto," reportada en el propio Cundinamarca"))," llega a las principales centrales de abasto de Bogotá."))}}
   return(values$mensaje1)
   })
   

@@ -1,8 +1,9 @@
 #Proyecto FAO
 ################################################################################
-#Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 28/03/2024
-#Fecha de ultima modificacion: 28/03/2024
+#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando,m Luis Miguel Garcia
+#Fecha de ultima modificacion: 10/11/2025
 ################################################################################
 # Paquetes 
 ################################################################################
@@ -57,13 +58,9 @@ ui <- fluidPage(
       
     "))
   ),
-  tags$h1("Balance de Alimentos: Productos de origen local vs. externo", class = "main-header"),
-  tags$h1("Compara volúmenes de alimentos locales y externos que ingresan a las principales centrales de abasto de Bogotá.", class = "main-header_2"),
-  div(
-    textOutput("subtitulo"),
-    class = "sub-header2",
-    style = "margin-bottom: 20px;"
-  ),  
+  tags$h1("Balance de alimentos: comparación entre productos de origen local y externo", class = "main-header"),
+  tags$h1("Volúmenes de alimentos locales y externos que ingresan a las principales centrales de abasto de Bogotá.", class = "main-header_2"),
+    
   div(
       fluidRow(
         column(4,
@@ -91,8 +88,9 @@ ui <- fluidPage(
       ),
            
     column(3,
+           wellPanel(textOutput("subtitulo"),style = "background-color: #0087CF; color: #FFFFFF;"),
            wellPanel(textOutput("mensaje1"),
-                     style = "background-color: #0087CF; color: #FFFFFF;"))
+                     style = "background-color:  #2A4E61; color: #FFFFFF;"))
     )
     
   ),
@@ -102,7 +100,7 @@ ui <- fluidPage(
       12,
       align = "left",
       HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       El balance de alimentos se define como la diferencia en volumen entre los alimentos que ingresan a las principales centrales de abasto de Bogotá con origen en Cundinamarca y el total de alimentos reportados en las centrales. 
       La fórmula para calcular el balance de alimentos es 

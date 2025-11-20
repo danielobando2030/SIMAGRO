@@ -64,28 +64,50 @@ visualizar_bandas_plotly <- function(data, producto_sel, anio_sel = NULL) {
   
   df_plot <- df %>% filter(!is.na(estado))
   
-  # Seleccionar un tick cada 10 días
   fechas_ticks <- df_plot$fecha[seq(1, nrow(df_plot), by = 10)]
   labels_ticks <- df_plot$label_fecha[seq(1, nrow(df_plot), by = 10)]
   
   fig <- plot_ly(df_plot, x = ~fecha) %>%
-    add_ribbons(ymin = ~banda_inf, ymax = ~banda_sup, 
-                fillcolor = 'rgba(128, 0, 128, 0.2)',
-                line = list(color = 'rgba(128,0,128,0)'), 
-                name = 'Banda ±2sd',
-                hoverinfo = "none",
-                showlegend = TRUE) %>%
-    add_lines(y = ~precio_norm, name = 'Precio normalizado', 
-              line = list(color = '#2c3e50'),
-              showlegend = TRUE) %>%
-    add_markers(y = ~precio_norm, 
-                name = 'Precio normalizado',
-                marker = list(color = ~ifelse(estado=="Atípico", "red", "#2980b9")),
-                text = ~paste("Fecha:", label_fecha,
-                              "<br>Precio normalizado:", round(precio_norm,2),
-                              "<br>Estado:", estado),
-                hoverinfo = "text",
-                showlegend = FALSE) %>%
+    
+    # -------------------------------------------------------------------
+  # ⭐ BANDA → amarillo FAO #FFDD00
+  # -------------------------------------------------------------------
+  add_ribbons(
+    ymin = ~banda_inf, ymax = ~banda_sup,
+    fillcolor = "rgba(255,221,0,0.25)",
+    line = list(color = "rgba(255,221,0,0)"),
+    name = "Banda ±2sd",
+    hoverinfo = "none",
+    showlegend = TRUE
+  ) %>%
+    
+    # -------------------------------------------------------------------
+  # ⭐ LÍNEA PRINCIPAL → #33322C
+  # -------------------------------------------------------------------
+  add_lines(
+    y = ~precio_norm,
+    name = "Precio normalizado",
+    line = list(color = "#33322C", width = 2),
+    showlegend = TRUE
+  ) %>%
+    
+    # -------------------------------------------------------------------
+  # ⭐ PUNTOS → normales #33322C, atípicos rojos
+  # -------------------------------------------------------------------
+  add_markers(
+    y = ~precio_norm,
+    name = "Precio normalizado",
+    marker = list(
+      color = ~ifelse(estado == "Atípico", "#DBC21F", "#33322C"),
+      size = 6
+    ),
+    text = ~paste("Fecha:", label_fecha,
+                  "<br>Precio normalizado:", round(precio_norm,2),
+                  "<br>Estado:", estado),
+    hoverinfo = "text",
+    showlegend = FALSE
+  ) %>%
+    
     layout(
       title = NULL,
       xaxis = list(
@@ -96,11 +118,13 @@ visualizar_bandas_plotly <- function(data, producto_sel, anio_sel = NULL) {
       ),
       yaxis = list(title = "Precio normalizado"),
       hovermode = "closest",
-      legend = list(title = list(text=''))
+      legend = list(title = list(text = ""))
     )
   
   return(fig)
 }
+
+
 
 # Ejemplo
 visualizar_bandas_plotly(data, "Aguacate", 2014)

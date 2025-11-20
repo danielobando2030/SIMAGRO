@@ -95,10 +95,33 @@ server <- function(input, output, session) {
     # Convertir la abreviatura del mes a un nombre completo de mes
     mes_max_IHH <- meses_es[match(tolower(mes_max_IHH), abrev_meses_es)]
     
+    clasificar_hhi <- function(hhi) {
+      if (hhi <= 1500) {
+        return("baja concentración del volumen de los alimentos (alta diversidad)")
+      } else if (hhi <= 2500) {
+        return("concentración moderada del volumen de los alimentos (diversidad media)")
+      } else {
+        return("alta concentración del volumen de los alimentos (baja diversidad)")
+      }
+    }
+    
+    
+    categoria_hhi <- clasificar_hhi(max_IHH)
+    
     if (tipo == 1) {
-      values$subtitulo <- (paste("La menor variedad de alimentos registrada fue en el año", anio_max_IHH, "donde se registró un índice máximo de", max_IHH))
+      values$subtitulo <- paste(
+        "El año con la menor diversidad de alimentos fue",
+        anio_max_IHH,
+        "al registrar un índice de",
+        max_IHH, ". Sin embargo, esto corresponde a", categoria_hhi, "."
+      )
     } else if (tipo == 0) {
-      values$subtitulo <- (paste("La menor variedad de alimentos registrada fue en el mes", mes_max_IHH,"del año", anio_max_IHH, "donde se registró un índice máximo de", max_IHH))
+      values$subtitulo <- paste(
+        "El mes con la menor diversidad de alimentos fue",
+        mes_max_IHH, "del año", anio_max_IHH,
+        "al registrar un índice de",
+        max_IHH, ", correspondiente a", categoria_hhi, "."
+      )
     }
     return(values$subtitulo)
   })
@@ -111,14 +134,14 @@ server <- function(input, output, session) {
   
   # Mensajes: Mensaje 1  
   output$mensaje1 <- renderText({
-    values$mensaje1 <- ("El índice de Herfindahl-Hirschman permite conocer el nivel de concentración de los alimentos en Cundinamarca, un mayor índice refleja menos variedad de alimentos")
+    values$mensaje1 <- ("Este índice muestra el nivel de concentración de los alimentos que ingresan a Cundinamarca.
+Valores altos indican menor diversidad; valores bajos reflejan una mayor variedad")
     values$mensaje1
   })
   
   # Mensajes: Mensaje 2
   output$mensaje2 <- renderUI({
-    values$mensaje2 <-("Este índice puede aumentar si un producto incrementa su participación en el volumen total o si disminuye el número de productos que ingresan
-")
+    values$mensaje2 <-("El índice aumenta cuando el volumen ingresado se concentra en unos pocos alimentos, reflejando una menor diversidad.")
     values$mensaje2
   })
   

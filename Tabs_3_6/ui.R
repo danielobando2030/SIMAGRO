@@ -1,6 +1,7 @@
 ################################################################################
 # Proyecto FAO - VP - 2025
-# UI - Bandas de precios normalizados con botones FAO y nota de probabilidad
+# UI - Bandas de precios normalizados (estructura institucional FAO)
+# SIN LOGO SUPERIOR
 ################################################################################
 
 library(shiny)
@@ -14,122 +15,154 @@ data <- readRDS("base_diaria_mayoristas_indices_bog_3_6.rds")
 productos <- sort(unique(data$producto))
 anios <- sort(unique(year(data$fecha)))
 
-# --- Interfaz UI ---
+# ============================
+#      INTERFAZ COMPLETA
+# ============================
 ui <- fluidPage(
+  
+  ##############################################################################
+  # ENCABEZADO Y ESTILOS
+  ##############################################################################
   tags$head(
     tags$title("Bandas de precios normalizados - FAO VP 2025"),
-    tags$link(rel = "stylesheet", type = "text/css",
-              href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"),
+    tags$link(
+      rel = "stylesheet", type = "text/css",
+      href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
+    ),
     tags$style(HTML("
       body {
         font-family: 'Prompt', sans-serif;
         background-color: #fafafa;
+        color: #4E4D4D;
       }
-      h1 {
-        color: #6A1B9A;
-        font-weight: bold;
-        font-size: 34px;
-        text-align: center;
+
+      /* TITULOS */
+      .main-header {
+        font-size: 40px;
+        color: #6D673E !important;
+        font-weight: 700;
+        text-align: left;
       }
-      h2 {
-        color: #8E24AA;
+      .main-header_2 {
         font-size: 20px;
-        text-align: center;
-        margin-top: -5px;
-        margin-bottom: 20px;
-      }
-      .btn-faoc {
-        background-color: #6A1B9A;
-        border-color: #6A1B9A;
-        color: white;
+        color: #6D673E !important;
         font-weight: 500;
-        border-radius: 6px;
-        margin-right: 5px;
+        text-align: left;
+        margin-top: -10px;
+      }
+      .sub-header2 {
+        font-size: 15px;
+        color: #4E4D4D;
+        font-weight: 400;
+      }
+
+      /* BOTONES FAO */
+      .btn-faoc {
+        background-color: #FFFFFF !important;
+        border: 1.5px solid #A0A0A0 !important;
+        color: #4E4D4D !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+        padding: 6px 14px !important;
+        margin-right: 4px !important;
+        height: 36px !important;
+        display: inline-flex !important;
+        align-items: center !important;
       }
       .btn-faoc:hover {
-        background-color: #500985;
-        border-color: #500985;
-        color: white;
+        background-color: #EAEAEA !important;
       }
+
+      /* PANEL LATERAL */
       .well-panel-fao {
-        background-color: #6A1B9A;
-        color: white;
+        background-color: #DBC21F !important;
+        color: #FFFFFF !important;
         font-weight: 500;
-        font-size: 14px;
         border-radius: 8px;
-        padding: 15px;
-      }
-      .panel-atipicos ul {
-        margin-left: -15px;
-        padding-left: 20px;
-      }
-      .panel-atipicos li {
-        margin-bottom: 4px;
+        padding: 12px;
       }
     "))
   ),
   
-  # --- Logo superior ---
-  div(class = "logo-header", img(src = "logo_3.png", height = "90px")),
+  ##############################################################################
+  # TÍTULOS (MISMA DISPOSICIÓN QUE ABASTECIMIENTO)
+  ##############################################################################
+  tags$h1("Bandas de precios normalizados por producto", class = "main-header"),
+  tags$h1("Detección de días con precios atípicos en los mercados mayoristas", class = "main-header_2"),
   
-  # --- Título principal ---
-  h1("Bandas de precios normalizados por producto"),
-  h2("Detección de días con precios atípicos en los mercados mayoristas"),
-  
-  # --- Filtros ---
-  fluidRow(
-    column(6,
-           selectInput("producto", "Seleccione producto:",
-                       choices = productos, selected = "Aguacate")),
-    column(6,
-           selectInput("anio", "Seleccione año:",
-                       choices = c("Todos" = "todos", sort(unique(anios))),
-                       selected = "2024"))
+  div(
+    textOutput("subtitulo"),
+    class = "sub-header2",
+    style = "margin-bottom: 20px;"
   ),
   
-  br(),
-  
-  # --- Gráfico principal y botones FAO ---
-  fluidRow(
-    column(
-      9,
-      plotlyOutput("grafico", height = "600px"),
-      br(),
-      downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
-      downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
-      shiny::a("GitHub",
-               href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_6",
-               target = "_blank", class = "btn btn-faoc", icon("github")),
-      actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
-      downloadButton("descargarPDF", "Generar informe", class = "btn-faoc")
-    ),
-    
-    # --- Panel lateral de días atípicos ---
-    column(
-      3,
-      wellPanel(uiOutput("diasAtipicos"), class = "well-panel-fao")
+  ##############################################################################
+  # SELECTORES — MISMA FILA Y ORDEN QUE ABASTECIMIENTO
+  ##############################################################################
+  div(
+    fluidRow(
+      column(3,
+             selectInput("producto", "Seleccione producto:", productos, selected = "Aguacate")),
+      column(3,
+             selectInput("anio", "Seleccione año:",
+                         choices = c("Todos" = "todos", anios),
+                         selected = "2024"))
     )
   ),
   
-  br(), br(),
+  ##############################################################################
+  # GRÁFICO + PANEL LATERAL (9 - 3 IGUAL AL MÓDULO DE ABASTECIMIENTO)
+  ##############################################################################
+  fluidRow(
+    column(
+      9,
+      div(
+        plotlyOutput("grafico", height = "600px"),
+        br(),
+        downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
+        downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
+        shiny::a(
+          tagList(icon("github"), " GitHub"),
+          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_6",
+          target = "_blank",
+          class = "btn-faoc"
+        ),
+        actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
+        downloadButton("descargarPDF", "Generar informe", class = "btn-faoc")
+      )
+    ),
+    
+    column(
+      3,
+      div(
+        wellPanel(uiOutput("diasAtipicos"), class = "well-panel-fao")
+      )
+    )
+  ),
   
-  # --- Nota metodológica ampliada ---
+  ##############################################################################
+  # NOTA METODOLÓGICA — BLOQUE ÚNICO
+  ##############################################################################
   fluidRow(
     column(
       12, align = "left",
       HTML("
-        <div style='font-size:12px; color:#5A5A5A; text-align:left; line-height:1.5;'>
-        Fuente: cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-        Las bandas representan ±2 desviaciones estándar de una media móvil de 20 días sobre los precios mayoristas normalizados.<br>
-        Bajo una distribución normal, aproximadamente el <b>95% de las observaciones</b> se espera que se encuentren dentro de estas dos desviaciones estándar.<br>
-        Los puntos rojos indican observaciones atípicas en el comportamiento de precios para el producto y año seleccionados.<br>
-        </div>
-      ")
+        <b>Fuente:</b> cálculos propios a partir del SIPSA.<br><br>
+        Las bandas representan ±2 desviaciones estándar de la media móvil de 20 días. 
+        El 95% de los datos debería ubicarse dentro de estas bandas bajo normalidad. <br>
+        Los puntos rojos indican días atípicos.
+      "),
+      style = "font-size:12px; color:#4E4D4D; font-family: 'Prompt'; margin-top:15px;"
     )
   ),
   
-  br(),
-  
-  # --- Logo inferior ---
-  div(class = "logo-footer", img(src = "logo_2.png", height = "80px"))
+  ##############################################################################
+  # LOGO INFERIOR — IGUAL A ABASTECIMIENTO
+  ##############################################################################
+  fluidRow(
+    tags$div(
+      tags$img(src = "logo_2.png", style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
+    )
+  )
 )

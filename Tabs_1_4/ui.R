@@ -2,8 +2,9 @@
 #Procesamiento datos SIPSA
 ################################################################################-
 #Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 02/04/2024
-#Fecha de ultima modificacion: 02/04/2024
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando, Luis Miguel Garcia
+#Fecha de ultima modificacion: 10/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())
@@ -74,7 +75,7 @@ ui <- fluidPage(
                                            "Junio" = 6, "Julio" = 7, "Agosto" = 8, "Septiembre" = 9, "Octubre" = 10, "Noviembre" = 11,
                                            "Diciembre" = 12), selected="")),
         column(3,
-               numericInput("municipios", "Número de municipios", value = 10, min = 1, max = 18)),
+               numericInput("municipios", "Número de destinos", value = 10, min = 1, max = 18)),
         column(3,
                selectInput("producto", "Producto",c("Todos los productos" = "todo", sort(as.character(unique(proviene_cundinamarca$producto))))))
       )),
@@ -97,7 +98,7 @@ ui <- fluidPage(
     ),
     fluidRow(
       column(12, align = "left",
-             HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+             HTML("<b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br>
                <br>
                Solo se tienen en cuenta las principales ciudades con centros de acopio en las que se recolecta información para el SIPSA.<br>
                Esta visualización muestra el ranking de destinos de los alimentos con origen en Cundinamarca, 

@@ -114,7 +114,7 @@ ui <- fluidPage(
       12,
       align = "left",
       HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       Este gráfico se calcula con base en el índice de Gini.<br><br>
 

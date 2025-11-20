@@ -82,7 +82,7 @@ visualizar_ranking <- function(data, producto, anio) {
       textfont = list(size = 7, color = "#B0B0B0"),
       hoverinfo = 'text',
       hovertext = ~hover_text,
-      marker = list(size = 8, color = "#B0B0B0", line = list(width = 1, color = "white")),
+      marker = list(size = 8, color = "#B0B0B0", line = list(width = 1, color = "#6D673E")),
       showlegend = FALSE
     )
   
@@ -96,10 +96,10 @@ visualizar_ranking <- function(data, producto, anio) {
       mode = 'markers+text',
       text = ~ciudad,
       textposition = 'right middle',
-      textfont = list(size = 10, color = "#7B1FA2"),
+      textfont = list(size = 10, color = "#DBC21F"),
       hoverinfo = 'text',
       hovertext = ~hover_text,
-      marker = list(size = 10, color = "#7B1FA2", line = list(width = 3, color = "gold")),
+      marker = list(size = 10, color = "#DBC21F", line = list(width = 3, color = "#6D673E")),
       showlegend = FALSE
     )
   

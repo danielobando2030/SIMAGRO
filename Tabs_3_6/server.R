@@ -59,11 +59,15 @@ server <- function(input, output, session) {
     content = function(file) {
       df <- data_filtrada()
       if (nrow(df) == 0) stop("No hay datos para exportar.")
+      
       graf <- visualizar_bandas_plotly(df, producto_sel = input$producto, anio_sel = input$anio)
+      
       tmp_html <- tempfile(fileext = ".html")
       tmp_png  <- tempfile(fileext = ".png")
-      htmlwidgets::saveWidget(plotly::as_widget(graf), tmp_html, selfcontained = TRUE)
+      
+      htmlwidgets::saveWidget(as_widget(graf), tmp_html, selfcontained = TRUE)
       webshot2::webshot(tmp_html, file = tmp_png, vwidth = 1600, vheight = 900, delay = 1)
+      
       file.copy(tmp_png, file, overwrite = TRUE)
     }
   )
@@ -92,16 +96,15 @@ server <- function(input, output, session) {
     df <- data_filtrada()
     if (nrow(df) == 0) return(HTML("<p>No hay información disponible.</p>"))
     
-    # Recalcular bandas y estado
     df_proc <- df %>%
       mutate(anio = year(fecha)) %>%
       arrange(fecha) %>%
       group_by(anio) %>%
       mutate(
-        media_20 = zoo::rollapply(precio, width = 20, FUN = mean,
-                                  align = "right", fill = NA, na.rm = TRUE),
-        sd_20    = zoo::rollapply(precio, width = 20, FUN = sd,
-                                  align = "right", fill = NA, na.rm = TRUE),
+        media_20 = rollapply(precio, width = 20, FUN = mean,
+                             align = "right", fill = NA, na.rm = TRUE),
+        sd_20    = rollapply(precio, width = 20, FUN = sd,
+                             align = "right", fill = NA, na.rm = TRUE),
         precio_norm = precio - media_20,
         banda_sup =  2 * sd_20,
         banda_inf = -2 * sd_20,
@@ -142,11 +145,22 @@ server <- function(input, output, session) {
       paste0("informe_bandas_precio_", input$producto, "_", input$anio, ".pdf")
     },
     content = function(file) {
+      
       df <- data_filtrada()
       if (nrow(df) == 0) stop("No hay datos para generar el informe.")
+      
       anio_sel <- if (input$anio == "todos") NULL else as.numeric(input$anio)
       grafico <- visualizar_bandas_plotly(df, producto_sel = input$producto, anio_sel = anio_sel)
       
+      # ================= PNG del gráfico =====================
+      tmp_html <- tempfile(fileext = ".html")
+      tmp_png  <- file.path(tempdir(), "grafico_bandas.png")
+      
+      htmlwidgets::saveWidget(as_widget(grafico), tmp_html, selfcontained = TRUE)
+      webshot2::webshot(tmp_html, file = tmp_png,
+                        vwidth = 1600, vheight = 900, delay = 1)
+      
+      # ================= Data procesada ======================
       df_proc <- df %>%
         mutate(anio = year(fecha)) %>%
         arrange(fecha) %>%
@@ -164,26 +178,57 @@ server <- function(input, output, session) {
             precio_norm > banda_sup | precio_norm < banda_inf ~ "Atípico",
             TRUE ~ "Normal"
           )
-        ) %>%
-        ungroup()
+        ) %>% ungroup()
       
       if (!is.null(anio_sel)) df_proc <- df_proc %>% filter(anio == anio_sel)
       
-      tmp_html <- tempfile(fileext = ".html")
-      htmlwidgets::saveWidget(as_widget(grafico), tmp_html, selfcontained = TRUE)
+      # ================= Crear mensaje resumen ======================
+      df_atip <- df_proc %>% filter(estado == "Atípico")
+      n_atipicos <- nrow(df_atip)
       
+      mensaje1 <- if (n_atipicos == 0) {
+        "No se registraron días con precios atípicos para este año."
+      } else {
+        glue("Se detectaron {n_atipicos} días con precios atípicos durante el año {input$anio}.")
+      }
+      
+      # ================= Crear LISTA estilo FAO ======================
+      if (n_atipicos == 0) {
+        
+        lista_atipicos <- "No hubo días atípicos."
+        
+      } else {
+        
+        df_atip2 <- df_atip %>%
+          mutate(
+            dia = format(fecha, "%d de %B"),
+            # EVITAR el símbolo $ (lo escapamos)
+            precio_fmt = paste0("\\$", format(round(precio,0), big.mark=".", decimal.mark=","))
+          )
+        
+        lista_atipicos <- paste0(
+          "\\begin{itemize}\n",
+          paste0("  \\item ", df_atip2$dia, ": ", df_atip2$precio_fmt, collapse = "\n"),
+          "\n\\end{itemize}"
+        )
+      }
+      
+      # ================= Copiar informe ======================
       tempReport <- file.path(tempdir(), "informe.Rmd")
       file.copy("informe.Rmd", tempReport, overwrite = TRUE)
       
+      # ================= Render ================================
       rmarkdown::render(
         input = tempReport,
         output_format = "pdf_document",
         output_file = file,
         params = list(
           datos = df_proc,
-          grafico = tmp_html,
+          grafico_png = tmp_png,
           producto = input$producto,
-          anio = input$anio
+          anio = input$anio,
+          mensaje1 = mensaje1,
+          lista_atipicos = lista_atipicos
         ),
         envir = new.env(parent = globalenv())
       )

@@ -229,11 +229,54 @@ importancia <- function(Año = NULL, Mes = NULL, municipios = 10, Producto = NUL
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.position = "none", axis.text.x = element_blank(), axis.ticks.x = element_blank())
     
     
-    p <- plotly::ggplotly(p_plano, tooltip = "text")
-  }
+  #  p <- plotly::ggplotly(p_plano, tooltip = "text")
+
+    df <- df %>%
+      mutate(
+        label_pct = scales::percent(columna_porcentaje, accuracy = 0.1),
+        mpio_destino = forcats::fct_reorder(mpio_destino, columna_porcentaje)
+      )
+    
+    p=plot_ly(
+      data = df,
+      x = ~columna_porcentaje,
+      y = ~mpio_destino,
+      type = "bar",
+      orientation = "h",
+      text = ~label_pct,
+      textposition = "outside",
+      textfont = list(
+        family = "sans-serif",
+        size = 12,
+        color = "#4E4D4D"
+      ),
+      marker = list(
+        color = ~col_palette[as.numeric(factor(mpio_destino))]
+      ),
+      hovertext = ~tooltip_text,
+      hoverinfo = "text"
+    ) %>%
+      layout(
+        xaxis = list(
+          title = "Porcentaje (%)",
+          tickformat = ".1%",
+          showgrid = FALSE
+        ),
+        yaxis = list(
+          title = "",
+          categoryorder = "array",
+          categoryarray = levels(df$mpio_destino)   # <--- usa el orden invertido
+        ),
+        margin = list(l = 130)
+      )
+    
+      }
   df<-df%>%select(-tooltip_text)
   porcentaje_max <- ifelse(nrow(df)==0, "", round(max(df$columna_porcentaje)*100, digits = 2))
   lugar_max <- ifelse(nrow(df) == 0, "", as.character(df$mpio_destino)[which.max(df$columna_porcentaje)])
+  
+  
+
   
   return(
     list(

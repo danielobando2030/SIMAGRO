@@ -71,12 +71,12 @@ ui <- fluidPage(
   ),
   tags$h1("Cundinamarca y su importancia en la recepción de alimentos", class = "main-header"),
   tags$h1("Descubre la importancia de Cundinamarca como receptor de alimentos desde otros departamentos del país.", class = "main-header_2"),
+#  div(
+#    textOutput("subtitulo"),
+#    class = "sub-header2",
+#    style = "margin-bottom: 20px;"
+#  ),
   div(
-    textOutput("subtitulo"),
-    class = "sub-header2",
-    style = "margin-bottom: 20px;"
-  ),
-  div(class = "scrollable-content",
       fluidRow(
         column(4,
                selectInput("anio", "Año", c("Todos los años" = "todo", sort(as.character(unique(cundinamarca$anio)))))),
@@ -99,14 +99,16 @@ ui <- fluidPage(
       ),
       column(3, 
              wellPanel(textOutput("mensaje1"),
-                       style = "background-color: #134174; color: #FFFFFF;")
+                       style = "background-color: #134174; color: #FFFFFF;"),
+             wellPanel(textOutput("subtitulo"),
+                       style = "background-color: #D3E7FF; color: #000000;")
       )
     ),
   
 ),
 fluidRow(
   column(12, align = "left",
-         HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+         HTML("<b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br>
                <br>
                Esta visualización muestra el porcentaje de alimentos enviados a Cundinamarca desde cada departamento, incluyendo productos de origen local. 
                Permite apreciar la importancia de Cundinamarca como receptor de alimentos provenientes de otros territorios del país.<br>

@@ -80,7 +80,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
     p_plano <- ggplot(df, aes(x = fecha, y = IHH, color = producto)) +
       geom_line() +
       geom_point(aes(text = tooltip_text), size = 1e-8) +
-      labs(x = "Fecha", y = " ") +
+      labs(x = "Fecha", y = "Índice diversidad de origen") +
       theme_minimal() +
       scale_color_manual(values = col_palette) +
       theme(text = element_text(size = 16),
@@ -95,7 +95,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
     p_plano <- ggplot(df, aes(x = fecha, y = IHH, color = producto)) +
       geom_line() +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Fecha", y = " ") +
+      labs(x = "Fecha", y = "Índice diversidad de origen") +
       theme_minimal() +
       scale_color_manual(values = col_palette) + 
       theme(text = element_text(size = 16),
@@ -115,7 +115,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
        p_plano <- ggplot(df, aes(x = fecha, y = IHH)) +
          geom_line(color = "#983136") +
          geom_point(aes(text = tooltip_text),size = 1e-8) +
-         labs(x = "Fecha", y = " ") +
+         labs(x = "Fecha", y = "Índice diversidad de origen") +
          theme_minimal() +
          theme(text = element_text( size = 16),
                axis.text.x = element_text(size = 10, angle = 90, hjust = 1)) +
@@ -129,7 +129,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
       p_plano <- ggplot(df, aes(x = fecha, y = IHH)) +
         geom_line(color = "#983136") +
         geom_point(aes(text = tooltip_text),size = 1e-8) +
-        labs(x = "Fecha", y = " ") +
+        labs(x = "Fecha", y = "Índice diversidad de origen") +
         theme_minimal()  +
         scale_color_manual(values = col_palette) +
         theme(text = element_text(size = 12),

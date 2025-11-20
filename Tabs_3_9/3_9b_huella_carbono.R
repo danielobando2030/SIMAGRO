@@ -89,11 +89,18 @@ graficar_treemap_producto <- function(data, anio = NULL, mes = NULL) {
   # --- 3. Escalas de color ---
   # Más granularidad y mejor transición perceptual
   purples_scale <- colorRampPalette(
-    c("#f4e1ff", "#d3b4e6", "#b383d6", "#8f52c6", "#6a1b9a", "#4a148c")
+    c(
+      "#BC222A",  # 1. rojo profundo fuerte
+      "#983136",  # 2. vino saturado
+      "#743639",  # 3. vino oscuro
+      "#592F30",  # 4. vino-marrón fuerte
+      "#3F2427",  # 5. vino-marrón oscuro
+      "#2B181A"   # 6. vino-marrón muy oscuro
+    )
   )(500)
   
   blues_scale <- colorRampPalette(
-    c("#e0ecff", "#a6bddb", "#74a9cf", "#0570b0", "#023858")
+    c("#f2f2f2", "#d9d9d9", "#bdbdbd", "#969696", "#525252")
   )(200)
   
   # --- 4. Categorías (nivel padre) ---
@@ -150,7 +157,7 @@ graficar_treemap_producto <- function(data, anio = NULL, mes = NULL) {
   # --- 6. Unión de niveles ---
   df_final <- bind_rows(df_categorias, df_productos_final)
   
-  # --- 7. Treemap final ---
+  # --- 7. Treemap final (SIN TÍTULO) ---
   p <- plot_ly(
     df_final,
     type = "treemap",
@@ -164,17 +171,11 @@ graficar_treemap_producto <- function(data, anio = NULL, mes = NULL) {
     textinfo = "label+value+percent parent"
   )
   
-  titulo <- paste0(
-    "Huella de CO₂ por categoría y producto (",
-    ifelse(is.null(anio), "Todos los años", paste0("Año: ", anio)),
-    ifelse(is.null(mes), ", todos los meses)", paste0(", Mes: ", mes, ")"))
-  )
-  
   p <- p %>%
     layout(
-      title = list(text = titulo, x = 0.05, font = list(size = 18, color = "#2e7d32")),
+      title = list(text = ""),   # ← TÍTULO VACÍO (eliminado)
       uniformtext = list(minsize = 10, mode = 'hide'),
-      margin = list(t = 70, l = 0, r = 0, b = 0)
+      margin = list(t = 10, l = 0, r = 0, b = 0)   # ← reduce espacio superior
     )
   
   return(p)

@@ -105,40 +105,85 @@ output$descargarDatos <- downloadHandler(
 values <- reactiveValues(subtitulo = NULL, mensaje1 = NULL, mensaje2= NULL)  
 # En el servidor
 output$subtitulo <- renderText({
+  
+  # Validación de producto para tipo 2 y 4
   if ((input$tipo == 2 || input$tipo == 4) && is.null(input$producto)) {
     return("Debe seleccionar un producto.")
   }
-  # Lógica para manejar años no seleccionados
-  if (is.null(input$anio) || input$anio == "todo") {
-    anio <- ""
-  } else {
-    anio <- input$anio
+  
+  tipo <- input$tipo
+  anio <- ifelse(is.null(input$anio) || input$anio == "todo", NA, input$anio)
+  
+  # Ejecutar función que trae resultados
+  resultado <- grafica_indice_mun(tipo, anio, input$producto)
+  
+  max_IHH <- round(resultado$max_vulnerabilidad, 1)
+  fecha <- as.character(resultado$fecha_max_vulnerabilidad)
+  producto_max <- resultado$producto_max_vulnerabilidad
+  
+  # Separar en año-mes-día
+  partes <- strsplit(fecha, "-")[[1]]
+  anio_max_IHH <- partes[1]
+  mes_num <- partes[2]
+  
+  # Meses completos
+  meses_es <- c("enero","febrero","marzo","abril","mayo","junio",
+                "julio","agosto","septiembre","octubre","noviembre","diciembre")
+  mes_max_IHH <- meses_es[as.integer(mes_num)]
+  
+  # Clasificación del HHI
+  clasificar_hhi <- function(hhi) {
+    if (hhi <= 1500) {
+      return("baja concentración del volumen de los alimentos (alta diversidad)")
+    } else if (hhi <= 2500) {
+      return("concentración moderada del volumen de los alimentos (diversidad media)")
+    } else {
+      return("alta concentración del volumen de los alimentos (baja diversidad)")
+    }
   }
   
-  resultado <- grafica_indice_mun(input$tipo, anio, input$producto)
-  tipo <- input$tipo
-  max_IHH <- resultado$max_vulnerabilidad
-  fecha_max_vulnerabilidad <- resultado$fecha_max_vulnerabilidad
-  producto_max_vulnerabilidad <- resultado$producto_max_vulnerabilidad
-  fecha_max_vulnerabilidad <- as.character(fecha_max_vulnerabilidad)
-  componentes <- strsplit(fecha_max_vulnerabilidad, "-")[[1]]
-  anio <- componentes[1]
-  mes <- componentes[2]
-  dia <- componentes[3]
-  nombres_meses <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", 
-                     "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
-  mes <- nombres_meses[as.integer(mes)]
-  producto_max_vulnerabilidad <- resultado$producto_max_vulnerabilidad
+  categoria_hhi <- clasificar_hhi(max_IHH)
+  
+  # -------------------------------
+  # Textos por tipo
+  # -------------------------------
   
   if (tipo == 2) {
-    values$subtitulo <- (paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en el" ,anio," con un índice máximo de" , max_IHH, " para el producto ",producto_max_vulnerabilidad ))
+    values$subtitulo <- paste(
+      "El año con la menor diversidad de territorios conectados hacia Cundinamarca fue",
+      anio_max_IHH,
+      "al registrar un índice de",
+      max_IHH, "para el producto", producto_max, 
+      ". Esto corresponde a", categoria_hhi, "."
+    )
+    
   } else if (tipo == 3) {
-    values$subtitulo <- (paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en ",mes, " del año ",anio, "con un índice máximo de", max_IHH ))
+    values$subtitulo <- paste(
+      "El mes con la menor diversidad de territorios conectados hacia Cundinamarca fue",
+      mes_max_IHH, "del año", anio_max_IHH,
+      "al registrar un índice de",
+      max_IHH, ", correspondiente a", categoria_hhi, "."
+    )
+    
   } else if (tipo == 4) {
-    values$subtitulo <- (paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en ",mes, " del año ",anio, " con un índice máximo ", max_IHH, "para el producto" ,producto_max_vulnerabilidad))
+    values$subtitulo <- paste(
+      "El mes con la menor diversidad de territorios conectados hacia Cundinamarca fue",
+      mes_max_IHH, "del año", anio_max_IHH,
+      "al registrar un índice de",
+      max_IHH, "para el producto", producto_max,
+      ". Esto corresponde a", categoria_hhi, "."
+    )
+    
   } else {
-    values$subtitulo <-(paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en el ",anio," con un índice máximo de", max_IHH ))
+    # tipo 1 o cualquier otro
+    values$subtitulo <- paste(
+      "El año con la menor diversidad de territorios conectados hacia Cundinamarca fue",
+      anio_max_IHH,
+      "al registrar un índice de",
+      max_IHH, ". Esto corresponde a", categoria_hhi, "."
+    )
   }
+  
   return(values$subtitulo)
 })
 
@@ -150,13 +195,14 @@ output$subtitulo <- renderText({
   
 # Mensaje: MENSAJE 1  
   output$mensaje1 <- renderText({
-    values$mensaje1 <- ("El índice de Herfindahl-Hirschman permite midir la concentración de los orígenes de alimentos. Un índice más alto indica que hay menos municipios de origen para los alimentos que llegan a las principales plazas de abasto de Cundinamarca")
+    values$mensaje1 <- ("Este índice muestra el nivel de concentración de los origenes de los alimentos que ingresan a Cundinamarca.
+Valores altos indican menor diversidad de origenes; valores bajos indican mayor diversidad de origenes")
     values$mensaje1
     })
   
 # Mensaje: MENSAJE 2
   output$mensaje2 <- renderUI({
-    values$mensaje2 <-("Este índice puede aumentar si incrementa la participación de un municipio sobre el volumen total o disminuye el número de municipios de origen")
+    values$mensaje2 <-("El índice aumenta cuando pocos municipios de origen concentran la mayor parte del volumen de alimentos que ingresa a Cundinamarca, disminuye cuando el abastecimiento depende de muchos origenes.")
     values$mensaje2
     })
   

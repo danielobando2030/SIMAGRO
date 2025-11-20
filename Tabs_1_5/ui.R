@@ -2,8 +2,9 @@
 #Procesamiento datos SIPSA
 ################################################################################-
 #Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 21/04/2024
-#Fecha de ultima modificacion: 21/04/2024
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando, Luis Miguel Garcia
+#Fecha de ultima modificacion: 10/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())
@@ -86,16 +87,17 @@ ui <- fluidPage(
       column(3, 
              wellPanel(textOutput("mensaje1"),
                        style = "background-color: #0087CF; color: #FFFFFF;"),
-             wellPanel(textOutput("mensaje2"),
+             wellPanel(textOutput("subtitulo"),
                        style = "background-color: #2A4E61; color: #FFFFFF;")
       )
     ),
     fluidRow(
       column(12, align = "left",
-             HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+             HTML("<b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br>
                <br>
-               Solo se muestran los productos que representan al menos el 0,5% del volumen total de ingresos 
-               a las principales centrales de abasto de Bogotá."),
+               Este gráfico visualiza los alimentos que llegan a las centrales de abasto de Bogotá, destacando los productos principales por volumen.
+              <br> 
+              Solo se incluyen los productos que representan al menos el 0,5 % del volumen total ingresado, de acuerdo con los filtros seleccionados."),
              style = "font-size:12px; color:#4E4D4D; text-align:left; font-family:'Prompt', sans-serif; margin-top:15px;"
       )
     ) ),

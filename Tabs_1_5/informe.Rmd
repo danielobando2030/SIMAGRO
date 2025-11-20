@@ -89,17 +89,20 @@ tabla_kable
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Visualiza los alimentos más destacados en las centrales de abasto de Bogotá, basado en su volumen de entrada}\
 <!-- Subtitulo dinamico -->
-\fontsize{10}{10} \selectfont `r params$subtitulo`\
+\fontsize{8}{8} \selectfont `r params$subtitulo`\
 ```{r, out.width = "90%", fig.align = "center", warning=FALSE}
 print(params$plot)
 ```
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
 
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
-\fontsize{10}{10} \selectfont `r params$mensaje2`\
+\fontsize{10}{10} \selectfont \textcolor{mybrown}{Este gráfico visualiza los alimentos que llegan a las centrales de abasto de Bogotá, destacando los productos principales por volumen.}\
 
 
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{Solo se muestran los productos que representan al menos un 0,5\% del volumen total de ingresos a las principales centrales de abasto de Bogotá.}\
+
+
+
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

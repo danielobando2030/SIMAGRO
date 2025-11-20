@@ -89,7 +89,16 @@ print(params$plot)
 
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra la distribución mensual de la cantidad de alimentos que salen del departamento de Cundinamarca, desagregada por año. Cada diagrama de caja y bigotes resume la variabilidad de los volúmenes mensuales de alimentos para cada año, permitiendo identificar diferencias en la mediana, la dispersión y la presencia de valores atípicos. El cuerpo de la caja representa el rango intercuartílico (del 25% al 75% de los valores observados), la línea central indica la mediana del volumen mensual, y los bigotes muestran la extensión de los valores típicos. Los puntos fuera de los bigotes corresponden a meses con niveles de abastecimiento inusualmente altos o bajos, que podrían estar asociados con variaciones estacionales, coyunturas de mercado o condiciones climáticas.}\
+\fontsize{8}{8}\selectfont\color{mybrown}
+Esta visualización muestra cómo varía mes a mes del volumen de alimentos que salen de Cundinamarca, separada por años.
+
+\begin{itemize}
+    \item \textbf{Mediana:} representa el valor típico de cada año (la línea central de la caja).
+    \item \textbf{Percentil 25\% y 75\%:} los bordes inferior y superior de la caja. Indican el punto por debajo del cual se encuentra el 25\% y el 75\% de los meses, respectivamente. En conjunto, la caja contiene el 50\% central de los datos.
+    \item \textbf{Variación mensual:} el tamaño de la caja muestra qué tan parejos o dispersos fueron los volúmenes dentro del año.
+\end{itemize}
+
+Comparar las cajas entre años permite identificar cambios en los niveles y en la variabilidad del abastecimiento a lo largo del tiempo.
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

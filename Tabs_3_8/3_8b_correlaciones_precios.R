@@ -122,9 +122,9 @@ correlacion_precios <- function(data, anio){
     y = productos,
     type = "heatmap",
     colorscale = list(
-      list(0, "#8e44ad"),
+      list(0, "#494634"),
       list(0.5, "white"),
-      list(1, "#e74c3c")
+      list(1, "#DBC21F")
     ),
     zmin = -1, zmax = 1,
     hovertemplate = paste(

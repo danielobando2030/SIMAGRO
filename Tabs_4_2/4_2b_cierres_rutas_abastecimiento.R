@@ -171,12 +171,12 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
 
 
 # ---- Ejemplo de uso ----
-#mapa <- graficar_rutas_color_importancia(
-#  data_cierres_final,
-#  Año = 2018,
-#  Mes = "11",
-#  Producto = "Maracuyá"
-#)
-#mapa
+mapa <- graficar_rutas_color_importancia(
+  data_cierres_final,
+  Año = 2018,
+  Mes = "11",
+  Producto = "Maracuyá"
+)
+mapa
 
 

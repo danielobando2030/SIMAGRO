@@ -21,18 +21,18 @@ salen_prod<-function(año = NULL, Mes = NULL, depto = NULL){
   if(!is.null(año)&!is.null(Mes)&!is.null(depto)){
     
     df<-df%>%filter(anio == año)%>%filter(mes == Mes)%>%filter(mpio_destino==depto)%>%
-      select(producto,grupo_alimento,porcentaje_producto_anio_mes_dpto,tonelads_total_producto_anio_mes_dpto)%>%
+      select(producto,grupo_alimento,porcentaje_producto_anio_mes_dpto,toneladas_total_producto_anio_mes_dpto)%>%
       unique()%>%
-      rename( columna_porcentaje = porcentaje_producto_anio_mes_dpto, toneladas_r = tonelads_total_producto_anio_mes_dpto)
+      rename( columna_porcentaje = porcentaje_producto_anio_mes_dpto, toneladas_r = toneladas_total_producto_anio_mes_dpto)
     
   }
   
   if(!is.null(año)&!is.null(depto)&is.null(Mes)){
     
     df<-df%>%filter(anio == año)%>%filter(mpio_destino==depto)%>%
-      select(producto,grupo_alimento,porcentaje_producto_anio_dpto, tonelads_total_producto_anio_dpto)%>%
+      select(producto,grupo_alimento,porcentaje_producto_anio_dpto, toneladas_total_producto_anio_dpto)%>%
       unique()%>%
-      rename( columna_porcentaje = porcentaje_producto_anio_dpto, toneladas_r = tonelads_total_producto_anio_dpto)
+      rename( columna_porcentaje = porcentaje_producto_anio_dpto, toneladas_r = toneladas_total_producto_anio_dpto)
     
   }
   

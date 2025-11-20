@@ -1,9 +1,6 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# Visualización de datos - Comparación con Bogotá
-################################################################################-
-# Autores: Luis Miguel García, Laura Quintero, Juliana Lalinde
-# Última modificación: 07/11/2025
+# Visualización de datos - Comparación con Bogotá (AJUSTADO)
 ################################################################################-
 
 library(shiny)
@@ -21,107 +18,177 @@ productos_filtrados <- data_global %>%
   pull(producto)
 
 ################################################################################-
-# Interfaz de usuario
+# UI
 ################################################################################-
+
 ui <- fluidPage(
+  
+  # ====================== HEAD ======================
   tags$head(
     tags$title("Comparación de precios con Bogotá"),
-    tags$link(rel = "stylesheet", type = "text/css",
-              href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"),
+    
+    tags$link(
+      rel = "stylesheet",
+      type = "text/css",
+      href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
+    ),
+    
     tags$style(HTML("
-      body { font-family: 'Prompt', sans-serif; background-color: #fafafa; }
-      h1, h2, h3, h4 { color: #0D8D38; }
+      body { 
+        font-family: 'Prompt', sans-serif; 
+        background-color: #fafafa;
+        color:#4E4D4D;
+      }
+
+      /* TITULOS */
+      .main-header {
+        font-size: 40px;
+        color: #6D673E;
+        font-weight: 700;
+      }
+
+      .main-header_2 {
+        font-size: 20px;
+        color: #6D673E;
+      }
+
+      .sub-header2 {
+        font-size: 15px;
+        color: #4E4D4D;
+      }
+
+      /* BOTONES FAO */
       .btn-faoc {
-        background-color: #6A0DAD;
-        border-color: #6A0DAD;
-        color: white;
+        background-color: white !important;
+        border: 1px solid #CCC !important;
+        color: #4E4D4D !important;
         font-weight: 500;
+        border-radius: 6px;
       }
       .btn-faoc:hover {
-        background-color: #500985;
-        border-color: #500985;
-        color: white;
+        background-color: #E2E2E2 !important;
       }
-      .sub-header2 { font-size: 15px; color: #3D3D6B; }
-      .selectize-dropdown { z-index: 10000 !important; }
+
+      /* PANELS DERECHA */
+      .panel-dorado {
+        background-color:#DBC21F;
+        color:white;
+        font-weight:bold;
+        border-radius:8px;
+        padding:12px;
+      }
+      .panel-verde {
+        background-color:#B6A534;
+        color:white;
+        font-weight:bold;
+        border-radius:8px;
+        padding:12px;
+      }
+
+      .nota-metodo {
+        font-size:12px; 
+        text-align:left;
+        margin-top:15px;
+        color:#4E4D4D;
+      }
     "))
   ),
   
-  # Encabezado
-  h1("Diferencia de precios de alimentos por departamento", class = "main-header"),
-  h4("Comparación de precios promedio con respecto a Bogotá D.C.", style = "color:#0D8D38;"),
+  # ====================== TITULOS ======================
+  tags$h1("Diferencia de precios de alimentos por departamento", class = "main-header"),
+  tags$h1("Comparación de precios promedio con respecto a Bogotá D.C.", class = "main-header_2"),
   
-  br(),
+  div(
+    textOutput("subtitulo"),
+    class = "sub-header2",
+    style = "margin-bottom: 20px;"
+  ),
   
-  # Controles
-  fluidRow(
-    column(4,
-           selectInput("anio", "Año:",
-                       choices = c("Todos los años" = "todo", sort(unique(data_global$year))),
-                       selected = 2024)
-    ),
-    column(4,
-           selectInput("mes", "Mes:",
-                       choices = c("Todos los meses" = "todo",
-                                   "Enero" = 1, "Febrero" = 2, "Marzo" = 3, "Abril" = 4,
-                                   "Mayo" = 5, "Junio" = 6, "Julio" = 7, "Agosto" = 8,
-                                   "Septiembre" = 9, "Octubre" = 10, "Noviembre" = 11, "Diciembre" = 12),
-                       selected = 1)
-    ),
-    column(4,
-           selectInput("producto", "Producto:",
-                       choices = c("Todos los productos" = "todo",
-                                   setNames(productos_filtrados, productos_filtrados)),
-                       selected = "Aguacate")
+  # ====================== FILTROS (MISMA DISPOSICIÓN) ======================
+  div(
+    fluidRow(
+      column(3,
+             selectInput("anio", "Año:",
+                         choices = c("Todos los años" = "todo", sort(unique(data_global$year))),
+                         selected = 2024))
+      ,
+      column(2,
+             selectInput("mes", "Mes:",
+                         choices = c("Todos los meses" = "todo",
+                                     "Enero"=1,"Febrero"=2,"Marzo"=3,"Abril"=4,
+                                     "Mayo"=5,"Junio"=6,"Julio"=7,"Agosto"=8,
+                                     "Septiembre"=9,"Octubre"=10,"Noviembre"=11,"Diciembre"=12),
+                         selected = 1))
+      ,
+      column(2,
+             selectInput("producto", "Producto:",
+                         choices = c("Todos los productos"="todo",
+                                     setNames(productos_filtrados, productos_filtrados)),
+                         selected = "Aguacate"))
+      ,
+      column(2, div())  # espacio vacío
+      ,
+      column(3, div())  # espacio vacío
     )
   ),
   
-  br(),
-  
-  # Mapa y panel lateral
+  # ====================== MAPA + PANEL DERECHA ======================
   fluidRow(
     column(9,
-           leafletOutput("grafico", height = "500px"),
-           br(),
-           downloadButton("descargar", "Gráfica", class = "btn btn-faoc"),
-           downloadButton("descargarDatos", "Datos", class = "btn btn-faoc"),
-           shiny::a("GitHub",
-                    href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_2",
-                    target = "_blank",
-                    class = "btn btn-faoc",
-                    icon("github")),
-           actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn btn-faoc"),
-           downloadButton("descargarInforme", "Generar informe", class = "btn btn-faoc")
+           div(
+             leafletOutput("grafico", height = "450px"),
+             actionButton("descargar", "Gráfica",  icon=icon("download"), class="btn-faoc"),
+             downloadButton("descargarDatos", "Datos", class="btn-faoc"),
+             a(
+               tagList(icon("github"), " GitHub"),
+               href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_2",
+               target = "_blank",
+               class = "btn btn-faoc",
+               style = "display:inline-block; padding:6px 12px; border-radius:6px; text-decoration:none;"
+             ),
+             actionButton("reset", "Restablecer", icon=icon("refresh"), class="btn-faoc"),
+             downloadButton("descargarInforme", "Generar informe", class="btn-faoc")
+           )
     ),
     column(3,
-           wellPanel(textOutput("mensaje1"),
-                     style = "background-color: #0D8D38; color: white; font-weight: bold;"),
-           wellPanel(textOutput("mensaje2"),
-                     style = "background-color: #13A756; color: white; font-weight: bold;")
+           
+           wellPanel(
+             textOutput("mensaje1"),
+             style = "
+      background-color:#DBC21F; 
+      color:white; 
+      font-weight:bold; 
+      border-radius:8px; 
+      padding:12px; 
+      margin-bottom:15px;   /* ← ESPACIO ENTRE LOS CUADROS */
+    "
+           ),
+           
+           wellPanel(
+             textOutput("mensaje2"),
+             style = "
+      background-color:#B6A534; 
+      color:white; 
+      font-weight:bold; 
+      border-radius:8px; 
+      padding:12px;
+    "
+           )
     )
   ),
   
-  br(),
-  
-  # ---------------------------------------------------------------------------------
-  # Bloque institucional FAO estándar (idéntico al del módulo anterior)
-  # ---------------------------------------------------------------------------------
+  # ====================== FUENTE ======================
   fluidRow(
-    column(12, align = "left",
-           HTML("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-               La información solo se muestra para los precios en el centro de acopio de Bogotá.<br>
-               Para los productos fríjol verde, tomate, aguacate, banano, guayaba, mandarina, naranja, piña, arracacha, papa negra y yuca, los precios reportados corresponden a la variedad predominante en el mercado al momento de la recolección de la información.<br>
-               De acuerdo con el SIPSA, el valor reportado corresponde al precio mayorista por kilogramo de producto de primera calidad en la Central Mayorista de Corabastos."),
-           style = "font-size:12px; color:#5A5A5A; text-align:left;"
-    )
+    column(12,
+           HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
+           class="nota-metodo")
   ),
   
-  br(), br(),
-  
-  # Logo institucional FAO
-  tags$div(
-    tags$img(src = 'logo_2.png', 
-             style = "width: 100%; display: block; margin: 0 auto;"),
-    style = "position: relative; bottom: 0; width: 100%; background-color: white;"
+  # ====================== LOGO ======================
+  fluidRow(
+    tags$div(
+      tags$img(src='logo_2.png', style="width: 100%; margin: 0;"),
+      style="width: 100%; margin: 0;"
+    )
   )
 )

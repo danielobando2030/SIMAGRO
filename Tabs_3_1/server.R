@@ -78,8 +78,8 @@ server <- function(input, output, session) {
       y = ~valor,
       type = "scatter",
       mode = "lines+markers",
-      line = list(color = "#6A0DAD", width = 2),
-      marker = list(color = "#6A0DAD", size = 6)
+      line = list(color = col_grafico, width = 2),
+      marker = list(color = col_grafico, size = 6)
     ) %>%
       layout(
         xaxis = list(title = "Fecha"),
@@ -148,13 +148,17 @@ server <- function(input, output, session) {
       
       # Capturar imagen visible del gráfico
       webshot2::webshot(
-        url = temp_html,
-        file = file,
+        temp_html,
+        file = grafico_path,
         vwidth = 1200,
         vheight = 800,
         zoom = 2,
         delay = 0.5
       )
+      
+      if (!file.exists(grafico_path)) {
+        stop(glue("No se generó el archivo PNG del gráfico: {grafico_path}"))
+      }
     }
   )
   
@@ -200,12 +204,24 @@ server <- function(input, output, session) {
           prod_mas_volatil = res$prod_mas_volatil,
           promedio_cambio  = res$promedio_cambio,
           mes_max          = res$mes_max,
-          valor_max        = res$valor_max
+          valor_max        = res$valor_max,
+          
+          #  ESTOS ERAN LOS QUE FALTABAN 
+          mensaje_volatil = glue(
+            "El precio de '{res$prod_mas_volatil}' presenta la mayor volatilidad entre los productos analizados."
+          ),
+          mensaje_promedio = glue(
+            "En promedio, los precios variaron un {round(res$promedio_cambio, 1)}%."
+          ),
+          mensaje_mesanual = glue(
+            "En {format(res$mes_max, '%B de %Y')}, los precios aumentaron un {round(res$valor_max,1)}% frente al mismo mes del año anterior."
+          )
         ),
         envir = new.env(parent = globalenv())
       )
     }
   )
+  
   
   # --- 9. Subtítulo dinámico ---
   output$subtitulo <- renderText({
@@ -219,7 +235,11 @@ server <- function(input, output, session) {
   output$texto_volatil <- renderUI({
     res <- grafico_reactivo()
     div(
-      style = "background-color:#CFA8E6; color:#3D3D6B; padding:15px; border-radius:5px; margin-top:10px;",
+      style = glue("
+      background-color:{col_palette[1]};
+      color:white;
+      padding:15px; border-radius:5px; margin-top:10px;
+    "),
       glue("El precio de '{res$prod_mas_volatil}' presenta la mayor volatilidad entre los productos analizados.")
     )
   })
@@ -227,7 +247,11 @@ server <- function(input, output, session) {
   output$texto_promedio_cambio <- renderUI({
     res <- grafico_reactivo()
     div(
-      style = "background-color:#D6B3FF; color:#3D3D6B; padding:15px; border-radius:5px; margin-top:10px;",
+      style = glue("
+      background-color:{col_palette[2]};
+      color:white;
+      padding:15px; border-radius:5px; margin-top:10px;
+    "),
       glue("En promedio, los precios variaron un {round(res$promedio_cambio, 1)}%.")
     )
   })
@@ -235,7 +259,11 @@ server <- function(input, output, session) {
   output$texto_mes_max_anual <- renderUI({
     res <- grafico_reactivo()
     div(
-      style = "background-color:#E6D0F8; color:#3D3D6B; padding:15px; border-radius:5px; margin-top:10px;",
+      style = glue("
+      background-color:{col_palette[3]};
+      color:white;
+      padding:15px; border-radius:5px; margin-top:10px;
+    "),
       glue("En {format(res$mes_max, '%B de %Y')}, los precios aumentaron un {round(res$valor_max,1)}% frente al mismo mes del año anterior.")
     )
   })

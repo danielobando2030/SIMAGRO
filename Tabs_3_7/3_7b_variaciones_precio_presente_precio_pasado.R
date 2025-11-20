@@ -36,11 +36,8 @@ head(data)
 
 calc_cambio_mensual <- function(data, producto, anio) {
   
-  # Establecer idioma de los meses en español
   Sys.setlocale("LC_TIME", "Spanish_Colombia.UTF-8")
-  if (Sys.getlocale("LC_TIME") == "C") {
-    Sys.setlocale("LC_TIME", "Spanish")
-  }
+  if (Sys.getlocale("LC_TIME") == "C") Sys.setlocale("LC_TIME", "Spanish")
   
   df <- data %>%
     mutate(
@@ -54,10 +51,7 @@ calc_cambio_mensual <- function(data, producto, anio) {
     ) %>%
     filter(!is.na(cambio_pct_mensual))
   
-  if (nrow(df) == 0) {
-    warning(paste("No hay datos para", producto, "en", anio))
-    return(NULL)
-  }
+  if (nrow(df) == 0) return(NULL)
   
   df <- df %>%
     mutate(
@@ -73,8 +67,8 @@ calc_cambio_mensual <- function(data, producto, anio) {
                  y = ~cambio_pct_mensual,
                  type = 'scatter',
                  mode = 'lines+markers',
-                 line = list(color = '#9B30FF', width = 2),
-                 marker = list(color = '#9B30FF', size = 8),
+                 line = list(color = '#DBC21F', width = 2),
+                 marker = list(color = '#DBC21F', size = 8),
                  text = ~text_label,
                  hoverinfo = 'text',
                  showlegend = FALSE) %>%
@@ -87,7 +81,7 @@ calc_cambio_mensual <- function(data, producto, anio) {
               hoverinfo = "none") %>%
     
     layout(
-      title = list(text = ""),  # 👈 sin título
+      title = list(text = NULL),   # 🔥 ELIMINA TITULOS AUTOMÁTICOS
       xaxis = list(
         title = "Mes",
         tickvals = df$mes_y_ano,
@@ -98,6 +92,9 @@ calc_cambio_mensual <- function(data, producto, anio) {
       yaxis = list(title = "Cambio % mensual"),
       hovermode = "x unified"
     )
+  
+  # Asegurar que NO quede un título residual
+  fig$x$layout$title <- NULL
   
   return(fig)
 }

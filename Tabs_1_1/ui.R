@@ -113,9 +113,9 @@ fluidRow(
   column(12, align = "left",
          HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
                <br>
-               Esta visualización muestra el porcentaje de alimentos enviados a Cundinamarca desde cada departamento, incluyendo productos de origen local. 
-               Permite apreciar la importancia de Cundinamarca como receptor de alimentos provenientes de otros territorios del país.<br>
-               Los departamentos en color gris indican la ausencia de reportes de ingresos de productos provenientes de esas áreas en las principales centrales de abasto.
+               La visualización muestra el porcentaje de alimentos que ingresan a Cundinamarca por municipio de origen, incluyendo productos locales, según los registros del SIPSA. Las barras representan la participación relativa de cada municipio en el volumen total del año seleccionado.<br>
+               <br>
+               <b>Nota:</b> Las centrales de abasto registradas en el SIPSA corresponden a las principales ciudades del país. En el caso de Cundinamarca, la información disponible proviene de las centrales de abasto ubicadas en Bogotá. En la gráfica se incluye Bogotá con el fin de analizar su nivel de autoabastecimiento
                "),
          style = "font-size:12px; color:#4E4D4D; text-align:left; font-family: 'Prompt', sans-serif; margin-top:15px;"
   )

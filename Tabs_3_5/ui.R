@@ -1,6 +1,6 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# UI - Ranking mensual de precios mayoristas
+# UI - Ranking mensual de precios mayoristas (Estilo Abastecimiento)
 ################################################################################-
 
 library(shiny)
@@ -14,109 +14,178 @@ productos <- sort(unique(data$producto))
 anios <- sort(unique(format(as.yearmon(data$mes_y_ano, "%Y-%m"), "%Y")))
 
 ui <- fluidPage(
+  
   tags$head(
     tags$title("Ranking mensual de precios - FAO VP 2025"),
     tags$link(rel = "stylesheet", type = "text/css",
-              href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"),
+              href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"),
+    
     tags$style(HTML("
       body {
         font-family: 'Prompt', sans-serif;
         background-color: #fafafa;
+        color: #4E4D4D;
       }
-      h1 {
-        color: #6A1B9A;
+
+      /* Títulos FAO */
+      .main-header {
+        font-size: 40px;
         font-weight: bold;
-        font-size: 34px;
-        text-align: center;
+        color: #6D673E;
+        text-align: left;
+        margin-left: 5px;
       }
-      h2 {
-        color: #8E24AA;
+      .main-header_2 {
         font-size: 20px;
-        text-align: center;
-        margin-top: -5px;
-        margin-bottom: 20px;
+        font-weight: normal;
+        color: #6D673E;
+        text-align: left;
+        margin-left: 5px;
       }
+      .sub-header2 {
+        font-size: 15px;
+        color: #4E4D4D;
+        margin-left: 5px;
+      }
+
+      /* Botones FAO */
       .btn-faoc {
-        background-color: #6A1B9A;
-        border-color: #6A1B9A;
-        color: white;
-        font-weight: 500;
-        border-radius: 6px;
-        margin-right: 5px;
+        background-color: #FFFFFF !important;
+        border: 1.2px solid #A0A0A0 !important;
+        color: #4E4D4D !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+        padding: 6px 14px !important;
+        margin-right: 6px !important;
       }
       .btn-faoc:hover {
-        background-color: #500985;
-        border-color: #500985;
-        color: white;
+        background-color: #EAEAEA !important;
+        border-color: #7A7A7A !important;
       }
+
+      .btn-faoc-link {
+        background-color: #FFFFFF !important;
+        border: 1.2px solid #A0A0A0 !important;
+        color: #4E4D4D !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+        padding: 6px 14px !important;
+        margin-right: 6px !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+      }
+      .btn-faoc-link:hover {
+        background-color: #EAEAEA !important;
+        border-color: #7A7A7A !important;
+        text-decoration: none !important;
+        color: #4E4D4D !important;
+      }
+
+      /* PANEL DERECHO — COLOR NUEVO #DBC21F */
       .well-panel-fao {
-        background-color: #6A1B9A;
-        color: white;
-        font-weight: bold;
-        font-size: 14px;
-        border-radius: 8px;
-        padding: 15px;
-      }
-      .nota-metodo {
-        font-size: 12px;
-        color: #5A5A5A;
-        text-align: left;
-        line-height: 1.5;
+        background-color: #DBC21F !important;
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+        padding: 15px !important;
+        font-size: 14px !important;
+        margin-bottom: 15px !important; /* <-- separación entre cuadros */
       }
     "))
   ),
   
-  div(class = "logo-header", img(src = "logo_3.png", height = "90px")),
+  ##############################################################################
+  # TÍTULOS
+  ##############################################################################
+  tags$h1("Ranking mensual de precios mayoristas por ciudad", class = "main-header"),
+  tags$h1("Posición relativa de Bogotá frente a otras ciudades", class = "main-header_2"),
   
-  h1("Ranking mensual de precios mayoristas por ciudad"),
-  h2("Posición relativa de Bogotá frente a otras ciudades"),
+  div(
+    textOutput("subtitulo"),
+    class = "sub-header2",
+    style = "margin-bottom: 20px;"
+  ),
   
+  ##############################################################################
+  # SELECTORES
+  ##############################################################################
   fluidRow(
-    column(6, selectInput("producto", "Seleccione producto:", productos, selected = "Aguacate")),
-    column(6, selectInput("anio", "Seleccione año:", choices = c("Todos" = "todos", anios), selected = "2024"))
+    column(3, selectInput("producto", "Producto:", productos, selected = "Aguacate")),
+    column(3, selectInput("anio", "Año:", choices = c("Todos"="todos", anios), selected = "2024"))
   ),
   
   br(),
   
+  ##############################################################################
+  # GRAFICO (9) + PANEL DERECHO (3)
+  ##############################################################################
   fluidRow(
     column(
       9,
-      plotlyOutput("grafico", height = "480px"),
-      br(),
-      downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
-      downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
-      shiny::a("GitHub",
-               href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_5",
-               target = "_blank", class = "btn btn-faoc", icon("github")),
-      actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
-      downloadButton("descargarPDF", "Generar informe", class = "btn-faoc")
+      div(
+        plotlyOutput("grafico", height = "480px"),
+        br(),
+        downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
+        downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
+        
+        shiny::a(
+          tagList(icon("github"), " GitHub"),
+          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_5",
+          target = "_blank",
+          class = "btn-faoc-link"
+        ),
+        
+        actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
+        downloadButton("descargarPDF", "Generar informe", class = "btn-faoc")
+      )
     ),
+    
     column(
       3,
-      wellPanel(textOutput("mensaje1"), class = "well-panel-fao")
+      div(
+        # Primer cuadro: mensaje 1
+        wellPanel(
+          textOutput("mensaje1"),
+          class = "well-panel-fao"
+        ),
+        
+        # Segundo cuadro: mensaje 2
+        wellPanel(
+          textOutput("mensaje2"),
+          class = "well-panel-fao"
+        ),
+        
+        style = "margin-left: 20px;"  # espacio contra el gráfico
+      )
     )
   ),
   
   br(),
   
+  ##############################################################################
+  # FUENTE
+  ##############################################################################
   fluidRow(
     column(
       12, align = "left",
       HTML("
-        <div class='nota-metodo'>
-        Fuente: cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA). 
-        Este módulo presenta el escalafón mensual de precios mayoristas por ciudad, construido con base en el precio promedio registrado para cada producto y mes. 
-        El ranking o posición se obtiene ordenando los precios de mayor a menor dentro del grupo de ciudades con información disponible en cada mes. 
-        Una posición igual a 1 indica que la ciudad registró el precio más alto del conjunto, mientras que valores mayores reflejan precios relativamente más bajos. 
-        La información corresponde a los precios en los principales centros de acopio urbanos del SIPSA, incluyendo la Central Mayorista de Corabastos (Bogotá). 
-        Para productos como fríjol verde, tomate, aguacate, banano, guayaba, mandarina, naranja, piña, arracacha, papa negra y yuca, los valores se refieren a la variedad predominante en el mercado al momento de la recolección. 
-        De acuerdo con el SIPSA, los precios corresponden a valores mayoristas por kilogramo de productos de primera calidad.
-        </div>
-      ")
+        <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+        Este módulo presenta el escalafón mensual de precios mayoristas por ciudad.
+      "),
+      style = "font-size:12px; color:#4E4D4D;"
     )
   ),
   
   br(), br(),
   
-  div(class = "logo-footer", img(src = "logo_2.png", height = "80px"))
+  ##############################################################################
+  # LOGO
+  ##############################################################################
+  fluidRow(
+    tags$div(
+      tags$img(src = "logo_2.png", style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
+    )
+  )
 )

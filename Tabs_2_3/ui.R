@@ -57,7 +57,7 @@ ui <- fluidPage(
     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML")
   ),
   tags$h1("Índice de diversidad de alimentos", class = "main-header"),
-  tags$h1("Análisis de variedad de los alimentos que ingresan a las principales centrales de abasto de Cundinamarca", class = "main-header_2"),
+  tags$h1("Cuando el índice es alto, el volumen de alimentos está concentrada en unos pocos productos; cuando es bajo, la oferta es más diversa y equilibrada.", class = "main-header_2"),
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -103,8 +103,8 @@ ui <- fluidPage(
     column(
       12,
       align = "left",
-      HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      HTML('
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.<br><br>
 
@@ -117,9 +117,38 @@ ui <- fluidPage(
       Donde S<sub>i</sub> es la participación que tiene cada producto en el volumen total de alimentos que ingresan a las principales centrales de abasto de Cundinamarca.
       
       <script>
-        MathJax.Hub.Queue([\"Typeset\", MathJax.Hub]);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
       </script>
-    "),
+
+      <br><br>
+
+      <table style="border-collapse: collapse; width: 100%; max-width: 800px;">
+        <thead>
+          <tr style="background: #f2f2f2;">
+            <th style="text-align: left; padding: 8px; border: 1px solid #ddd;"><strong>Rango HHI</strong></th>
+            <th style="text-align: left; padding: 8px; border: 1px solid #ddd;"><strong>Interpretación</strong></th>
+            <th style="text-align: left; padding: 8px; border: 1px solid #ddd;"><strong>Significado en términos de diversidad de productos</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>0 – 1.500</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Baja concentración</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Alta diversidad:</strong> muchos productos participan de forma equilibrada en el volumen total ingresado.</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.500 – 2.500</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Concentración moderada</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Diversidad media:</strong> algunos productos comienzan a concentrar una parte importante del volumen, pero aún hay variedad.</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>&gt; 2.500</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Alta concentración</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Baja diversidad:</strong> pocos productos dominan la mayor parte del volumen ingresado.</td>
+          </tr>
+        </tbody>
+      </table>
+    '),
       style = "font-size:12px; color:#4E4D4D; 
              text-align:left; font-family:'Prompt', sans-serif; 
              margin-top:20px;"

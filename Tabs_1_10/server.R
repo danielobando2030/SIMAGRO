@@ -84,8 +84,7 @@ server <- function(input, output, session) {
     if(nrow(res$datos) == 0){
       values$subtitulo <- "No hay datos disponibles"
     }else{
-    values$subtitulo= "Esta visualización muestra la distribución mensual de la cantidad de alimentos que ingresan a la ciudad de Bogotá, desagregada por año." 
-      
+    values$subtitulo= "Esta visualización muestra la distribución mensual del Volumen de alimentos que salen de Cundinamarca, desagregada por año." 
     } 
     #else {
     #  lugar_max <- res$lugar_max

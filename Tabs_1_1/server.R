@@ -124,11 +124,11 @@ output$mensaje1 <- renderText({
   if ( is.null(input$municipios) || input$municipios < 1) {
     values$mensaje1 <- "No hay información disponible"
   } else if (input$variable == 1) {
-    values$mensaje1 <- paste0(resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max,digits = 1), " % del volumen total.")
+    values$mensaje1 <- paste0("Para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max,digits = 1), " % del volumen total.")
   } else if (input$variable == 2){
-    values$mensaje1 <- paste0(resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen local.")
+    values$mensaje1 <- paste0("Para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen local.")
   } else{
-    values$mensaje1 <- paste0(resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen externo.")
+    values$mensaje1 <- paste0("Para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen externo.")
   }
   return(values$mensaje1)
 }})

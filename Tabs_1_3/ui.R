@@ -3,7 +3,8 @@
 ################################################################################-
 #Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
 #Fecha de creacion: 03/04/2024
-#Fecha de ultima modificacion: 03/04/2024
+#Modificado: Cristian Daniel Obando, Luis Miguel Garcia
+#Fecha de ultima modificacion: 10/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())
@@ -61,7 +62,7 @@ ui <- fluidPage(
     "))
   ),
   tags$h1("Contribución de Cundinamarca al Abastecimiento Nacional", class = "main-header"),
-  tags$h1("Análisis de la participación de Cundinamarca en el abastecimiento de alimentos en otros departamentos del país", class = "main-header_2"),
+  tags$h1("Descubre la proporción del volumen de alimentos enviados desde Cundinamarca hacia otros departamentos del país", class = "main-header_2"),
   #div(
   # textOutput("subtitulo"),
   #  class = "sub-header2",
@@ -97,7 +98,7 @@ ui <- fluidPage(
     ),
     fluidRow(
       column(12, align = "left",
-             HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+             HTML("<b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br>
                <br>
                Esta visualización muestra la contribución de Cundinamarca al abastecimiento de otros departamentos. 
                Los porcentajes representan la proporción del volumen registrado en las principales centrales de abasto de cada departamento con origen en Cundinamarca, 

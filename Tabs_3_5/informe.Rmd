@@ -1,178 +1,133 @@
 ---
-title: " "
+title: ' '
 params:
-  datos: NA
-  grafico: NA
   producto: NA
   anio: NA
+  datos: NA        # <--- AGREGADO
+  grafico_png: NA
+  mes: NA
+  mensaje1: NA
+  mensaje2: NA
+  mapa_png: NA
+  tabla_datos: NA
+  logo_sup: NA
+  logo_inf: NA
+
 output:
   pdf_document:
     latex_engine: xelatex
-    toc: false
+
 header-includes:
-- \usepackage{float}
-- \usepackage{arydshln}
-- \usepackage{tabu}
-- \usepackage{xcolor}
-- \usepackage{fontspec}
-- \usepackage{booktabs}
-- \usepackage{fancyhdr}
-- \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
-- '\setmainfont{Prompt-Regular.ttf}'
-- \pagestyle{fancy}
-- \fancyfoot{}
-- \usepackage{colortbl}
-- \usepackage{adjustbox}
-- \setlength{\headheight}{2cm}
-- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
-- \usepackage{eso-pic}
+  - \usepackage{float}
+  - \usepackage{arydshln}
+  - \usepackage{graphicx}
+  - \usepackage{xcolor}
+  - \usepackage{fontspec}
+  - \usepackage{booktabs}
+  - \usepackage{fancyhdr}
+  - \usepackage{eso-pic}
+  - \usepackage{colortbl}
+  - \usepackage{adjustbox}
+  - \setmainfont{Prompt-Regular.ttf}
+  - \definecolor{mygreen}{RGB}{255,221,0}
+  - \definecolor{MYGREEN}{RGB}{255,221,0}
+  - \definecolor{grayA}{RGB}{78,77,77}
+  - \definecolor{green2}{RGB}{255,221,0}
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  - \setlength{\headheight}{2cm}
 ---
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 library(dplyr)
 library(knitr)
 library(kableExtra)
-library(htmlwidgets)
-library(webshot2)
-library(plotly)
-library(zoo)
-library(stringr)
-
-try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
-
-df <- params$datos
 ```
 
 \begin{flushright}
-\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
-\section*{Parámetros con los cuales se generó el informe}
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-```{r params-tabla}
+```{r, results='asis'}
+
+# Etiquetas
+anio_label <- ifelse(params$anio == "todos", "Todos los años", params$anio)
+prod_label <- params$producto
+
+# Tabla FAO oficial (solo Año y Alimento)
 df_params <- data.frame(
-  "Parámetro" = c("Producto", "Año"),
-  "Valor" = c(
-    ifelse(is.null(params$producto) || is.na(params$producto), "N/A", params$producto),
-    ifelse(is.null(params$anio) || is.na(params$anio), "N/A", params$anio)
-  )
+  Parámetro = c("Año", "Alimento"),
+  Valor     = c(anio_label, prod_label)
 )
 
-df_params %>%
-  kable(
-    col.names = NULL,
-    align = "l",
-    format = "latex",
-    booktabs = TRUE,
-    linesep = "",
-    escape = FALSE
-  ) %>%
-  kable_styling(
-    full_width = TRUE,
-    latex_options = c("HOLD_position"),
-    position = "left"
-  )
+cat("\\begingroup\n")
+cat("\\small\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
+cat("\\toprule\n")
+
+for (i in 1:nrow(df_params)) {
+  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\n", sep = "")
+}
+
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{adjustbox}\n")
+cat("\\endgroup\n")
 ```
 
-\fontsize{14}{14}\selectfont \textcolor{mygreen}{Ranking mensual de precios mayoristas por ciudad}\
+\begingroup
+\fontsize{14}{14}\selectfont
+\textcolor{mygreen}{Ranking de precios entre ciudades}
+\par
+\fontsize{12}{12}\selectfont
+\textcolor{mygreen}{Descubre posición del precio del alimento en Bogotá mes a mes con respecto a las demás ciudades}
+\par
+\endgroup
 
-\fontsize{12}{12}\selectfont \textcolor{green2}{Posición relativa de los precios mayoristas entre ciudades para el producto y año seleccionados}\
+```{r grafico_principal, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
+knitr::include_graphics(params$grafico_png)
+```
 
+\vspace{0.2cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\endgroup
+
+
+\vspace{0.2cm}
+
+\begingroup
 \fontsize{10}{10}\selectfont
+\textcolor{grayA}{`r enc2utf8(params$mensaje1)`}
+\endgroup
 
-Este informe presenta la posición relativa de los precios mayoristas de cada ciudad dentro del conjunto de ciudades con información disponible. La construcción del escalafón se realiza ordenando, para cada mes, los precios promedio de mayor a menor. Una posición igual a 1 corresponde al precio más alto observado en ese mes, mientras que posiciones mayores indican precios relativamente más bajos frente al resto de ciudades consideradas.
+\vspace{0.2cm}
 
----
+\begingroup
+\fontsize{10}{10}\selectfont
+\textcolor{grayA}{`r enc2utf8(params$mensaje2)`}
+\endgroup
 
-### Visualización general
+\vspace{0.25cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{grayA}{Esta visualizaición permite ver la posición del precio mayorista en Bogotá mes a mes del alimento con respecto a las demás ciudades del país.}
+\endgroup
 
-```{r grafico, out.width='95%', fig.align='center', message=FALSE, warning=FALSE}
-if (!is.null(params$grafico)) {
-  tmp_html <- tempfile(fileext = ".html")
-  tmp_png  <- tempfile(fileext = ".png")
-  
-  htmlwidgets::saveWidget(plotly::as_widget(params$grafico), tmp_html, selfcontained = TRUE)
-  
-  suppressWarnings(
-    webshot2::webshot(
-      tmp_html,
-      file   = tmp_png,
-      vwidth = 1280,
-      vheight = 720,
-      delay  = 0.5
-    )
-  )
-  
-  if (file.exists(tmp_png)) {
-    knitr::include_graphics(tmp_png)
-  } else {
-    cat("No se pudo generar la imagen del gráfico para los parámetros seleccionados.")
-  }
-} else {
-  cat("No hay gráfico disponible para los parámetros seleccionados.")
+\AddToShipoutPictureBG*{
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
 }
-```
 
----
 
-### Tabla de posiciones por mes
 
-```{r tabla-ranking, message=FALSE, warning=FALSE, results='asis'}
-if (!is.null(df) && nrow(df) > 0) {
-  
-  # Calcular posición de Bogotá por mes
-  tabla_bogota <- df %>%
-    mutate(
-      mes_y_ano = as.yearmon(mes_y_ano, "%Y-%m"),
-      Mes = str_to_title(format(mes_y_ano, "%B %Y"))
-    ) %>%
-    group_by(mes_y_ano) %>%
-    mutate(ranking = rank(-precio_prom, ties.method = "min")) %>%
-    ungroup() %>%
-    filter(ciudad == "Bogotá") %>%
-    arrange(mes_y_ano) %>%
-    select(Mes, `Posición de Bogotá` = ranking)
-  
-  # Mostrar única tabla
-  knitr::asis_output("\\textbf{Posición de Bogotá por mes}\n")
-  
-  tabla_bogota %>%
-    kable(
-      format = "latex",
-      booktabs = TRUE,
-      align = "lc",
-      caption = "Posición mensual de Bogotá en el ranking de precios mayoristas"
-    ) %>%
-    kable_styling(
-      latex_options = c("striped", "hold_position"),
-      font_size = 9
-    ) %>%
-    print()
-  
-} else {
-  cat("No hay datos disponibles para generar la tabla de ranking.")
-}
-```
 
----
 
-### Comentarios de interpretación
 
-\fontsize{9}{11}\selectfont
-
-Las posiciones más bajas representan niveles de precio relativamente altos frente al resto de ciudades analizadas en cada mes, mientras que las posiciones más altas reflejan precios comparativamente más bajos. Este ranking permite identificar diferencias espaciales en los niveles de precios mayoristas y el comportamiento relativo de las ciudades a lo largo del año seleccionado.
-
----
-
-\fontsize{8}{9}\selectfont
-\textcolor{mygreen}{Fuente: cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.}\
-\textcolor{mygreen}{Los precios corresponden al valor mayorista por kilogramo de productos de primera calidad registrados en las centrales de abasto con información disponible.}\
-\textcolor{mygreen}{Para los productos analizados, los valores reportados se refieren a la variedad predominante en el mercado al momento de la recolección de la información.}\
-
-\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

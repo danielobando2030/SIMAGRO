@@ -96,22 +96,27 @@ Caja_y_Bigotes = function(ALIMENTO = NULL, formato = "numeric") {
       )
     ) +
     labs(fill = "Año", y = "Kilogramos",x="") +
-    theme_minimal(base_size = 13) +
-    theme(
-      axis.text.x = element_blank(),
-      axis.ticks = element_blank(),
-      plot.title = element_text(face = "bold", hjust = 0.5)
-    )
+    theme_minimal(base_size = 13) +scale_y_continuous(
+      labels = scales::label_number(
+        big.mark = ".",     # separador de miles
+        decimal.mark = ","  # separador decimal
+      ))
   
   
   # --- 7. Versión interactiva con plotly ---
-  graf_plotly <- plotly::ggplotly(graf, tooltip = "text") %>%
+  graf_plotly <- plotly::ggplotly(graf+theme(
+                                      #axis.text.x = element_blank(),
+                                      #axis.ticks = element_blank(),
+                                      legend.position = "none",
+                                      plot.title = element_text(face = "bold", hjust = 0.5)
+                                      
+                                    ), tooltip = "text") %>%
     plotly::layout(
       hoverlabel = list(bgcolor = "white", font = list(size = 12)))
-S=BD[BD$var1==2025,][1,]    
-Texto=paste("En 2025, se puede observar que en el 25% de los meses se alcanza una cantidad cómo máximo de",format(S$q1,decimal.mark=",",big.mark="."),
-            "En el 50% de los meses se alcanza una cantidad cómo máximo de",format(S$mediana,decimal.mark=",",big.mark="."),
-            "En el 75% de los meses se alcanza ",format(S$q3,decimal.mark=",",big.mark="."))
+S=BD[BD$var1==max(as.numeric(as.character(BD$var1))),][1,]    
+Texto=paste("En el año ",max(as.numeric(as.character(BD$var1)))," se puede observar que en el 25% de los meses se alcanza un volumen de alimentos menor o igual a ",format(S$q1,decimal.mark=",",big.mark="."),
+              "En el 50% de los meses se alcanza un volumen menor o igual a ",format(S$mediana,decimal.mark=",",big.mark="."),
+              "En el 75% de los meses alcanza un volumen menor o igual a  ",format(S$q3,decimal.mark=",",big.mark="."))
   # --- 8. Retorno ---
   return(list(
     grafico_plano = graf,

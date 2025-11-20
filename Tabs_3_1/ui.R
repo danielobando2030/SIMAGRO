@@ -2,9 +2,6 @@
 # Proyecto FAO - VP - 2025
 # Interfaz UI - Módulo 3_1: Precios Mayoristas (Bogotá)
 ################################################################################
-# Autores: Luis Miguel García, Laura Quintero, Daniel Obando
-# Última edición: 2025/11/07
-################################################################################
 
 library(shiny)
 library(plotly)
@@ -24,30 +21,55 @@ ui <- fluidPage(
       href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
     ),
     tags$style(HTML("
-      body { font-family: 'Prompt', sans-serif; background-color: #fafafa; }
-      h2, h4, h5 { color: #3D3D6B; }
-      .btn-faoc {
-        background-color: #6A0DAD;
-        border-color: #6A0DAD;
-        color: white;
-        font-weight: 500;
+      body { font-family: 'Prompt', sans-serif; background-color: #fafafa; color:#4E4D4D; }
+
+      .main-header {
+        font-size: 40px;
+        color: #6D673E;
+        font-weight: 700;
       }
+
+      .main-header_2 {
+        font-size: 20px;
+        color: #6D673E;
+      }
+
+      .sub-header2 {
+        font-size: 15px;
+        color:#4E4D4D;
+      }
+
+      h5, label, p, .stat-value, .stat-title,
+      .shiny-input-container, .control-label {
+        color:#4E4D4D !important;
+      }
+
+      .btn-faoc {
+        background-color: white !important;
+        border: 1px solid #CCC !important;
+        color: #4E4D4D !important;
+        font-weight: 500;
+        border-radius: 6px;
+      }
+
       .btn-faoc:hover {
-        background-color: #500985;
-        border-color: #500985;
-        color: white;
+        background-color: #F2F2F2 !important;
+        border-color: #AAA !important;
       }
     "))
   ),
   
-  div(
-    h2("Comportamiento de los precios en el tiempo",
-       style = "font-weight:600; color:#3D3D6B; text-align:center;"),
-    h4("Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.",
-       style = "color:#5A5A5A; font-weight:400; text-align:center; margin-top:-10px; margin-bottom:5px;")
-  ),
+  # ------------------------------------------------------------------
+  # TÍTULOS EXACTAMENTE COMO EL OTRO DASHBOARD
+  # ------------------------------------------------------------------
+  tags$h1("Comportamiento de los precios en el tiempo", class = "main-header"),
+  tags$h1("Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.", class = "main-header_2"),
   
-  br(),
+  div(
+    textOutput("subtitulo"),
+    class = "sub-header2",
+    style = "margin-bottom: 20px;"
+  ),
   
   # ------------------------------------------------------------------
   # Filtros
@@ -76,8 +98,8 @@ ui <- fluidPage(
   # ------------------------------------------------------------------
   fluidRow(
     column(12, align = "center",
-           h5(textOutput("subtitulo"),
-              style = "color:#3D3D6B; margin-bottom:10px;")
+           h5(textOutput("subtitulo2"),
+              style = "margin-bottom:10px; font-weight:500; color:#4E4D4D;")
     )
   ),
   
@@ -88,6 +110,7 @@ ui <- fluidPage(
     column(9, align = "center",
            plotlyOutput("grafico", height = "450px")
     ),
+    
     column(3,
            uiOutput("texto_volatil"),
            uiOutput("texto_promedio_cambio"),
@@ -99,44 +122,40 @@ ui <- fluidPage(
   br(),
   
   # ------------------------------------------------------------------
-  # Botones de acción (FAO estilo institucional)
+  # Botones
   # ------------------------------------------------------------------
   fluidRow(
     column(12, align = "center",
            downloadButton("descargar", "Gráfica", class = "btn btn-faoc"),
            downloadButton("descargarDatos", "Datos", class = "btn btn-faoc"),
-           shiny::a("GitHub",
-                    href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_1",
-                    target = "_blank",
-                    class = "btn btn-faoc",
-                    icon("github")),
-           actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn btn-faoc"),
-           downloadButton("descargarInforme", "Generar informe", class = "btn btn-faoc")
+           a("GitHub",
+             href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_1",
+             target = "_blank", class = "btn btn-faoc", icon("github")),
+           actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
+           downloadButton("descargarInforme", "Generar informe", class = "btn-faoc")
     )
   ),
   
   br(),
   
   # ------------------------------------------------------------------
-  # Fuente de datos
+  # Nota metodológica
   # ------------------------------------------------------------------
   fluidRow(
-    column(12, align = "left",
-           HTML("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-               La información solo se muestra para los precios en el centro de acopio de Bogotá.<br>
-               Para los productos fríjol verde, tomate, aguacate, banano, guayaba, mandarina, naranja, piña, arracacha, papa negra y yuca, los precios reportados corresponden a la variedad predominante en el mercado al momento de la recolección de la información.<br>
-               De acuerdo con el SIPSA, el valor reportado corresponde al precio mayorista por kilogramo de producto de primera calidad en la Central Mayorista de Corabastos."),
-           style = "font-size:12px; color:#5A5A5A; text-align:left;"
+    column(12,
+           align = "left",
+           HTML("Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
+           style = "font-size:12px; text-align:left;"
     )
   ),
   
   # ------------------------------------------------------------------
-  # Logo institucional al final
+  # Logo
   # ------------------------------------------------------------------
   fluidRow(
     tags$div(
-      tags$img(src = "logo_2.png", style = "width: 100%; margin: 0;"),
-      style = "width: 100%; margin:0;"
+      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      style = "width: 100%; margin: 0;"
     )
   )
 )

@@ -1,5 +1,5 @@
----
-title: " "
+--- 
+title: ' '
 params:
   producto: NA
   anio: NA
@@ -8,112 +8,114 @@ params:
   mensaje2: NA
   mapa_png: NA
   tabla_datos: NA
+  logo_sup: NA
+  logo_inf: NA
+
 output:
   pdf_document:
     latex_engine: xelatex
+
 header-includes:
-- \usepackage{float}
-- \usepackage{longtable}
-- \usepackage{array}
-- \usepackage{xcolor}
-- \usepackage{fontspec}
-- \usepackage{booktabs}
-- \usepackage{fancyhdr}
-- \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
-- "\\setmainfont{Prompt-Regular.ttf}"
-- \pagestyle{fancy}
-- \fancyfoot{}
-- \usepackage{colortbl}
-- \usepackage{adjustbox}
-- \setlength{\headheight}{2cm}
-- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
-- \usepackage{eso-pic}
+  - \usepackage{float}
+  - \usepackage{arydshln}
+  - \usepackage{graphicx}
+  - \usepackage{xcolor}
+  - \usepackage{fontspec}
+  - \usepackage{booktabs}
+  - \usepackage{fancyhdr}
+  - \usepackage{eso-pic}
+  - \usepackage{colortbl}
+  - \usepackage{adjustbox}
+  - \setmainfont{Prompt-Regular.ttf}
+  - \definecolor{mygreen}{RGB}{255,221,0}
+  - \definecolor{MYGREEN}{RGB}{255,221,0}
+  - \definecolor{grayA}{RGB}{78,77,77}
+  - \definecolor{green2}{RGB}{255,221,0}
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  - \setlength{\headheight}{2cm}
 ---
 
-```{r setup, include=FALSE, message=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-library(knitr)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 library(dplyr)
+library(knitr)
 library(kableExtra)
-library(xtable)
-try({Sys.setlocale("LC_TIME","es_ES.UTF-8")}, silent = TRUE)
 ```
 
 \begin{flushright}
-\textcolor{gray}{Informe en línea generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
-\section*{Parámetros con los cuales se generó el informe:}
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-```{r params-table, message=FALSE, warning=FALSE}
-opciones_Mes <- c("Enero" = 1, "Febrero" = 2, "Marzo" = 3, "Abril" = 4, "Mayo" = 5, 
-                  "Junio" = 6, "Julio" = 7, "Agosto" = 8, "Septiembre" = 9, "Octubre" = 10, 
-                  "Noviembre" = 11, "Diciembre" = 12)
-
-mes_label <- ifelse(is.na(params$mes) | !(params$mes %in% opciones_Mes), 
-                    "Todos los meses", names(opciones_Mes)[which(opciones_Mes == params$mes)])
-
-df <- data.frame(
-  "Parámetro" = c("Año:", "Mes:", "Producto:"),
-  "Valor" = c(ifelse(is.na(params$anio) | params$anio == "todo", "Todos los años", params$anio),
-              mes_label,
-              ifelse(is.na(params$producto) | params$producto == "todo", "Todos los productos", params$producto))
+```{r, results='asis'}
+opciones_mes <- c(
+  "Enero"=1,"Febrero"=2,"Marzo"=3,"Abril"=4,"Mayo"=5,"Junio"=6,
+  "Julio"=7,"Agosto"=8,"Septiembre"=9,"Octubre"=10,"Noviembre"=11,"Diciembre"=12
 )
 
-cat("\\begin{adjustbox}{max width=\\textwidth}")
-knitr::kable(
-  df,
-  col.names = NULL,
-  align = 'l',
-  format = "latex",
-  booktabs = TRUE,
-  longtable = TRUE,
-  escape = FALSE
-) %>%
-  kable_styling(
-    full_width = FALSE,
-    latex_options = c("striped"),
-    position = "left"
+mes_label <- ifelse(is.na(params$mes),"Todos los meses",
+                    names(opciones_mes)[opciones_mes == params$mes])
+
+df_params <- data.frame(
+  Parámetro = c("Año","Mes","Alimento"),
+  Valor = c(
+    ifelse(is.na(params$anio),"Todos los años", params$anio),
+    mes_label,
+    ifelse(params$producto=="todo","Todos los productos",params$producto)
   )
-cat("\\end{adjustbox}")
-```
+)
 
-\fontsize{14}{14} \selectfont \textcolor{mygreen}{Análisis de precios de alimentos por departamento}\
+cat("\\small\\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\\n")
+cat("\\toprule\\n")
 
-\fontsize{12}{12} \selectfont \textcolor{green2}{Precios promedio de alimentos comparados con Bogotá D.C.}\
-
-\fontsize{10}{10} \selectfont `r params$mensaje1`\\
-\fontsize{10}{10} \selectfont `r params$mensaje2`\\
-
-# Mapa de diferencias de precios
-
-```{r, out.width="90%", fig.align="center", message=FALSE, warning=FALSE}
-if (!is.null(params$mapa_png)) knitr::include_graphics(params$mapa_png)
-```
-
-# Tabla de datos
-
-```{r, message=FALSE, warning=FALSE}
-if (!is.null(params$tabla_datos)) {
-  params$tabla_datos %>%
-    arrange(desc(comp)) %>%
-    mutate(
-      Departamento = stringr::str_to_title(stringr::str_to_lower(departamento)),
-      `Dif. vs Bogotá ($)` = format(round(comp), big.mark=".", decimal.mark=",")
-    ) %>%
-    select(`Código dpto` = cod_depto, Departamento, `Dif. vs Bogotá ($)`) %>%
-    kable(format = "latex", booktabs = TRUE, longtable = TRUE, align = "lrr") %>%
-    kable_styling(full_width = FALSE, latex_options = c("striped", "scale_down"))
+for (i in 1:nrow(df_params)) {
+  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\
+", sep="")
 }
+
+cat("\\bottomrule\\n")
+cat("\\end{tabular}\\n")
+cat("\\end{adjustbox}\\n")
+cat("\\normalsize\\n")
 ```
 
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Los precios corresponden a valores mayoristas por kilogramo de producto de primera calidad en las principales centrales del país.}\\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{La comparación se realiza respecto a Bogotá D.C. como referencia nacional.}\\
-\fontsize{8}{8} \selectfont \textcolor{mygreen}{Los departamentos en color gris indican ausencia de datos.}\\
+\fontsize{14}{14} \selectfont \textcolor{mygreen}{Diferencias de precios de alimentos con Bogotá}\\
+\fontsize{12}{12} \selectfont \textcolor{mygreen}{Descubre los departamentos donde hay mayores y menores diferencias de precios en los alimentos con Bogotá y Cundinamarca}\\
 
-\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+```{r, out.width="90%",warning=FALSE,message=FALSE}
+knitr::include_graphics(params$mapa_png)
+```
+
+\vspace{0.2cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\endgroup
+
+\begingroup
+\fontsize{10}{10}\selectfont 
+\textcolor{grayA}`r params$mensaje1`
+\endgroup
+
+\vspace{0.2cm}
+
+\begingroup
+\fontsize{10}{10}\selectfont 
+\textcolor{grayA}`r params$mensaje2`
+\endgroup
+
+\vspace{0.25cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{grayA}{Esta visualización compara los precios promedio de alimentos entre Bogotá y los demás departamentos del país, mostrando qué territorios registran mayores o menores valores relativos. Un valor mayor indica precios más altos con respecto a Bogotá, mientras que un valor menor indica precios más bajos comparando con la misma.}
+\endgroup
+
+\AddToShipoutPictureBG*{
+  \includegraphics[width=\\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+}

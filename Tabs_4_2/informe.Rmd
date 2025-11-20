@@ -1,139 +1,151 @@
 ---
-title: "Mapa de rutas de abastecimiento por región - FAO 2025"
-output:
-  pdf_document:
-    latex_engine: xelatex
-    toc: false
+title: ' '
 params:
-  datos: NA
-  grafico: NA
   anio: NA
   mes: NA
   producto: NA
+  datos: NA
+  grafico_png: NA
   logo_sup: NA
   logo_inf: NA
+  mensaje1: NA        # <<<<<<<<<< AÑADIDO
+  mensaje2: NA        # <<<<<<<<<< AÑADIDO
+output:
+  pdf_document:
+    latex_engine: xelatex
+
 header-includes:
-  - \usepackage[utf8]{inputenc}
-  - \usepackage[T1]{fontenc}
-  - \usepackage[spanish,es-tabla]{babel}
-  - \usepackage{lmodern}
-  - \usepackage{booktabs}
-  - \usepackage[table]{xcolor}
-  - \usepackage{colortbl}
   - \usepackage{float}
+  - \usepackage{arydshln}
   - \usepackage{graphicx}
-  - \usepackage{geometry}
-  - \geometry{top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm}
-  - \definecolor{violetaFAO}{RGB}{123,31,162}
-  - \selectlanguage{spanish}
+  - \usepackage{xcolor}
+  - \usepackage{fontspec}
+  - \usepackage{booktabs}
+  - \usepackage{fancyhdr}
+  - \usepackage{eso-pic}
+  - \usepackage{colortbl}
+  - \usepackage{adjustbox}
+  - \setmainfont{Prompt-Regular.ttf}
+  - \definecolor{mygreen}{RGB}{224,9,20}
+  - \definecolor{grayA}{RGB}{78,77,77}
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  - \setlength{\headheight}{2cm}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
 library(dplyr)
 library(knitr)
 library(kableExtra)
-library(htmlwidgets)
-library(webshot2)
 library(leaflet)
-try(Sys.setlocale("LC_TIME", "es_ES.UTF-8"), silent = TRUE)
-df <- params$datos
+library(htmlwidgets)
 ```
 
-```{r logos, echo=FALSE, out.width='100%', fig.align='center'}
-if (file.exists(params$logo_sup)) knitr::include_graphics(params$logo_sup)
-```
+\begin{flushright}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\end{flushright}
 
----
 
-# \textcolor{violetaFAO}{\LARGE Rutas de abastecimiento por región geográfica}
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-\textcolor{violetaFAO}{\large \textbf{Año: `r params$anio` — Mes: `r month.name[as.numeric(params$mes)]` — Producto: `r params$producto`}}  
+```{r, results='asis'}
 
-Este informe presenta la distribución geográfica de las rutas de abastecimiento para el producto seleccionado, clasificadas según su dirección cardinal desde Bogotá.  
-Cada color representa una **región geográfica**, y el grosor de las líneas indica la **proporción del flujo regional** sobre el total transportado.
+# Año
+anio_label <- params$anio
 
----
+# Convertir mes a número y luego a nombre en español
+mes_num <- suppressWarnings(as.integer(params$mes))
 
-# Visualización general
+nombres_mes <- c(
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+)
 
-```{r grafico, fig.align='center', out.width='95%'}
-if (inherits(params$grafico, "leaflet")) {
-  tmp_html <- tempfile(fileext = ".html")
-  tmp_png  <- tempfile(fileext = ".png")
-  htmlwidgets::saveWidget(params$grafico, tmp_html, selfcontained = TRUE)
-  webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
-  knitr::include_graphics(tmp_png)
-} else if (is.character(params$grafico) && file.exists(params$grafico)) {
-  knitr::include_graphics(params$grafico)
-} else {
-  cat("No hay mapa disponible para los parámetros seleccionados.")
+mes_label <- ifelse(
+  is.na(mes_num) | mes_num < 1 | mes_num > 12,
+  as.character(params$mes),
+  nombres_mes[mes_num]
+)
+
+# Alimento (antes: producto)
+alim_label <- params$producto
+
+# Construir tabla FAO: Año - Mes - Alimento
+df_params <- data.frame(
+  Parámetro = c("Año", "Mes", "Alimento"),
+  Valor     = c(anio_label, mes_label, alim_label)
+)
+
+# ==== TABLA FAO SIN FLOATS, COMPLETAMENTE ESCAPADA =====
+cat("\\begingroup\n")
+cat("\\small\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
+cat("\\toprule\n")
+
+for (i in 1:nrow(df_params)) {
+  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\n", sep = "")
 }
+
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{adjustbox}\n")
+cat("\\endgroup\n")
+
 ```
 
----
+\begingroup
+\fontsize{14}{14}\selectfont
+\textcolor{mygreen}{Rutas de abastecimiento por regiones geográficas}
+\par
+\fontsize{12}{12}\selectfont
+\textcolor{mygreen}{Descubre la importancia de las diferentes rutas de abastecimiento del país en Bogotá y Cundinamarca}
+\par
+\endgroup
 
-# Interpretación
+```{r grafico_principal, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
+knitr::include_graphics(params$grafico_png)
+```
 
-- Los **colores** distinguen las rutas según su orientación geográfica.  
-- El **grosor** representa la participación regional en el total de abastecimiento.  
-- Las regiones con mayor densidad de líneas más gruesas concentran los principales flujos logísticos.  
-- Este análisis permite identificar las áreas con **mayor relevancia logística** en el abastecimiento de Bogotá.
+\vspace{0.2cm}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\endgroup
 
----
+\vspace{0.2cm}
 
-# Principales regiones del mes
+\begingroup
+\fontsize{10}{10}\selectfont
+\textcolor{grayA}{`r params$mensaje1`}
+\endgroup
 
-```{r tabla_regiones, echo=FALSE}
-if (!is.null(df) && nrow(df) > 0) {
-  tabla_top <- df %>%
-    group_by(region_geo) %>%
-    summarise(
-      `Importancia regional (%)` = round(sum(prop_region_producto, na.rm = TRUE) * 100, 2),
-      `Número de rutas` = n()
-    ) %>%
-    arrange(desc(`Importancia regional (%)`))
+\vspace{0.25cm}
 
-  kable(tabla_top, format = "latex", booktabs = TRUE, align = "lcc",
-        caption = "Distribución de importancia relativa por región geográfica") %>%
-    kable_styling(latex_options = c("striped", "hold_position"))
-} else {
-  cat("No hay datos disponibles para generar la tabla de regiones.")
+\begingroup
+\fontsize{10}{10}\selectfont
+\textcolor{grayA}{`r params$mensaje2`}
+\endgroup
+
+\vspace{0.45cm}
+
+\newpage
+
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{grayA}{
+Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca}
+\endgroup
+
+\vspace*{4cm}
+
+\AddToShipoutPictureBG*{
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
 }
-```
 
----
 
-# Top 10 rutas más relevantes
 
-```{r tabla_top_rutas, echo=FALSE}
-if (!is.null(df) && nrow(df) > 0) {
-  tabla_rutas <- df %>%
-    arrange(desc(importancia_ruta)) %>%
-    select(region_geo, mpio_origen, depto_origen, distancia, importancia_ruta) %>%
-    head(10) %>%
-    mutate(
-      importancia_ruta = round(importancia_ruta * 100, 2),
-      distancia = round(distancia, 1)
-    ) %>%
-    rename(
-      "Región" = region_geo,
-      "Municipio origen" = mpio_origen,
-      "Departamento" = depto_origen,
-      "Distancia (km)" = distancia,
-      "Importancia (%)" = importancia_ruta
-    )
 
-  kable(tabla_rutas, format = "latex", booktabs = TRUE, align = "lcccc",
-        caption = "Top 10 rutas más importantes en el abastecimiento regional") %>%
-    kable_styling(latex_options = c("striped", "hold_position"))
-} else {
-  cat("No hay datos disponibles para generar la tabla de rutas.")
-}
-```
-
----
-
-```{r logo_inf, echo=FALSE, out.width='100%', fig.align='center'}
-if (file.exists(params$logo_inf)) knitr::include_graphics(params$logo_inf)
-```

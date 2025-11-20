@@ -20,7 +20,6 @@ source("2_2b_Indices_Curva_Lorentz_Gini_Cantidades_salen.R")
 
 ui <- fluidPage(
   tags$head(
-    tags$title("Curva de lorentz para la diversidad de destinos"),  
     tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"), 
     tags$style(HTML("
       .main-header {
@@ -59,8 +58,8 @@ ui <- fluidPage(
       
     "))
   ),
-    tags$h1("Diversidad de los destinos de alimentos producidos en Cundinamarca", class = "main-header"),
-    tags$h1("Descubre el nivel de dependencia de los municipios receptores de alimentos que salen de Cundinamarca según el SIPSA.", class = "main-header_2"),  
+    tags$h1("Diversidad de municipios destinos de alimentos producidos en Cundinamarca", class = "main-header"),
+    tags$h1("Analiza cuán concentrado está el suministro de alimentos desde Cundinamarca hacia los municipios de destino", class = "main-header_2"),  
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -112,11 +111,18 @@ ui <- fluidPage(
       12,
       align = "left",
       HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
+<b>Cálculo: </b> Primero se ordenan los datos de menor a mayor. Luego se compara la distribución
+real con una línea imaginaria que representa la igualdad perfecta.  
+La diferencia entre ambas áreas es el Gini.
 
-      Esta visualización muestra el porcentaje acumulado de municipios que reciben productos de Cundinamarca. 
-      Cuanto más cercana esté la curva a la línea de 45°, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios para enviar sus productos.
-    "),
+<p>
+En resumen: <strong>mientras más se alejen los datos de la igualdad perfecta,
+más alto será el Gini.</strong>
+</p>
+           
+           
+               "),
       style = "font-size:12px; color:#4E4D4D; text-align:left; 
              font-family:'Prompt', sans-serif; margin-top:20px;"
     )

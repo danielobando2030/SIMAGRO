@@ -11,7 +11,9 @@ rm(list=ls())
 # Paquetes 
 ################################################################################-
 library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)
-library(glue);library(tidyverse);library(gridExtra);library(corrplot);library(tools);library(plotly);library(arrow)
+library(glue);library(tidyverse);library(gridExtra);library(corrplot);library(tools);library(plotly);library(arrow);
+library(forcats)
+
 options(scipen = 999)
 ################################################################################-
 abastecimiento_bogota<-readRDS("base_indices_abastecimiento_1_1.RDS")%>%
@@ -140,7 +142,7 @@ importancia <- function(tipo, Año = NULL, Mes = NULL, municipios = 10, Producto
   
     graf <- ggplot(df, aes(x =  forcats::fct_reorder(municipio_r, as.numeric(all_of(columna_porcentaje))), y = as.numeric(all_of(columna_porcentaje)), fill =  mpio_origen, text = tooltip_text)) +
     geom_bar(stat = "identity") +
-    geom_text(aes(label = scales::percent(as.numeric(all_of(columna_porcentaje)), accuracy = 0.1)), hjust = 1.2) +
+    geom_text(aes(label = scales::percent(as.numeric(all_of(columna_porcentaje)), accuracy = 0.1)), hjust = 0, color ="#4E4D4D",family = "sans") +
     coord_flip() +
     labs(x = " ", y = "Porcentaje", title = " ") +
     scale_fill_manual(values = col_palette) +  # Agregar la paleta de colores
@@ -149,7 +151,53 @@ importancia <- function(tipo, Año = NULL, Mes = NULL, municipios = 10, Producto
   
   
   
-  p <- plotly::ggplotly(graf, tooltip = "text")
+ # p <- plotly::ggplotly(graf, tooltip = "text")
+  
+  df <- df %>%
+    mutate(
+      label_pct = scales::percent(columna_porcentaje, accuracy = 0.1),
+      municipio_r = forcats::fct_reorder(municipio_r, columna_porcentaje)
+    )
+  
+p=plot_ly(
+  data = df,
+  x = ~columna_porcentaje,
+  y = ~municipio_r,
+  type = "bar",
+  orientation = "h",
+  text = ~label_pct,
+  textposition = "outside",
+  textfont = list(
+    family = "sans-serif",
+    size = 12,
+    color = "#4E4D4D"
+  ),
+  marker = list(
+    color = ~col_palette[as.numeric(factor(mpio_origen))]
+  ),
+  hovertext = ~tooltip_text,
+  hoverinfo = "text"
+) %>%
+  layout(
+    xaxis = list(
+      title = "Porcentaje (%)",
+      tickformat = ".1%",
+      showgrid = FALSE
+    
+      ),
+    yaxis = list(
+      title = "",
+      categoryorder = "array",
+      categoryarray = levels(df$municipio_r)   # <--- usa el orden invertido
+    
+      ),
+    margin = list(l = 130)
+  )
+
+  
+  
+  
+  
   
   
   
@@ -168,7 +216,7 @@ importancia <- function(tipo, Año = NULL, Mes = NULL, municipios = 10, Producto
 }
 
 
-#importancia(1,2023)
+#importancia(tipo=1,Año=2023)
 #importancia(2,2023,1)
 #importancia(3,2023,1,15,"lechuga batavia")
 #importancia(1,Año = 2023, Producto = "lechuga batavia")

@@ -83,7 +83,7 @@ pareto_graf<-function(pareto,año=NULL, Mes=NULL, sitio=NULL){
   
   num_productos <- nrow(df_filtrado)
   
-  df_filtrado$tooltip_text1 <- paste0("Producto: ", df_filtrado$producto, "<br>Cantidad: ", round(df_filtrado$total_sum,1))
+  df_filtrado$tooltip_text1 <- paste0("Producto: ", df_filtrado$producto, "<br>Cantidad: ", format(round(df_filtrado$total_sum,1),decimal.mark=",",big.mark="."))
   df_filtrado$tooltip_text2 <- paste0("Producto: ", df_filtrado$producto, "<br>Porcentaje acumulado: ", round(df_filtrado$acumulado_total*100,1),"%")
   
   index <- which.min(abs(df_filtrado$acumulado_total - 0.8))
@@ -104,13 +104,18 @@ pareto_graf<-function(pareto,año=NULL, Mes=NULL, sitio=NULL){
     geom_point(aes(y = acumulado_total * total_sum_total, text = tooltip_text2), color = "#0087CF", group = 1) +
     xlab("") + 
     geom_vline(xintercept = posicion_80, color = "#1877AA", linetype = "dashed") +
-    ylab("Miles de toneladas") +
+    ylab("Toneladas") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1),
           panel.border = element_blank(),
           axis.line = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank()) +
+    scale_y_continuous(
+      labels = scales::label_number(
+        big.mark = ".",     # separador de miles
+        decimal.mark = ","  # separador decimal
+      ))+
     labs(fill = "Barras: Amarillo", color = "Verde: Acumulado")
   p<-plotly::ggplotly(plot, tooltip = "text")
 

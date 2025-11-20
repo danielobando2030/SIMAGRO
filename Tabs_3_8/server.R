@@ -42,7 +42,11 @@ server <- function(input, output, session) {
   # --- Gráfico principal ---
   output$grafico <- renderPlotly({
     res <- resultado_correlacion()
-    validate(need(!is.null(res$grafico), "Generando matriz de correlación..."))
+    
+    if (is.null(res) || is.null(res$grafico)) {
+      return(plotly_empty(type = "heatmap"))
+    }
+    
     res$grafico
   })
   
@@ -64,7 +68,7 @@ server <- function(input, output, session) {
       slice_head(n = 5)
     
     HTML(paste0(
-      "<b>🟩 Correlaciones más altas</b><br>",
+      "<b> Correlaciones más altas</b><br>",
       paste0("<br>", cor_df$Var1, " – ", cor_df$Var2, 
              ": <b>", sprintf('%.2f', cor_df$Freq), "</b>", collapse = "")
     ))
@@ -88,7 +92,7 @@ server <- function(input, output, session) {
       slice_head(n = 5)
     
     HTML(paste0(
-      "<b>🟥 Correlaciones más bajas</b><br>",
+      "<b> Correlaciones más bajas</b><br>",
       paste0("<br>", cor_df$Var1, " – ", cor_df$Var2,
              ": <b>", sprintf('%.2f', cor_df$Freq), "</b>", collapse = "")
     ))

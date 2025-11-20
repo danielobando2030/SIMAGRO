@@ -125,9 +125,9 @@ output$subtitulo <- renderText({
       porcentaje_max <- resultado$porcentaje_max
       depto <- input$depto
       if(depto != "todo"){
-        values$subtitulo <- (paste0("El Producto procedente de ", depto, " con mayor volumen reportado en las centrales de abasto de Bogotá fue ", producto_max))
+        values$subtitulo <- (paste0("Para las condiciones seleccionadas, el producto procedente de ", depto, " el producto con mayor volumen de ingreso es ",producto_max,", con una participación de ",resultado()$porcentaje_max,"% del volumen total."))
       } else if (depto == "todo") {
-        values$subtitulo <- (paste0("El prodcuto con mayor volumen reportado en las centrales de abasto de Bogotá fue ", producto_max))
+        values$subtitulo <- (paste0("Para las condiciones seleccionadas, el producto con mayor volumen de ingreso es ",producto_max,", con una participación de ",resultado()$porcentaje_max,"% del volumen total."))
       }
     }
     return(values$subtitulo)
@@ -137,14 +137,10 @@ output$subtitulo <- renderText({
   
 # Mensajes
 output$mensaje1 <- renderText({
-    values$mensaje1 <-("Este gráfico visualiza los alimentos que llegan a las centrales de abasto de Bogotá, destacando los productos principales por volumen.")
+    values$mensaje1 <-("Cada rectángulo en el gráfico representa un tipo de alimento, y el tamaño de cada rectángulo es  proporcional al volumen de ese alimento en comparación con los demás ingresados")
     values$mensaje1
     })
-  output$mensaje2 <- renderText({
-    values$mensaje2 <- ("Cada rectángulo en el gráfico representa un tipo de alimento, y el tamaño de cada rectángulo es  proporcional al volumen de ese alimento en comparación con los demás ingresados")
-    values$mensaje2
-    })
-  
+
   
   
   # Generamos el Informe
@@ -165,7 +161,7 @@ output$mensaje1 <- renderText({
         porcentaje_max = resultado()$porcentaje_max,
         plot = grafico_plano(),
         mensaje1 = values$mensaje1,
-        mensaje2 = values$mensaje2
+        mensaje2 = values$subtitulo
       ))  
     },
     contentType = 'application/pdf'

@@ -60,7 +60,26 @@ server <- function(input, output, session) {
   ###############################################################################
   output$grafico <- renderPlotly({
     res <- resultado()
-    validate(need(!is.null(res), "No hay datos disponibles para el producto y año seleccionados."))
+    
+    # --- Si no hay datos o res no trae gráfico válido ---
+    if (is.null(res) || is.null(res$grafico)) {
+      return(
+        plot_ly() %>%
+          layout(
+            annotations = list(
+              text = "No hay datos disponibles para la selección.",
+              x = 0.5, y = 0.5,
+              xref = "paper", yref = "paper",
+              showarrow = FALSE,
+              font = list(size = 18, color = "#DBC21F")
+            ),
+            xaxis = list(visible = FALSE),
+            yaxis = list(visible = FALSE)
+          )
+      )
+    }
+    
+    # --- Si sí hay gráfico ---
     res$grafico
   })
   
@@ -137,8 +156,9 @@ server <- function(input, output, session) {
       webshot2::webshot(
         tmp_html,
         file   = tmp_png,
-        vwidth = 1600,
-        vheight = 900,
+        vwidth = 2800,      # mucho más grande
+        vheight = 1800,     # alta resolución
+        zoom = 1.5,         # más zoom interno de webshot
         delay  = 1
       )
       
@@ -157,6 +177,24 @@ server <- function(input, output, session) {
       res <- resultado()
       req(res)
       
+      # ---- Convertir el plotly a PNG para el informe ----
+      tmp_html <- tempfile(fileext = ".html")
+      tmp_png  <- tempfile(fileext = ".png")
+      
+      htmlwidgets::saveWidget(
+        widget = plotly::as_widget(res$grafico),
+        file = tmp_html,
+        selfcontained = TRUE
+      )
+      
+      webshot2::webshot(
+        tmp_html,
+        file   = tmp_png,
+        vwidth = 1600,
+        vheight = 900,
+        delay  = 1
+      )
+      
       temp_pdf <- tempfile(fileext = ".pdf")
       
       rmarkdown::render(
@@ -164,11 +202,12 @@ server <- function(input, output, session) {
         output_file   = temp_pdf,
         output_format = "pdf_document",
         params = list(
-          datos      = res$datos,
-          grafico    = res$grafico,
-          producto   = input$producto,
-          anio       = input$anio,
-          resumen    = paste0(values$subtitulo, " ", values$mensaje1)
+          producto    = input$producto,
+          anio        = input$anio,
+          datos       = res$datos,
+          grafico_png = tmp_png,
+          resumen     = values$subtitulo,
+          mensaje1    = values$mensaje1    # <--- AÑADIR ESTO
         ),
         envir         = new.env(parent = globalenv()),
         knit_root_dir = getwd(),

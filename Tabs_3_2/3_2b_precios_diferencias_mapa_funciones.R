@@ -118,7 +118,7 @@ mapa_dif <- function(Anio = NULL, Mes = NULL, Producto = NULL) {
   }
   
   my_palette <- colorNumeric(
-    palette = colorRampPalette(c("#3F007D", "#8C6BB1", "#CBC9E2", "#F2F0F7"))(100),
+    palette = colorRampPalette(c("#DBC21F", "#B6A534", "#6D673E", "#494634"))(100),
     domain = c(-max_abs, max_abs),
     na.color = "#D9D9D9"
   )

@@ -15,6 +15,28 @@ library(sf);library(arrow)
 options(scipen = 999)
 ################################################################################-
 
+
+
+formatC_custom=function(x, digits = NULL, width = NULL,
+                 format = NULL, flag = "", mode = NULL,
+                 big.mark = ".", big.interval = 3L,
+                 small.mark = ",", small.interval = 5L,
+                 decimal.mark = ",",
+                 preserve.width = "individual",
+                 zero.print = NULL, replace.zero = TRUE,
+                 drop0trailing = FALSE){
+  salida=formatC(x=x, digits = digits, width = width,
+        format = format, flag =flag, mode = mode,
+        big.mark = big.mark, big.interval =  big.interval,
+        small.mark = small.mark, small.interval = small.interval,
+        decimal.mark =decimal.mark,
+        preserve.width = preserve.width,
+        zero.print = zero.print, replace.zero = replace.zero,
+        drop0trailing = drop0trailing)
+return(salida)
+}
+
+
 data_mensual<-readRDS("neto_mensual_1_7.RDS")%>%
   mutate(fecha = floor_date(as.Date(as.yearmon(fecha, "%Y-%m"), frac = 1), "month"))
 data_anual<-readRDS("neto_anual_1_7.RDS")
@@ -55,6 +77,7 @@ neto_grafica <- function(tipo, productos_seleccionados = "") {
     df <- data_anual_producto
     df <- df %>%
       select("anio","producto", "total_importado","sale_kg","ingresa_kg")
+  
     if (length(productos_seleccionados) == 0){
       message("Para esta opcion debe escoger los productos que quiere graficar")
     }
@@ -63,6 +86,7 @@ neto_grafica <- function(tipo, productos_seleccionados = "") {
     df <- data_mensual
     df <- df %>%
       select("fecha","total_importado","sale_kg","ingresa_kg","mes")
+    
     tipo<- 3
     df <- rename(df, anio = fecha)
   } else if (tipo == 4) {
@@ -80,60 +104,80 @@ neto_grafica <- function(tipo, productos_seleccionados = "") {
   if (tipo %in% c(2)) {
     df <- df[df$producto %in% productos_seleccionados, ]
     df$tooltip_text <- paste("Año: ", df$anio , 
-                             "<br> Volumen de salidas (mil t):" , formatC(df$sale_kg, format = "f", digits = 1),"mil",
-                             "<br> Volumen de ingreso (mil t):", formatC(df$ingresa_kg, format = "f", digits = 1),"mil", 
-                             "<br> Balance Alimentos:",formatC(df$total_importado,format = "f", digits = 1),"mil")
+                             "<br> Volumen de salidas:" , formatC_custom(df$sale_kg, format = "f", digits = 1),"Kg",
+                             "<br> Volumen de ingreso:", formatC_custom(df$ingresa_kg, format = "f", digits = 1),"Kg", 
+                             "<br> Balance Alimentos:",formatC_custom(df$total_importado,format = "f", digits = 1),"Kg")
     p_plano <- ggplot(df, aes(x = anio, y = total_importado, color = producto)) +
       geom_line() +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Año", y = "Miles de toneladas") +
+      labs(x = "Año", y = "Balance (Kilogramos)") +
       scale_x_continuous(breaks = seq(min(df$anio), max(df$anio))) +
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",     # separador de miles
+          decimal.mark = ","  # separador decimal
+        ))+
       scale_color_manual(values = col_palette) +  
       theme_minimal()
     
   } else if(tipo %in% c(4)) {
     df <- df[df$producto %in% productos_seleccionados, ]
     df$tooltip_text <- paste("Fecha: ", format(as.Date(df$anio), "%m-%Y") , "<br>Mes:",df$mes, 
-                             "<br> Volumen de salidas (mil t):" , formatC(df$sale_kg, format = "f",digits = 1),"mil", 
-                             "<br> Volumen de ingreso (mil t):",formatC(df$ingresa_kg, format = "f",digits = 1),"mil", 
-                             "<br> Balance Alimentos:", formatC(df$total_importado, format = "f", digits = 1),"mil")
+                             "<br> Volumen de salidas:" , formatC_custom(df$sale_kg, format = "f",digits = 1),"Kg", 
+                             "<br> Volumen de ingreso:",formatC_custom(df$ingresa_kg, format = "f",digits = 1),"Kg", 
+                             "<br> Balance Alimentos:", formatC_custom(df$total_importado, format = "f", digits = 1),"Kg")
     p_plano <-ggplot(df, aes(x = anio, y = total_importado, color = producto)) +
       geom_line() +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Año", y = "Miles de toneladas") +
+      labs(x = "Año", y = "Balance (Kilogramos)") +
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",     # separador de miles
+          decimal.mark = ","  # separador decimal
+        ))+
       #scale_x_continuous(breaks = seq(min(df$anio), max(df$anio))) +
       scale_color_manual(values = col_palette) +  
       theme_minimal()  
   }else if(tipo %in% c(3)){
     df$tooltip_text <- paste("Fecha: ", format(as.Date(df$anio), "%m-%Y") , "<br>Mes:",df$mes, 
-                             "<br> Volumen de salidas (mil t):" , formatC(df$sale_kg, format = "f",digits = 1),"mil",
-                             "<br> Volumen de ingreso (mil t):",  formatC(df$ingresa_kg, format = "f",digits = 1),"mil", 
-                             "<br> Balance Alimentos:",formatC(df$total_importado, format = "f", digits = 1),"mil")
+                             "<br> Volumen de salidas:" , formatC_custom(df$sale_kg, format = "f",digits = 1),"Kg",
+                             "<br> Volumen de ingreso:",  formatC_custom(df$ingresa_kg, format = "f",digits = 1),"Kg", 
+                             "<br> Balance Alimentos:",formatC_custom(df$total_importado, format = "f", digits = 1),"Kg")
     p_plano<-ggplot(df, aes(x = anio, y = total_importado)) +
       geom_line(colour = "#1A4922") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Año", y = "Miles de toneladas") +
+      labs(x = "Año", y = "Balance (Kilogramos)") +
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",     # separador de miles
+          decimal.mark = ","  # separador decimal
+        ))+
       #scale_x_continuous(breaks = seq(min(df$anio), max(df$anio))) +
       scale_color_manual(values = col_palette) +  
       theme_minimal()  
   }else {
     df$tooltip_text <- paste("Año: ", df$anio , 
-                             "<br> Volumen de salidas (mil t):" , formatC(df$sale_kg, format = "f", digits = 1),"mil", 
-                             "<br> Volumen de ingreso (mil t):", formatC(df$ingresa_kg, format = "f", digits = 1),"mil", 
-                             "<br> Balance Alimentos:", formatC(df$total_importado, format = "f", digits = 1),"mil")
+                             "<br> Volumen de salidas:" , formatC_custom(df$sale_kg, format = "f", digits = 1),"kg", 
+                             "<br> Volumen de ingreso:", formatC_custom(df$ingresa_kg, format = "f", digits = 1),"Kg", 
+                             "<br> Balance Alimentos:", formatC_custom(df$total_importado, format = "f", digits = 1),"Kg")
     p_plano <-ggplot(df, aes(x = anio, y = total_importado)) +
       geom_line(colour = "#1A4922") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Año", y = "Miles de toneladas") +
+      labs(x = "Año", y = "Balance (Kilogramos)") +
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",     # separador de miles
+          decimal.mark = ","  # separador decimal
+        ))+
       scale_x_continuous(breaks = seq(min(df$anio), max(df$anio))) +
       scale_color_manual(values = col_palette) +  
       theme_minimal()  
   }
   
-  min_ton<-formatC((min(df$total_importado)*-1), format = "f", digits = 1)
+  min_ton<-formatC_custom((min(df$total_importado)*-1), format = "f", digits = 1)
   fecha_min <- df$anio[which.min(df$total_importado)]
   df<-df%>%select(-tooltip_text)
-  max_balance <- formatC(max(df$total_importado), format = "f", digits = 1)
+  max_balance <- formatC_custom(max(df$total_importado), format = "f", digits = 1)
   producto_max_balance <- as.character(df$producto)[which.max(df$total_importado)]
   anio_max <- as.character(df$anio)[which.max(df$total_importado)]
   mes_max <- as.character(df$mes)[which.max(df$total_importado)]

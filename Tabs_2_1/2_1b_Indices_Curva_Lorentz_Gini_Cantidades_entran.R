@@ -88,7 +88,7 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
   
   # Gráfico
 
-  Salida$tooltip_text <- paste0("<br> % Municipios acumulados: ", scales::percent(Salida$one_cum,accuracy=0.1), "<br> % Kilogramos acumulados:", scales::percent(Salida$Part_cum,accuracy=0.1))
+  Salida$tooltip_text <- paste0("<br> % Municipios acumulados: ", scales::percent(Salida$one_cum,accuracy=0.1), "<br> % Volumen acumulados:", scales::percent(Salida$Part_cum,accuracy=0.1))
   
 
   
@@ -108,11 +108,11 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
     
     # texto Gini
     annotate("text", x=0.1, y=0.85, 
-             label=paste0("Gini = ", round(gini, 3)), 
+             label=paste0("Gini = ", round(gini, 2)), 
              hjust=0, size=5, color="#4F3032", fontface="bold") +
     # etiquetas y escalas
-    labs(x="Proporción acumulada de Municipios de origen",
-         y="Proporción acumulada kilogramos") +
+    labs(x="Proporción acumulada de municipios de origen",
+         y="Proporción acumulada del volumen") +
     scale_x_continuous(labels = scales::percent, limits=c(0,1)) +
     scale_y_continuous(labels = scales::percent, limits=c(0,1)) +
     theme_minimal(base_size=14)

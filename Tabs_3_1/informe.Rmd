@@ -1,12 +1,12 @@
 ---
 title: ' '
 params:
+  producto: NA
+  anio: NA
   datos: NA
   grafico: NA
   temporalidad: NA
   variable: NA
-  anio: NA
-  producto: NA
   promedio: NA
   fecha_max: NA
   fecha_min: NA
@@ -14,104 +14,182 @@ params:
   promedio_cambio: NA
   mes_max: NA
   valor_max: NA
+
+  # 🔥 NUEVOS PARÁMETROS PARA LOS TRES TEXTOS 🔥
+  mensaje_volatil: NA
+  mensaje_promedio: NA
+  mensaje_mesanual: NA
+
 output:
   pdf_document:
     latex_engine: xelatex
-    toc: false
+
 header-includes:
-- \usepackage{float}
-- \usepackage{arydshln}
-- \usepackage{tabu}
-- \usepackage{xcolor}
-- \usepackage{fontspec}
-- \usepackage{booktabs}
-- \usepackage{fancyhdr}
-- \usepackage{graphicx}
-- \definecolor{mygreen}{RGB}{26,73,34}
-- \definecolor{gray}{RGB}{128,128,128}
-- \definecolor{green2}{RGB}{13,141,56}
-- "\\setmainfont{Prompt-Regular.ttf}"
-- \pagestyle{fancy}
-- \fancyfoot{}
-- \usepackage{colortbl}
-- \usepackage{adjustbox}
-- \setlength{\headheight}{2cm}
-- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-- \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
-- \usepackage{eso-pic}
+  - \usepackage{float}
+  - \usepackage{arydshln}
+  - \usepackage{graphicx}
+  - \usepackage{xcolor}
+  - \usepackage{fontspec}
+  - \usepackage{booktabs}
+  - \usepackage{fancyhdr}
+  - \usepackage{eso-pic}
+  - \usepackage{colortbl}
+  - \usepackage{adjustbox}
+  - \setmainfont{Prompt-Regular.ttf}
+  - \definecolor{mygreen}{RGB}{255,221,0}
+  - \definecolor{MYGREEN}{RGB}{255,221,0}
+  - \definecolor{grayA}{RGB}{78,77,77}
+  - \definecolor{green2}{RGB}{255,221,0}
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
+  - \setlength{\headheight}{2cm}
 ---
 
-```{r setup, include=FALSE, message=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
 library(knitr)
 library(kableExtra)
-library(dplyr)
-library(xtable)
-```
+```        
 
 \begin{flushright}
-\textcolor{gray}{Informe generado el: \textbf{`r format(Sys.Date(), "%d de %B de %Y")`}}
+\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
-\section*{Parámetros con los cuales se generó el informe:}
+\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-```{r params-tabla, message=FALSE, warning=FALSE}
-opciones_temporalidad <- c("Mensual" = "mensual", "Diaria" = "diaria")
-opciones_variable <- c("Precio promedio" = "precio_prom",
-                       "Cambio porcentual mensual" = "cambio_pct",
-                       "Cambio porcentual anual" = "cambio_pct_anual")
 
-temporalidad_label <- names(opciones_temporalidad)[which(opciones_temporalidad == params$temporalidad)]
-variable_label <- names(opciones_variable)[which(opciones_variable == params$variable)]
+```{r tabla_parametros, results='asis'}
+library(stringr)
 
-df <- data.frame(
-  "Parámetro" = c("Temporalidad:", "Variable:", "Año:", "Producto:"),
-  "Valor" = c(
-    ifelse(is.na(temporalidad_label), "N/A", temporalidad_label),
-    ifelse(is.na(variable_label), "N/A", variable_label),
-    ifelse(is.na(params$anio) | params$anio == "Todos los años", "Todos los años", params$anio),
-    ifelse(is.na(params$producto) | params$producto == "Todos los productos", "Todos los productos", params$producto)
-  )
+# Función sencilla para escapar solo el guion bajo
+escape_latex <- function(x) {
+  x <- as.character(x)
+  str_replace_all(x, "_", "\\\\_")
+}
+
+escape_textcolor <- function(x) {
+  x <- as.character(x)
+  x <- stringr::str_replace_all(x, "%", "\\\\%")
+  x <- stringr::str_replace_all(x, "_", "\\\\_")
+  x <- stringr::str_replace_all(x, "\\$", "\\\\$")
+  x <- stringr::str_replace_all(x, "#", "\\\\#")
+  x <- stringr::str_replace_all(x, "\\{", "\\\\{")
+  x <- stringr::str_replace_all(x, "\\}", "\\\\}")
+  x
+}
+
+# --------- Construir etiquetas de parámetros ---------
+
+# Temporalidad
+temporalidad_label <- ifelse(
+  is.null(params$temporalidad) || params$temporalidad == "",
+  "Todos los períodos",
+  ifelse(params$temporalidad == "mensual", "Mensual",
+         ifelse(params$temporalidad == "diaria", "Diaria", params$temporalidad))
 )
 
-tabla_kable <- df %>%
-  knitr::kable(
-    col.names = NULL,
-    align = 'l',
-    format = "latex",
-    booktabs = TRUE,
-    linesep = "",
-    escape = FALSE
-  ) %>%
-  kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left")
-tabla_kable
+# Año
+anio_label <- ifelse(
+  is.null(params$anio) || params$anio == "Todos los años",
+  "Todos los años",
+  as.character(params$anio)
+)
+
+# Producto / Alimento
+producto_label <- ifelse(
+  is.null(params$producto) || params$producto == "Todos los productos",
+  "Todos los productos",
+  params$producto
+)
+
+# Variable a graficar (nota: aquí vienen nombres como precio_prom, cambio_pct_anual)
+variable_label <- ifelse(
+  is.null(params$variable) || params$variable == "",
+  "No especificada",
+  params$variable
+)
+
+# --------- Data frame de parámetros ---------
+df_params <- data.frame(
+  Parámetro = c("Temporalidad", "Año", "Alimento", "Variable"),
+  Valor     = c(temporalidad_label, anio_label, producto_label, variable_label),
+  stringsAsFactors = FALSE
+)
+
+# --------- Impresión tabla estilo FAO (sin floats) ---------
+cat("\\begingroup\n")
+cat("\\small\n")
+cat("\\begin{adjustbox}{width=1\\textwidth}\n")
+cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
+cat("\\toprule\n")
+
+for (i in 1:nrow(df_params)) {
+  cat(
+    escape_latex(df_params$Parámetro[i]), " & ",
+    escape_latex(df_params$Valor[i]), " \\\\\n",
+    sep = ""
+  )
+}
+
+cat("\\bottomrule\n")
+cat("\\end{tabular}\n")
+cat("\\end{adjustbox}\n")
+cat("\\endgroup\n")
 ```
 
-\fontsize{14}{14}\selectfont \textcolor{mygreen}{Comportamiento de los precios mayoristas en Bogotá y Cundinamarca}\
 
-\fontsize{12}{12}\selectfont \textcolor{green2}{Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.}\
+\begingroup
+\fontsize{14}{14}\selectfont
+\textcolor{mygreen}{Comportamiento de los precios en el tiempo}
+\par
+\fontsize{12}{12}\selectfont
+\textcolor{mygreen}{Descubre la dinámica de los precios en las centrales mayoristas de Bogotá y Cundinamarca, así como las tasas de varación de los mismos a lo largo del tiempo}
+\par
+\endgroup
 
-\fontsize{10}{10}\selectfont
-Durante el período analizado, el precio promedio fue de **$`r round(params$promedio, 0)`**.  
-El valor máximo se registró en **`r format(params$fecha_max, "%B de %Y")`**  
-y el mínimo en **`r format(params$fecha_min, "%B de %Y")`**.
-
-# Indicadores adicionales
-
-- Producto más volátil: **`r params$prod_mas_volatil`**  
-- Promedio de variación porcentual: **`r round(params$promedio_cambio, 2)`%**  
-- Mes con mayor aumento anual: **`r format(params$mes_max, "%B de %Y")`** (incremento de **`r round(params$valor_max, 2)`%**)
-
-# Visualización de precios
-
-```{r grafico, out.width = "90%", fig.align='center', message=FALSE, warning=FALSE}
+```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
 knitr::include_graphics(params$grafico)
 ```
 
-\fontsize{8}{8}\selectfont
-\textcolor{mygreen}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
-\textcolor{mygreen}{La información solo se muestra para los precios en el centro de acopio de Bogotá.}\
-\textcolor{mygreen}{Para los productos fríjol verde, tomate, aguacate, banano, guayaba, mandarina, naranja, piña, arracacha, papa negra y yuca, los precios reportados corresponden a la variedad predominante en el mercado al momento de la recolección de la información.}\
-\textcolor{mygreen}{De acuerdo con el SIPSA, el valor reportado corresponde al precio mayorista por kilogramo de producto de primera calidad en la Central Mayorista de Corabastos.}\
+\vspace{0.3cm}
 
-\AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\endgroup
+
+\vspace{0.4cm}
+
+\begingroup
+\fontsize{10}{12}\selectfont
+\textcolor{grayA}{`r escape_textcolor(params$mensaje_volatil)`}
+\endgroup
+
+\vspace{0.25cm}
+
+\begingroup
+\fontsize{10}{12}\selectfont
+\textcolor{grayA}{`r escape_textcolor(params$mensaje_promedio)`}
+\endgroup
+
+\vspace{0.25cm}
+
+\begingroup
+\fontsize{10}{12}\selectfont
+\textcolor{grayA}{`r escape_textcolor(params$mensaje_mesanual)`}
+\endgroup
+
+\vspace{0.4cm}
+
+\begingroup
+\fontsize{8}{8}\selectfont
+\textcolor{grayA}{Este gráfico muestra la evolución de los precios mayoristas como referencia para Bogotá y Cundinamarca.}
+\endgroup
+
+
+
+

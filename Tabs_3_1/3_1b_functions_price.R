@@ -37,82 +37,16 @@ diaria <- diaria %>% mutate(across(where(is.character), ~ enc2utf8(.)))
 diaria$anio <- year(diaria$mes_y_ano)
 
 ##########
-graficar_variable <- function(temporalidad = c("mensual", "diaria"),
-                              alimento = NULL,
-                              variable = "cambio_pct",
-                              anio_filtro = NULL) {
+# ============================================================
+# PALETA INSTITUCIONAL FAO–VP
+# ============================================================
+col_palette <-c("#DBC21F", "#B6A534", "#6D673E", "#494634")
+# Primer color (líneas y puntos)
+col_grafico <- col_palette[1]
 
-temporalidad <- match.arg(temporalidad)
-
-# Seleccionar dataset
-df_graf <- if (temporalidad == "mensual") mensual else diaria
-
-# Estandarizar formato
-df_graf <- df_graf %>%
-  mutate(
-    producto = str_to_title(producto),
-    mes_y_ano = as.Date(mes_y_ano)
-  )
-
-# Filtros
-if (!is.null(alimento) && alimento != "") {
-  df_graf <- df_graf %>% filter(producto == str_to_title(alimento))
-}
-if (!is.null(anio_filtro) && anio_filtro != "") {
-  df_graf <- df_graf %>% filter(anio == anio_filtro)
-}
-
-# Validación
-if (nrow(df_graf) == 0 || !variable %in% names(df_graf)) {
-  stop("⚠️ No hay datos disponibles para los filtros seleccionados o la variable no existe.")
-}
-
-# Tooltip
-formato_fecha <- if (temporalidad == "mensual") "%b-%Y" else "%d-%b-%Y"
-df_graf <- df_graf %>%
-  mutate(
-    etiqueta = paste0(
-      "<b>Fecha:</b> ", format(mes_y_ano, formato_fecha),
-      "<br><b>Producto:</b> ", producto,
-      "<br><b>", str_to_title(variable), ":</b> ", format(round(.data[[variable]], 2), big.mark = ",")
-    )
-  )
-
-# Gráfico interactivo con plotly (sin ggplotly)
-grafico_interactivo <- plot_ly(
-  data = df_graf,
-  x = ~mes_y_ano,
-  y = as.formula(paste0("~", variable)),
-  type = "scatter",
-  mode = "lines+markers",
-  text = ~etiqueta,
-  hoverinfo = "text",
-  line = list(color = "#6A0DAD", width = 2),
-  marker = list(color = "#6A0DAD", size = 6)
-) %>%
-  layout(
-    xaxis = list(title = "Fecha"),
-    yaxis = list(title = str_to_title(variable)),
-    hoverlabel = list(bgcolor = "white", font = list(color = "black")),
-    hovermode = "x unified"
-  )
-
-list(
-  grafico = grafico_interactivo,
-  datos = df_graf,
-  promedio = mean(df_graf[[variable]], na.rm = TRUE)
-)
-}
-
-
-
-# Mensual
-graficar_variable(temporalidad = "mensual", alimento = "aguacate", variable = "precio_prom", anio_filtro = 2023)
-
-# Diario
-graficar_variable(temporalidad = "diaria", alimento = "aguacate", variable = "cambio_pct", anio_filtro = 2014)
-
-
+# ============================================================
+# FUNCIÓN graficar_variable()
+# ============================================================
 graficar_variable <- function(temporalidad = c("mensual", "diaria"),
                               alimento = NULL,
                               variable = "cambio_pct",
@@ -120,17 +54,23 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
   
   temporalidad <- match.arg(temporalidad)
   
-  # Seleccionar dataset
+  # -----------------------------
+  # 1. Seleccionar dataset
+  # -----------------------------
   df_graf <- if (temporalidad == "mensual") mensual else diaria
   
-  # Estandarizar formato
+  # -----------------------------
+  # 2. Estandarizar formato
+  # -----------------------------
   df_graf <- df_graf %>%
     mutate(
       producto = str_to_title(producto),
       mes_y_ano = as.Date(mes_y_ano)
     )
   
-  # Filtros
+  # -----------------------------
+  # 3. Filtros
+  # -----------------------------
   if (!is.null(alimento) && alimento != "") {
     df_graf <- df_graf %>% filter(producto == str_to_title(alimento))
   }
@@ -138,33 +78,43 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
     df_graf <- df_graf %>% filter(anio == anio_filtro)
   }
   
-  # Validación
+  # -----------------------------
+  # 4. Validación
+  # -----------------------------
   if (nrow(df_graf) == 0 || !variable %in% names(df_graf)) {
     stop("⚠️ No hay datos disponibles para los filtros seleccionados o la variable no existe.")
   }
   
-  # Tooltip
+  # -----------------------------
+  # 5. Tooltip Plotly
+  # -----------------------------
   formato_fecha <- if (temporalidad == "mensual") "%b-%Y" else "%d-%b-%Y"
+  
   df_graf <- df_graf %>%
     mutate(
       etiqueta = paste0(
         "<b>Fecha:</b> ", format(mes_y_ano, formato_fecha),
         "<br><b>Producto:</b> ", producto,
-        "<br><b>", str_to_title(variable), ":</b> ", format(round(.data[[variable]], 2), big.mark = ",")
+        "<br><b>", str_to_title(variable), ":</b> ",
+        format(round(.data[[variable]], 2), big.mark = ",")
       )
     )
   
-  # Gráfico plano (ggplot)
+  # -----------------------------
+  # 6. GRÁFICO PLANO (ggplot)
+  # -----------------------------
   grafico_plano <- ggplot(df_graf, aes(x = mes_y_ano, y = .data[[variable]])) +
-    geom_line(color = "#6A0DAD", linewidth = 1) +
-    geom_point(color = "#6A0DAD", size = 2) +
+    geom_line(color = col_grafico, linewidth = 1.4) +
+    geom_point(color = col_grafico, size = 2.8) +
     labs(x = "Fecha", y = str_to_title(variable)) +
     theme_minimal(base_size = 14) +
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
     )
   
-  # Gráfico interactivo
+  # -----------------------------
+  # 7. GRÁFICO INTERACTIVO (plotly)
+  # -----------------------------
   grafico_interactivo <- plot_ly(
     data = df_graf,
     x = ~mes_y_ano,
@@ -173,8 +123,8 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
     mode = "lines+markers",
     text = ~etiqueta,
     hoverinfo = "text",
-    line = list(color = "#6A0DAD", width = 2),
-    marker = list(color = "#6A0DAD", size = 6)
+    line = list(color = col_grafico, width = 2.5),
+    marker = list(color = col_grafico, size = 6)
   ) %>%
     layout(
       xaxis = list(title = "Fecha"),
@@ -183,13 +133,17 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
       hovermode = "x unified"
     )
   
-  # Calcular mínimos
+  # -----------------------------
+  # 8. Cálculo de mínimo
+  # -----------------------------
   idx_min <- which.min(df_graf[[variable]])
   min_valor <- round(df_graf[[variable]][idx_min], 2)
   fecha_min_valor <- df_graf$mes_y_ano[idx_min]
-  producto_min_valor <- ifelse("producto" %in% names(df_graf), df_graf$producto[idx_min], NA)
+  producto_min_valor <- df_graf$producto[idx_min]
   
-  # Retornar outputs al estilo FAO
+  # -----------------------------
+  # 9. Retornar lista FAO
+  # -----------------------------
   return(list(
     grafico = grafico_interactivo,
     grafico_plano = grafico_plano,
@@ -199,7 +153,6 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
     producto_min_valor = producto_min_valor
   ))
 }
-
 
 
 

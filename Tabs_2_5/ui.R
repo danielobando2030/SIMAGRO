@@ -114,7 +114,7 @@ ui <- fluidPage(
       12,
       align = "left",
       HTML("
-      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+      <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.<br><br>
 
@@ -124,7 +124,7 @@ ui <- fluidPage(
 
       <br>
 
-      Donde S<sub>i</sub> es la participación que tiene cada municipio (origen) en el total del volumen de alimentos que ingresan.
+      Donde S<sub>i</sub> es la participación que tiene cada municipio (destino) en el total del volumen de alimentos que salen de cundinamarca.
 
       <script>
         MathJax.Hub.Queue([\"Typeset\", MathJax.Hub]);

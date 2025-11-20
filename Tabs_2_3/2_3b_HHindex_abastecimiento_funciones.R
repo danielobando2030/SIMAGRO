@@ -42,7 +42,7 @@ plot_data <- function(tipo, anio = NULL) {
     p_plano <- ggplot(data, aes_string(x = "date_col", y = "IHH")) +
       geom_line(color = "#983136") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Fecha", y = " ") +
+      labs(x = "Fecha", y = "Índice diversidad de alimentos") +
       theme_minimal() +  
       scale_color_manual(values = "#983136") + 
       theme(text = element_text( size = 16)) + 
@@ -68,7 +68,7 @@ plot_data <- function(tipo, anio = NULL) {
     p_plano <- ggplot(data, aes_string(x = "date_col", y = "IHH")) +
       geom_line(color = "#983136") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
-      labs(x = "Fecha", y = " ") +
+      labs(x = "Fecha", y = "Índice diversidad de alimentos") +
       theme_minimal() +  # Usar un tema minimalista
       scale_color_manual(values = "#983136") +  # Establecer el color de la línea
       theme(text = element_text( size = 12))+

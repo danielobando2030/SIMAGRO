@@ -13,7 +13,7 @@ rm(list = ls())
 pacman::p_load(
   readr, readxl, dplyr, tidyr, janitor, lubridate, stringr, geosphere,
   arrow, osrm, sf, ggplot2, jsonlite, purrr, leaflet, scales, htmltools,
-  callr
+  callr,leaflet
 )
 
 options(scipen = 999)
@@ -69,7 +69,7 @@ graficar_rutas <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
   
   # Escalado y color -----------------------------------------------------------
   pal <- colorNumeric(
-    palette = c("#E0BBE4", "#9D4EDD", "#3C096C"),
+    palette = c("#332728", "#4F3032", "#743639", "#983136", "#BC222A"),
     domain = df$importancia_ruta
   )
   

@@ -84,7 +84,7 @@ tabla_kable
 <!-- Titulo del tablaro -->
 \fontsize{14}{14} \selectfont \textcolor{mybrown}{Contribución de Cundinamarca al Abastecimiento Nacional}\newline
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{mybrown}{Análisis de la participación de Cundinamarca en el abastecimiento de alimentos en otros departamentos del país}\newline
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre la proporción del volumen de alimentos enviados desde Cundinamarca hacia otros departamentos del país}\newline
 <!-- Subtitulo dinamico -->
 \fontsize{10}{10} \selectfont `r params$subtitulo`
 ```{r, out.width = "95%", fig.align = "center", warning=FALSE, message=FALSE}
