@@ -102,14 +102,10 @@ tabla_kable
 ```{r, out.width = "80%", fig.align = "center", warning=FALSE,message=FALSE}
 print(params$plot)
 ```
+
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
 
-\fontsize{10}{10} \selectfont `r params$mensaje1`\
-
-\fontsize{10}{10} \selectfont `r params$mensaje3`\
-
-
-
+\fontsize{10}{10} \selectfont \textcolor{mybrown}{Este gráfico ordena los alimentos por volumen y muestra cómo se acumula el total. La línea vertical marca el punto donde se alcanza cerca del 80\% del volumen acumulado e identifica el alimento que completa ese porcentaje. Así, permite ver cuántos productos concentran la mayor parte del volumen en el periodo seleccionado y la importancia de cada uno en las entradas y salidas de alimentos de Cundinamarca.}\
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{Se muestran los alimentos que reunen aproximadamente el 85\% del acumulado.}\
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{Entradas locales: Productos reportados con origen de territorios del departamento de Cundinamarca.}\
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{Entradas externas: Productos reportados con origen fuera del departamento de  Cundinamarca.}\

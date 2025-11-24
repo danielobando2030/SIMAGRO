@@ -155,7 +155,7 @@ knitr::include_graphics(params$grafico_png)
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{grayA}{
-Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca desde los municipios origen del abastecimiento}
+Esta visualización permite identificar las principales rutas por las cuales se transportan los alimentos hacia Bogotá y Cundinamarca desde los municipios de origen del abastecimiento, donde el tono de color más rojizo, y más grosor en la línea de la ruta indican mayor importancia de la misma.}
 \endgroup
 
 \vspace*{4cm}

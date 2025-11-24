@@ -85,7 +85,7 @@ ui <- fluidPage(
   ),
   
   ##############################################################################
-  # TÍTULOS — igual que abastecimiento
+  # TÍTULOS
   ##############################################################################
   tags$h1("Matriz de correlación de precios entre productos", class = "main-header"),
   tags$h1("Identificación de relaciones entre precios mayoristas por producto", class = "main-subheader"),
@@ -93,19 +93,23 @@ ui <- fluidPage(
   div(textOutput("subtitulo"), class = "sub-header2"),
   
   ##############################################################################
-  # SELECTORES — misma disposición que abastecimiento
+  # SELECTOR AÑO
   ##############################################################################
   div(
     fluidRow(
-      column(3,
-             selectInput("anio", "Seleccione año:",
-                         choices = sort(unique(data$anio)),
-                         selected = max(data$anio)))
+      column(
+        3,
+        selectInput(
+          "anio", "Seleccione año:",
+          choices = sort(unique(data$anio)),
+          selected = max(data$anio)
+        )
+      )
     )
   ),
   
   ##############################################################################
-  # GRÁFICO + PANELS — distribución 9/3 exacta
+  # GRÁFICO + PANELS  (9 / 3)
   ##############################################################################
   fluidRow(
     column(
@@ -114,14 +118,17 @@ ui <- fluidPage(
         plotlyOutput("grafico", height = "600px"),
         br(),
         
-        actionButton("descargar", "Gráfica", icon = icon("download"), class = "btn-faoc"),
-        downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
+        # ⬇⬇⬇ BOTONES FAO CORREGIDOS ⬇⬇⬇
+        downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
+        downloadButton("descargarDatos",   "Datos",   class = "btn-faoc"),
+        
         shiny::a(
           tagList(icon("github"), " GitHub"),
           href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_8",
           target = "_blank",
           class = "btn-faoc"
         ),
+        
         actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
         downloadButton("descargarPDF", "Generar informe PDF", class = "btn-faoc")
       )
@@ -143,7 +150,10 @@ ui <- fluidPage(
       HTML("
         <div style='font-size:12px; color:#5A5A5A; text-align:left; line-height:1.4;'>
         <b>Fuente:</b> cálculos propios a partir de datos del Sistema de Información de Precios 
-        y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.
+        y Abastecimiento del Sector Agropecuario (SIPSA).</br></br> 
+        Este gráfico muestra la correlación de los precios mayoristas como referencia para Bogotá y Cundinamarca. 
+        Un valor cercano a 1 indica que los dos productos se mueven en la misma dirección; 
+        valores cercanos a -1 indican movimientos opuestos.
         </div>
       ")
     )

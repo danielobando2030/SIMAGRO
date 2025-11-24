@@ -19,7 +19,6 @@ productos <- unique(Gini_anual_producto$producto)
 ui <- fluidPage(
   #theme = shinythemes::shinytheme("default"),
   tags$head(
-    tags$title("Índice concentración del origen de los alimentos - GINI"),
     tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"),
     tags$style(HTML("
       .main-header {
@@ -59,7 +58,7 @@ ui <- fluidPage(
     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML")
   ),
   tags$h1("Índice Gini de diversidad de origen de los alimentos", class = "main-header"),
-  tags$h1("Análisis de la diversidad de origen de los alimentos desde su origen hasta los pricipales centros de abasto de Cundinamarca.", class = "main-header_2"),
+  tags$h1("Análisis del nivel de concentración de los municipios de origen de los alimentos que llegan a las principales centrales de abasto de Cundinamarca.", class = "main-header_2"),
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -116,7 +115,7 @@ ui <- fluidPage(
     column(
       12,
       align = "left",
-      HTML("
+      HTML('
       <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       Este gráfico se calcula con base en el índice de Gini.<br><br>
@@ -129,15 +128,72 @@ ui <- fluidPage(
 
       Donde X<sub>i</sub> representa el porcentaje acumulado de municipios (ordenados de menor a mayor participación), 
       y Y<sub>i</sub> el porcentaje acumulado del volumen total de alimentos que ingresa.  
-      El valor del índice varía entre 0 y 1, donde 0 indica una distribución perfectamente equitativa y 1 una concentración total.
+      El valor del índice varía entre 0 y 100, donde 0 indica una distribución perfectamente equitativa y 100 una concentración total.
 
       <script>
         MathJax.Hub.Queue([\"Typeset\", MathJax.Hub]);
       </script>
-    "),
+      
+      <!-- Tabla de rangos del coeficiente de Gini -->
+<table role="table" aria-label="Rangos del coeficiente de Gini" style="width:100%; border-collapse:collapse; font-family:Arial,Helvetica,sans-serif;">
+      <br>
+
+  <thead>
+    <tr style="background:#f2f2f2;">
+             <th style="text-align:left; padding:10px; border:1px solid #ddd;">Rango Gini</th>
+             <th style="text-align:left; padding:10px; border:1px solid #ddd;">Categoría</th>
+             <th style="text-align:left; padding:10px; border:1px solid #ddd;">Significado / Interpretación</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">0 – 20</td>
+             <td style="padding:10px; border:1px solid #ddd;">Muy bajo</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Distribución muy equilibrada entre muchos orígenes. No hay dependencia marcada de uno o pocos proveedores; alta diversidad de orígenes.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">21 – 40</td>
+             <td style="padding:10px; border:1px solid #ddd;">Bajo</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Predomina una distribución relativamente equilibrada, con cierta concentración en algunos orígenes pero sin dominio fuerte.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">41 – 60</td>
+             <td style="padding:10px; border:1px solid #ddd;">Moderado</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Concentración notable: algunos orígenes aportan una proporción significativa. Riesgo medio de dependencia hacia unos pocos orígenes.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">61 – 80</td>
+             <td style="padding:10px; border:1px solid #ddd;">Alto</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Alta concentración: pocos orígenes dominan el volumen ingresado. Mayor vulnerabilidad ante problemas en esos orígenes.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">81 – 100</td>
+             <td style="padding:10px; border:1px solid #ddd;">Muy alto</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Concentración extrema: uno o muy pocos orígenes concentran casi todo el suministro. Dependencia crítica y riesgo elevado de interrupciones.
+           </td>
+             </tr>
+             </tbody>
+     
+             </table>
+             
+      
+    '),
       style = "font-size:12px; color:#4E4D4D;
              text-align:left; font-family:'Prompt', sans-serif;
              margin-top:20px;"
+      
+      
+      
+      
     )
   ),
   

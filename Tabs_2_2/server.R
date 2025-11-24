@@ -135,8 +135,11 @@ output$mensaje1 <- renderText({
       "valores cercanos a 0 indican una distribución equilibrada entre los municipios, ",
       "mientras que valores cercanos a 1 señalan una alta concentración en pocos municipios. ",
       "Según su valor, la dependencia es ",
-      ifelse(resultado_data$gini_ < 0.30, "baja",
-             ifelse(resultado_data$gini_ < 0.60, "media", "alta")),
+      ifelse(resultado_data$gini_ < 0.20, "muy baja",
+             ifelse(resultado_data$gini_ < 0.40, "baja",
+                    ifelse(resultado_data$gini_ < 0.60, "moderado",
+                           ifelse(resultado_data$gini_ < 0.80, "alto","muy alto"
+             )))),
       "."
     )
     

@@ -246,9 +246,9 @@ ui <- fluidPage(
           tags$span("GitHub")
         ),
         
-        actionButton("reset", "Restablecer filtros", icon=icon("refresh"), class="btn-faoc"),
+        actionButton("reset", "Restablecer", icon=icon("refresh"), class="btn-faoc"),
         
-        downloadButton("descargarPDF", "Generar informe PDF", class="btn-faoc")
+        downloadButton("descargarPDF", "Generar informe", class="btn-faoc")
       )
     ),
     
@@ -272,7 +272,9 @@ ui <- fluidPage(
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
+      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+          <br> Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca. Las
+           Líneas más gruesas indican mayor importancia de la ruta de abastecimiento."),
       class="footer-text"
     )
   ),

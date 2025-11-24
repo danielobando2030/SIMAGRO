@@ -67,7 +67,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
     df <- rename(df, fecha = mes_y_ano)
     df$fecha <-  as.Date(df$fecha)
   }
-  df<-df%>%mutate(IHH=round(IHH*100))
+  df<-df%>%mutate(IHH=round(IHH))
   # Filtrar los productos seleccionados solo para las opciones 2 y 4
   if (tipo %in% c(1)) {
     # Comprueba si df$fecha está vacío o contiene valores no numéricos
@@ -75,7 +75,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
     p_plano<-ggplot(df, aes(x = fecha, y = IHH)) +
         geom_line(color = "#983136") +
         geom_point(aes(text = tooltip_text), size = 1e-8) +
-        labs(x = "Fecha", y = " ") +
+        labs(x = "Fecha", y = "Índice diversidad destino") +
         scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha))) +
         scale_color_manual(values = col_palette) +
         theme_minimal()  +
@@ -91,7 +91,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
       geom_line() +
       geom_point(aes(text = tooltip_text), size = 1e-8) +
       scale_color_manual(values = col_palette) +
-      labs(x = "Fecha", y = " ") +
+      labs(x = "Fecha", y = "Índice diversidad destino") +
       scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha))) +
       theme_minimal() +
       scale_color_manual(values = col_palette) +
@@ -107,7 +107,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
    p_plano<- ggplot(df, aes(x = fecha, y = IHH)) +
       geom_line(color = "#983136") +
      geom_point(aes(text = tooltip_text), size = 1e-8) +
-      labs(x = "Fecha", y = " ") +
+      labs(x = "Fecha", y = "Índice diversidad destino") +
       theme_minimal()  +
      scale_color_manual(values = col_palette) +
      theme(text = element_text(size = 12),
@@ -126,7 +126,7 @@ grafica_indice <- function(tipo, anio_seleccionado = "", productos_seleccionados
     p_plano<-ggplot(df, aes(x = fecha, y = IHH, color = producto)) +
       geom_line() +
       geom_point(aes(text = tooltip_text), size = 1e-8) +
-      labs(x = "Año", y = " ") +
+      labs(x = "Año", y = "Índice diversidad destino") +
       theme_minimal()  +
       scale_color_manual(values = col_palette) + 
       theme(text = element_text(size = 16),

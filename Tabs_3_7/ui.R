@@ -26,14 +26,29 @@ ui <- fluidPage(
       .main-header { font-size: 40px; font-weight: 700; color: #6D673E !important; }
       .main-header_2 { font-size: 20px; font-weight: 500; color: #6D673E !important; margin-top: -10px; }
       .sub-header2 { font-size: 15px; color: #6D673E !important; margin-bottom: 25px; }
-      .btn-faoc { background-color: #FFFFFF !important; border: 1.5px solid #A0A0A0 !important;
-                  color: #4E4D4D !important; font-weight: 500 !important; border-radius: 6px !important;
-                  padding: 6px 14px !important; margin-right: 6px !important; height: 36px !important;
-                  display: inline-flex !important; align-items: center !important; }
+
+      .btn-faoc { 
+        background-color: #FFFFFF !important; 
+        border: 1.5px solid #A0A0A0 !important;
+        color: #4E4D4D !important; 
+        font-weight: 500 !important; 
+        border-radius: 6px !important;
+        padding: 6px 14px !important; 
+        margin-right: 6px !important; 
+        height: 36px !important;
+        display: inline-flex !important; 
+        align-items: center !important;
+      }
       .btn-faoc:hover { background-color: #EAEAEA !important; }
-      .well-panel-fao { background-color: #DBC21F !important; color: white !important;
-                        font-weight: 500 !important; font-size: 14px !important;
-                        border-radius: 10px !important; padding: 15px !important; }
+
+      .well-panel-fao { 
+        background-color: #DBC21F !important; 
+        color: white !important;
+        font-weight: 500 !important; 
+        font-size: 14px !important;
+        border-radius: 10px !important; 
+        padding: 15px !important; 
+      }
     "))
   ),
   
@@ -43,8 +58,12 @@ ui <- fluidPage(
   div(textOutput("subtitulo"), class = "sub-header2"),
   
   fluidRow(
-    column(3, selectInput("producto", "Seleccione producto:", choices = productos, selected = "Aguacate")),
-    column(3, selectInput("anio", "Seleccione año:", choices = anios, selected = "2014"))
+    column(3,
+           selectInput("producto", "Seleccione producto:",
+                       choices = productos, selected = "Aguacate")),
+    column(3,
+           selectInput("anio", "Seleccione año:",
+                       choices = anios, selected = "2024"))
   ),
   
   br(),
@@ -56,7 +75,11 @@ ui <- fluidPage(
         plotlyOutput("grafico", height = "600px"),
         br(),
         
-        actionButton("descargar", "Gráfica", icon = icon("download"), class = "btn-faoc"),
+        # ==========================
+        #  BOTONES FAO
+        # ==========================
+        downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
+        downloadButton("descargarDatos", "Datos", class = "btn-faoc"),   # ← AGREGADO
         
         shiny::a(
           tagList(icon("github"), " GitHub"),
@@ -67,8 +90,7 @@ ui <- fluidPage(
         ),
         
         actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
-        
-        downloadButton("report", "Generar informe", class = "btn-faoc")   # ← ÚNICO botón
+        downloadButton("report", "Generar informe", class = "btn-faoc")
       )
     ),
     
@@ -89,7 +111,7 @@ ui <- fluidPage(
         de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
         La variación porcentual mensual se obtiene al comparar el precio promedio del mes
         actual con el del mes anterior, permitiendo identificar aumentos o caídas fuertes
-        en los mercados mayoristas.
+        en las centrales de abasto de Bogotá como precios de referencia para Cundinamarca.
         </div>
       ")
     )

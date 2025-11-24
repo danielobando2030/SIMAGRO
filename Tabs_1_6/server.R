@@ -118,9 +118,9 @@ server <- function(input, output, session) {
       porcentaje_max <- resultado$porcentaje_max
       depto <- input$depto
       if(depto != "todo"){
-        values$subtitulo <- (paste0("El producto de origen cundinamarques con mayor volumen reportado en la central de abasto de ", depto, " fue ", producto_max, " con un porcentaje de: ",porcentaje_max,"%"))
+        values$subtitulo <- (paste0("Para los filtros seleccionados, el producto de origen cundinamarques con mayor volumen reportado en la central de abasto de ", depto, " fue ", producto_max, " con un porcentaje de: ",porcentaje_max,"%"))
       } else if (depto == "todo") {
-        values$subtitulo  <- (paste0("El producto de origen cundinamarques con mayor volumen reportado fue ", producto_max, " con un porcentaje de: ",porcentaje_max,"%"))
+        values$subtitulo  <- (paste0("Para los filtros seleccionados, el producto de origen cundinamarques con mayor volumen reportado fue ", producto_max, " con un porcentaje de: ",porcentaje_max,"%"))
       }
     }
     return(values$subtitulo)
@@ -133,7 +133,7 @@ server <- function(input, output, session) {
   values <- reactiveValues(mensaje1 = NULL, mensaje2 = NULL, mensaje3 = NULL)
   
   output$mensaje1 <- renderText({
-    values$mensaje1 <- " Este gráfico muestra la importancia en volumen de cada alimento entre los productos de origen cundinamarques reportado en las centrales de abasto del SIPSA, componente abastecimiento."
+    values$mensaje1 <- " Este gráfico muestra la importancia en volumen de cada alimento entre los productos de origen cundinamarques reportado en las centrales de abasto del SIPSA."
     values$mensaje1 
     })
   

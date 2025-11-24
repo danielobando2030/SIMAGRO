@@ -106,6 +106,36 @@ server <- function(input, output, session) {
   })
   
   ###############################################################################
+  # DESCARGAR GRÁFICA PNG
+  ###############################################################################
+  output$descargar <- downloadHandler(
+    filename = function() {
+      paste0("grafico_elasticidad_", input$producto, "_", input$anio, ".png")
+    },
+    content = function(file) {
+      res <- resultado()
+      req(res)
+      
+      # 1. Crear HTML temporal del plotly
+      temp_html <- tempfile(fileext = ".html")
+      htmlwidgets::saveWidget(
+        as_widget(res$grafico),
+        temp_html,
+        selfcontained = TRUE
+      )
+      
+      # 2. Convertir a PNG
+      webshot2::webshot(
+        url = temp_html,
+        file = file,
+        vwidth = 1400,
+        vheight = 900,
+        delay = 1
+      )
+    }
+  )
+  
+  ###############################################################################
   # MENSAJE 1 (para UI)
   ###############################################################################
   output$mensaje1 <- renderText({

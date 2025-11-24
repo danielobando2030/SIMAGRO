@@ -115,47 +115,98 @@ output$descargar_ <- downloadHandler(
 values <- reactiveValues(subtitulo = NULL, mensaje1 = NULL, mensaje2= NULL) 
   
 output$subtitulo <- renderText({
-    if ((input$tipo == 2 || input$tipo == 4) && is.null(input$producto)) {
-      return("Debe seleccionar un producto.")
-    }
+  
+  # Validación de producto cuando aplica
+  if ((input$tipo == 2 || input$tipo == 4) && is.null(input$producto)) {
+    return("Debe seleccionar un producto.")
+  }
+  
+  # Manejo de año seleccionado
   anio <- ""
   if (!is.null(input$anio) && input$anio != "todo") {
     anio <- input$anio
   }
-    resultado <- grafica_indice(input$tipo, anio, input$producto)
-    tipo <- input$tipo
-    max_vulnerabilidad <- resultado$max_vulnerabilidad
-    fecha_max_vulnerabilidad <- resultado$fecha_max_vulnerabilidad
-    producto_max_vulnerabilidad <- resultado$producto_max_vulnerabilidad
-    fecha_max_vulnerabilidad <- as.character(fecha_max_vulnerabilidad)
-    componentes <- strsplit(fecha_max_vulnerabilidad, "-")[[1]]
-    anio <- componentes[1]
-    mes <- componentes[2]
-    dia <- componentes[3]
-    nombres_meses <- c("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-                       "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
-    mes <- nombres_meses[as.integer(mes)]
-    
-    if (tipo == 2) {
-      values$subtitulo <- (paste0("La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el ", anio ," donde se registró un índice máximo de " , max_vulnerabilidad, " para el producto: ",producto_max_vulnerabilidad,"."))
-      } else if (tipo == 3) {
-        values$subtitulo <- (paste0( "La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes, " del ",anio, " donde se registró un índice máximo de ", max_vulnerabilidad,"."))
-    } else if (tipo == 4) {
-      values$subtitulo <- (paste0("La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes , " del ", anio, " donde se registró un índice máximo de ", max_vulnerabilidad, " para el producto: ",  producto_max_vulnerabilidad,"."))
-    } else {
-      values$subtitulo <- (paste0("La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el",anio, " donde se registró un índice máximo de " , max_vulnerabilidad,"."))
-    }
-    return(values$subtitulo)
-  })
   
+  # Resultado según tipo, año y producto
+  resultado <- grafica_indice(input$tipo, anio, input$producto)
+  
+  tipo <- input$tipo
+  max_vulnerabilidad <- resultado$max_vulnerabilidad
+  fecha_max_vulnerabilidad <- as.character(resultado$fecha_max_vulnerabilidad)
+  producto_max_vulnerabilidad <- resultado$producto_max_vulnerabilidad
+  
+  # Separar fecha
+  componentes <- strsplit(fecha_max_vulnerabilidad, "-")[[1]]
+  anio <- componentes[1]
+  mes <- componentes[2]
+  dia <- componentes[3]
+  
+  # Nombre del mes
+  nombres_meses <- c("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+  mes <- nombres_meses[as.integer(mes)]
+  
+  
+  #### ---------------------------------------
+  ####   GENERACIÓN DEL SUBTÍTULO MEJORADO
+  #### ---------------------------------------
+  
+  if (tipo == 2) {
+    # Anual por producto
+    values$subtitulo <- paste0(
+      "Para los filtros seleccionados, el nivel más bajo de diversidad de territorios conectados por el flujo de alimentos desde Cundinamarca se registró en ",
+      anio,
+      ", cuando el índice alcanzó un valor máximo de ",
+      max_vulnerabilidad,
+      " para el producto ",
+      producto_max_vulnerabilidad,
+      "."
+    )
+    
+  } else if (tipo == 3) {
+    # Mensual todos los productos
+    values$subtitulo <- paste0(
+      "Para los filtros seleccionados, el nivel más bajo de diversidad de territorios conectados por el flujo de alimentos desde Cundinamarca se observó en ",
+      mes, " de ", anio,
+      ", periodo en el que el índice alcanzó su valor máximo de ",
+      max_vulnerabilidad,
+      "."
+    )
+    
+  } else if (tipo == 4) {
+    # Mensual por producto
+    values$subtitulo <- paste0(
+      "Para los filtros seleccionados, el nivel más bajo de diversidad de territorios conectados por el flujo de alimentos desde Cundinamarca se presentó en ",
+      mes, " de ", anio,
+      ", alcanzando un índice máximo de ",
+      max_vulnerabilidad,
+      " para el producto ",
+      producto_max_vulnerabilidad,
+      "."
+    )
+    
+  } else {
+    # General
+    values$subtitulo <- paste0(
+      "Para los filtros seleccionados, el nivel más bajo de diversidad de territorios conectados por el flujo de alimentos desde Cundinamarca se presentó en ",
+      anio,
+      ", periodo en el que el índice alcanzó un valor máximo de ",
+      max_vulnerabilidad,
+      "."
+    )
+  }
+  
+  return(values$subtitulo)
+})
+
 # MENSAJES: MENSAJE 1   
   output$mensaje1 <- renderText({
-    values$mensaje1 <-("El índice de Herfindahl-Hirschman permite conocer el nivel de concentración de los destinos de alimentos en Cundinamarca, un mayor índice refleja menos municipios de destino para los alimentos cuyo origen esta en Cundinamarca.")
+    values$mensaje1 <-("Este índice permite medir el nivel de diversidad en los destinos económicos. Valores altos indican mayor concentración en pocos destinos (menor diversidad), mientras que valores bajos reflejan una distribución más equilibrada entre múltiples destinos (mayor diversidad).")
     values$mensaje1  
     })
 #MENSAJE: MENSAJE 2  
   output$mensaje2 <- renderUI({
-    values$mensaje2 <- ("Este índice puede aumentar si incrementa la participación de un municipio sobre el volumen total o disminuye el número de municipios de destino.")
+    values$mensaje2 <- ("El índice aumenta cuando pocos destinos concentran la mayor parte del volumen registrado, lo que refleja una menor diversidad. Por el contrario, disminuye cuando la distribución es más equilibrada entre varios destinos, indicando una mayor diversidad.")
     values$mensaje2
     })
   

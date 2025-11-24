@@ -80,7 +80,7 @@ tabla_kable
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre cómo se comporta la cantidad mensual de productos que entrán a Bogotá según el SIPSA.}\
 <!-- Grafica -->
-```{r, out.width = "90%",warning=FALSE,message=FALSE}
+```{r, out.width = "100%",warning=FALSE,message=FALSE}
 print(params$plot)
 ```
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
@@ -88,15 +88,14 @@ print(params$plot)
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 
 \fontsize{8}{8}\selectfont\color{mybrown}
-Esta visualización muestra cómo varía mes a mes  del volumen de alimentos que llegan a Bogotá, separada por años.
+Esta visualización muestra, de forma sencilla, cómo cambia cada mes la cantidad de alimentos que llegan a Bogotá, comparando diferentes años.
 
 \begin{itemize}
-    \item \textbf{Mediana:} representa el valor típico de cada año (la línea central de la caja).
-    \item \textbf{Percentil 25\% y 75\%:} los bordes inferior y superior de la caja. Indican el punto por debajo del cual se encuentra el 25\% y el 75\% de los meses, respectivamente. En conjunto, la caja contiene el 50\% central de los datos.
-    \item \textbf{Variación mensual:} el tamaño de la caja muestra qué tan parejos o dispersos fueron los volúmenes dentro del año.
+    \item \textbf{Mediana:} el valor típico del año.
+    \item \textbf{Percentil 25\% y 75\%:} la parte central donde estuvieron la mayoría de los meses.
+    \item \textbf{Variación mensual:} el tamaño de la caja muestra si los meses fueron parecidos o muy distintos.
 \end{itemize}
 
-Comparar las cajas entre años permite identificar cambios en los niveles y en la variabilidad del abastecimiento a lo largo del tiempo.
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

@@ -144,7 +144,9 @@ ui <- fluidPage(
   fluidRow(
     column(12,
            align = "left",
-           HTML("Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
+           HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+                 <br>
+                 La visualización permite analizar el comportamiento de los precios promedios del alimento en el tiempo y tasas de variación."),
            style = "font-size:12px; text-align:left;"
     )
   ),

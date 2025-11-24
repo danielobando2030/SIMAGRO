@@ -46,7 +46,7 @@ ui <- fluidPage(
         color: #4E4D4D;
       }
 
-      /* ======== BOTONES NEUTRALES ======== */
+      /* ======== BOTONES FAO ======== */
       .btn-faoc, .btn-faoc-link {
         background-color: #FFFFFF !important;
         border: 1.5px solid #A0A0A0 !important;
@@ -61,18 +61,18 @@ ui <- fluidPage(
         border-color: #808080 !important;
       }
 
-      /* ======== PANEL LATERAL (CUADRO DERECHO) ======== */
+      /* PANEL LATERAL */
       .well-panel-fao {
-        background-color: #DBC21F;   /* color solicitado */
-        border: none;                /* ← QUITAR BORDE */
-        color: #FFFFFF;              /* ← TEXTO BLANCO */
+        background-color: #DBC21F;
+        border: none;
+        color: #FFFFFF;
         font-weight: 500;
         font-size: 14px;
         border-radius: 10px;
         padding: 12px;
       }
 
-      /* ======== NOTA METODOLÓGICA ======== */
+      /* NOTA METODOLÓGICA */
       .nota-metodo {
         font-size: 12px;
         color: #4E4D4D;
@@ -92,6 +92,7 @@ ui <- fluidPage(
     style = "margin-bottom: 20px;"
   ),
   
+  # ================= FILTROS =================
   div(
     fluidRow(
       column(3,
@@ -103,24 +104,32 @@ ui <- fluidPage(
     )
   ),
   
+  # ================= GRÁFICO + PANEL LATERAL =================
   fluidRow(
+    
+    # ----------- Panel izquierdo (gráfico + botones) -----------
     column(
       9,
       div(
         plotlyOutput("grafico", height = "400px"),
-        actionButton("descargar", "Gráfica", icon = icon("download"), class = "btn-faoc"),
+        
+        # === BOTONES ===
+        downloadButton("descargar", "Gráfica", class = "btn-faoc"),
         downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
+        
         shiny::a(
           tagList(icon("github"), " GitHub"),
           href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_3",
           target = "_blank",
           class = "btn-faoc-link"
         ),
+        
         actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
         downloadButton("report", "Generar informe", class = "btn-faoc")
       )
     ),
     
+    # ----------- Panel derecho (mensaje) -----------
     column(
       3,
       div(
@@ -132,15 +141,18 @@ ui <- fluidPage(
     )
   ),
   
+  # ================= NOTA METODOLÓGICA =================
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir del SIPSA.<br>
+      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+           <br>
            La elasticidad se calcula como la variación porcentual del precio dividida por la variación porcentual de la cantidad ofertada."),
       class = "nota-metodo"
     )
   ),
   
+  # ================= LOGO =================
   fluidRow(
     tags$div(
       tags$img(src = "logo_4.png", style = "width: 100%; margin: 0;"),

@@ -98,6 +98,58 @@ server <- function(input, output, session) {
     ))
   })
   
+  # --- DESCARGA DE GRÁFICO ---
+  output$descargarGrafico <- downloadHandler(
+    filename = function() {
+      paste0("correlacion_", input$anio, ".png")
+    },
+    content = function(file) {
+      res <- resultado_correlacion()
+      g   <- res$grafico
+      
+      # Carpeta temporal
+      tmp_html <- tempfile(fileext = ".html")
+      tmp_png  <- tempfile(fileext = ".png")
+      
+      # Guardar html
+      htmlwidgets::saveWidget(as_widget(g), tmp_html, selfcontained = TRUE)
+      
+      # Convertir a PNG
+      webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
+      
+      # Copiar a destino final
+      file.copy(tmp_png, file)
+    }
+  )
+  
+  
+  # --- DESCARGA DE DATOS ---
+  output$descargarDatos <- downloadHandler(
+    filename = function() {
+      paste0("correlaciones_", input$anio, ".csv")
+    },
+    content = function(file) {
+      res <- resultado_correlacion()
+      m   <- res$matriz
+      
+      if (is.null(m)) {
+        write.csv(data.frame(), file, row.names = FALSE)
+        return()
+      }
+      
+      # Convertir matriz a formato "largo" para exportar
+      df_export <- as.data.frame(as.table(m)) %>%
+        dplyr::rename(
+          producto_1 = Var1,
+          producto_2 = Var2,
+          correlacion = Freq
+        ) %>%
+        dplyr::mutate(across(everything(), as.character))
+      
+      write.csv(df_export, file, row.names = FALSE, fileEncoding = "UTF-8")
+    }
+  )
+  
   # --- Botón reset ---
   observeEvent(input$reset, {
     updateSelectInput(session, "anio", selected = max(data$anio))

@@ -59,7 +59,7 @@ ui <- fluidPage(
     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML")
   ),
   tags$h1("Índice de diversidad de destino de los alimentos", class = "main-header"),
-  tags$h1("Análisis de la variedad de territorios conectados por el flujo de alimentos desde Cundinamarca hacia otras plazas en SIPSA.", class = "main-header_2"),
+  tags$h1("Análisis de la diversidad de municipios destino del volumen alimentos que salen de Cundinamarca", class = "main-header_2"),
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -113,7 +113,7 @@ ui <- fluidPage(
     column(
       12,
       align = "left",
-      HTML("
+      HTML('
       <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       Este gráfico se calcula con base en el índice de Herfindahl-Hirschman.<br><br>
@@ -129,7 +129,41 @@ ui <- fluidPage(
       <script>
         MathJax.Hub.Queue([\"Typeset\", MathJax.Hub]);
       </script>
-    "),
+            <br><br>
+
+      <table style="border-collapse: collapse; width: 100%; max-width: 800px;">
+        <thead>
+<tr style="background: #f2f2f2;">
+  <th style="text-align: left; padding: 8px; border: 1px solid #ddd;"><strong>Rango HHI</strong></th>
+  <th style="text-align: left; padding: 8px; border: 1px solid #ddd;"><strong>Interpretación</strong></th>
+  <th style="text-align: left; padding: 8px; border: 1px solid #ddd;"><strong>Significado en términos de diversidad de destino</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td style="padding: 8px; border: 1px solid #ddd;"><strong>0 – 1.500</strong></td>
+  <td style="padding: 8px; border: 1px solid #ddd;"><strong>Baja concentración</strong></td>
+  <td style="padding: 8px; border: 1px solid #ddd;">
+    <strong>Alta diversidad:</strong> el volumen de alimentos se distribuye de manera equilibrada entre muchos municipios que reciben productos desde Cundinamarca.
+  </td>
+</tr>
+<tr>
+  <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.500 – 2.500</strong></td>
+  <td style="padding: 8px; border: 1px solid #ddd;"><strong>Concentración moderada</strong></td>
+  <td style="padding: 8px; border: 1px solid #ddd;">
+    <strong>Diversidad media:</strong> un grupo de municipios empieza a concentrar una proporción relevante del volumen de alimentos enviado desde Cundinamarca.
+  </td>
+</tr>
+<tr>
+  <td style="padding: 8px; border: 1px solid #ddd;"><strong>&gt; 2.500</strong></td>
+  <td style="padding: 8px; border: 1px solid #ddd;"><strong>Alta concentración</strong></td>
+  <td style="padding: 8px; border: 1px solid #ddd;">
+    <strong>Baja diversidad:</strong> pocos municipios concentran la mayor parte del volumen de alimentos recibido desde Cundinamarca.
+  </td>
+</tr>
+</tbody>
+</table>
+      '),
       style = "font-size:12px; color:#4E4D4D;
              text-align:left; font-family:'Prompt', sans-serif;
              margin-top:20px;"

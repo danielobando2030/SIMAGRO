@@ -110,7 +110,7 @@ values <- reactiveValues(mensaje1 = NULL)
     validate("No hay información disponible")
 } else if(input$producto=="todo"){
 
-values$mensaje1<- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", round(resultado_data$porcentaje_max, digits = 1), "% del volumen registrado de los productos procedentes de municipios de Cundinamarca tienen como destino los principales centros de abasto de ", resultado_data$lugar_max, "."))
+values$mensaje1<- (paste0("Para el producto y periodo de tiempo  seleccionado, el ", round(resultado_data$porcentaje_max, digits = 1), "% del volumen registrado de productos procedentes de municipios de Cundinamarca tienen como destino los principales centros de abasto de ", resultado_data$lugar_max, "."))
 
 }else if(input$producto!="todo"){
 

@@ -58,8 +58,8 @@ ui <- fluidPage(
       
     "))
   ),
-    tags$h1("Diversidad de municipios destinos de alimentos producidos en Cundinamarca", class = "main-header"),
-    tags$h1("Analiza cuán concentrado está el suministro de alimentos desde Cundinamarca hacia los municipios de destino", class = "main-header_2"),  
+    tags$h1("Diversidad de municipios destinos de alimentos producidos en Cundinamarca.", class = "main-header"),
+    tags$h1("Analiza cuán concentrado está el suministro de alimentos desde Cundinamarca hacia los municipios de destino sin tener en cuenta a Bogotá.", class = "main-header_2"),  
   div(
     textOutput("subtitulo"),
     class = "sub-header2",

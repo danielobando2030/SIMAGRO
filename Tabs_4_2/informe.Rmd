@@ -137,7 +137,7 @@ knitr::include_graphics(params$grafico_png)
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{grayA}{
-Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca}
+Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca.}
 \endgroup
 
 \vspace*{4cm}

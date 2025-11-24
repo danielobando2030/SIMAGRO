@@ -80,7 +80,7 @@ tabla_kable
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre cómo se comporta la cantidad mensual de productos que salen de Cundinamarca según el SIPSA.}\
 <!-- Grafica -->
-```{r, out.width = "90%",warning=FALSE,message=FALSE}
+```{r, out.width = "100%",warning=FALSE,message=FALSE}
 print(params$plot)
 ```
 
@@ -97,8 +97,6 @@ Esta visualización muestra cómo varía mes a mes del volumen de alimentos que 
     \item \textbf{Percentil 25\% y 75\%:} los bordes inferior y superior de la caja. Indican el punto por debajo del cual se encuentra el 25\% y el 75\% de los meses, respectivamente. En conjunto, la caja contiene el 50\% central de los datos.
     \item \textbf{Variación mensual:} el tamaño de la caja muestra qué tan parejos o dispersos fueron los volúmenes dentro del año.
 \end{itemize}
-
-Comparar las cajas entre años permite identificar cambios en los niveles y en la variabilidad del abastecimiento a lo largo del tiempo.
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

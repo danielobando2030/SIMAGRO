@@ -3,17 +3,22 @@
 # SERVER - Variación porcentual mensual del precio promedio
 ################################################################################
 
-pacman::p_load(shiny, plotly, dplyr, zoo, lubridate, rmarkdown, webshot2, htmlwidgets)
+pacman::p_load(
+  shiny, plotly, dplyr, zoo, lubridate,
+  rmarkdown, webshot2, htmlwidgets
+)
 options(scipen = 999)
 
 # Cargar función del gráfico
 source("3_7b_variaciones_precio_presente_precio_pasado.R")
 
-# --- Definir servidor ---
+################################################################################
+# SERVIDOR
+################################################################################
 server <- function(input, output, session) {
   
   ##############################################################################
-  # --- Filtro reactivo principal ---
+  # --- DATA FILTRADA ---
   ##############################################################################
   data_filtrada <- reactive({
     req(input$producto, input$anio)
@@ -29,7 +34,7 @@ server <- function(input, output, session) {
   })
   
   ##############################################################################
-  # --- Gráfico principal ---
+  # --- GRÁFICO REACTIVO ---
   ##############################################################################
   grafico_reactivo <- reactive({
     df <- data_filtrada()
@@ -43,21 +48,26 @@ server <- function(input, output, session) {
       mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100) %>%
       filter(!is.na(cambio_pct_mensual))
     
-    plot_ly(df,
-            x = ~mes_y_ano,
-            y = ~cambio_pct_mensual,
-            type = 'scatter',
-            mode = 'lines+markers',
-            line = list(color = '#DBC21F', width = 2),
-            marker = list(color = '#DBC21F', size = 8),
-            text = ~paste0(
-              "Mes: ", format(mes_y_ano, "%B %Y"),
-              "<br>Cambio mensual: ", round(cambio_pct_mensual, 2), "%"
-            ),
-            hoverinfo = 'text') %>%
-      add_lines(y = 0, x = ~mes_y_ano,
-                line = list(color = 'rgba(155,48,255,0.3)', dash = 'dash'),
-                showlegend = FALSE) %>%
+    plot_ly(
+      df,
+      x = ~mes_y_ano,
+      y = ~cambio_pct_mensual,
+      type = "scatter",
+      mode = "lines+markers",
+      line = list(color = '#DBC21F', width = 2),
+      marker = list(color = '#DBC21F', size = 8),
+      text = ~paste0(
+        "Mes: ", format(mes_y_ano, "%B %Y"),
+        "<br>Cambio mensual: ", round(cambio_pct_mensual, 2), "%"
+      ),
+      hoverinfo = "text"
+    ) %>%
+      add_lines(
+        y = 0,
+        x = ~mes_y_ano,
+        line = list(color = "rgba(155,48,255,0.3)", dash = "dash"),
+        showlegend = FALSE
+      ) %>%
       layout(
         title = NULL,
         xaxis = list(
@@ -77,7 +87,7 @@ server <- function(input, output, session) {
   })
   
   ##############################################################################
-  # --- Panel lateral: mayor cambio mensual ---
+  # PANEL LATERAL: MAYOR CAMBIO
   ##############################################################################
   output$mayorCambio <- renderUI({
     df <- data_filtrada()
@@ -88,36 +98,86 @@ server <- function(input, output, session) {
       mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100) %>%
       filter(!is.na(cambio_pct_mensual))
     
-    max_change <- df[which.max(df$cambio_pct_mensual), ]
-    min_change <- df[which.min(df$cambio_pct_mensual), ]
+    max_c <- df[which.max(df$cambio_pct_mensual), ]
+    min_c <- df[which.min(df$cambio_pct_mensual), ]
     
-    mes_max  <- tools::toTitleCase(format(max_change$mes_y_ano, "%B %Y"))
-    mes_min  <- tools::toTitleCase(format(min_change$mes_y_ano, "%B %Y"))
-    valor_max <- round(max_change$cambio_pct_mensual, 2)
-    valor_min <- round(min_change$cambio_pct_mensual, 2)
+    mes_max <- tools::toTitleCase(format(max_c$mes_y_ano, "%B %Y"))
+    mes_min <- tools::toTitleCase(format(min_c$mes_y_ano, "%B %Y"))
+    valor_max <- round(max_c$cambio_pct_mensual, 2)
+    valor_min <- round(min_c$cambio_pct_mensual, 2)
     
     HTML(glue::glue("
       <div class='panel-cambio'>
-        <p><b> Mayor incremento mensual:</b><br>
-        {mes_max} (+{valor_max}%)</p>
-        <p><b> Mayor reducción mensual:</b><br>
-        {mes_min} ({valor_min}%)</p>
+        <p><b>Mayor incremento mensual:</b><br>{mes_max} (+{valor_max}%)</p>
+        <p><b>Mayor reducción mensual:</b><br>{mes_min} ({valor_min}%)</p>
       </div>
     "))
   })
   
   ##############################################################################
-  # --- Botón de reset ---
+  # RESET
   ##############################################################################
   observeEvent(input$reset, {
     updateSelectInput(session, "producto", selected = "Aguacate")
-    updateSelectInput(session, "anio", selected = "2014")
+    updateSelectInput(session, "anio", selected = "2024")
   })
   
   ##############################################################################
-  # --- Descarga del informe PDF (con LaTeX) ---
+  # DESCARGA DE GRÁFICA PNG
+  ##############################################################################
+  output$descargarGrafico <- downloadHandler(
+    
+    filename = function() {
+      paste0("variacion_mensual_", gsub(" ", "_", input$producto), "_", input$anio, ".png")
+    },
+    
+    content = function(file) {
+      
+      g <- grafico_reactivo()
+      
+      tmp_html <- tempfile(fileext = ".html")
+      tmp_png  <- tempfile(fileext = ".png")
+      
+      # Guardar widget temporal
+      htmlwidgets::saveWidget(as_widget(g), tmp_html, selfcontained = TRUE)
+      
+      # Convertir a PNG
+      webshot2::webshot(
+        tmp_html, 
+        file = tmp_png,
+        vwidth = 1600, 
+        vheight = 900, 
+        delay = 1
+      )
+      
+      # Copiar archivo final
+      file.copy(tmp_png, file, overwrite = TRUE)
+    }
+  )
+  
+  ##############################################################################
+  # DESCARGAR DATOS CSV
+  ##############################################################################
+  output$descargarDatos <- downloadHandler(
+    filename = function() {
+      paste0("variacion_precios_", input$producto, "_", input$anio, ".csv")
+    },
+    content = function(file) {
+      df <- data_filtrada()
+      if (nrow(df) == 0) {
+        write.csv(data.frame(Mensaje = "No hay datos disponibles."), file, row.names = FALSE)
+      } else {
+        write.csv(df, file, row.names = FALSE)
+      }
+    }
+  )
+  
+  
+  ##############################################################################
+  # INFORME PDF (LaTeX)
   ##############################################################################
   output$report <- downloadHandler(
+    
     filename = function() {
       paste0("informe_variacion_", input$producto, "_", input$anio, ".pdf")
     },
@@ -129,29 +189,45 @@ server <- function(input, output, session) {
       tmp_html <- file.path(tmp_dir, "grafico_tmp.html")
       tmp_png  <- file.path(tmp_dir, "grafico_tmp.png")
       
+      # Copiar informe
       file.copy("informe.Rmd", tmp_rmd, overwrite = TRUE)
       
-      # Guardar gráfico HTML → PNG
+      # Guardar gráfico como PNG
       g <- grafico_reactivo()
       htmlwidgets::saveWidget(as_widget(g), tmp_html, selfcontained = TRUE)
-      webshot2::webshot(tmp_html, tmp_png,
-                        vwidth = 1200, vheight = 800)
+      webshot2::webshot(tmp_html, tmp_png, vwidth = 1200, vheight = 800)
       
-      #### Construir mensaje estadístico real (sin tocar los %) ####
+      # Copiar logos (www)
+      if (dir.exists("www")) {
+        file.copy("www", tmp_dir, recursive = TRUE)
+      }
+      
+      # COPIAR FUENTE PROMPT (CORRECCIÓN CRÍTICA)
+      if (file.exists("Prompt-Regular.ttf")) {
+        file.copy("Prompt-Regular.ttf", tmp_dir, overwrite = TRUE)
+      } else if (file.exists(file.path("Prompt", "Prompt-Regular.ttf"))) {
+        file.copy(file.path("Prompt", "Prompt-Regular.ttf"), tmp_dir, overwrite = TRUE)
+      } else if (file.exists("www/Prompt-Regular.ttf")) {
+        file.copy("www/Prompt-Regular.ttf", tmp_dir, overwrite = TRUE)
+      }
+      
+      print("Fuentes en tmp_dir:")
+      print(list.files(tmp_dir))
+      
+      # Mensaje del panel
       mensaje_panel <- tryCatch({
         df <- data_filtrada() %>%
           arrange(mes_y_ano) %>%
-          mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / 
-                   lag(precio_prom) * 100) %>%
+          mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100) %>%
           filter(!is.na(cambio_pct_mensual))
         
-        max_change <- df[which.max(df$cambio_pct_mensual), ]
-        min_change <- df[which.min(df$cambio_pct_mensual), ]
+        max_c <- df[which.max(df$cambio_pct_mensual), ]
+        min_c <- df[which.min(df$cambio_pct_mensual), ]
         
-        mes_max   <- tools::toTitleCase(format(max_change$mes_y_ano, "%B %Y"))
-        mes_min   <- tools::toTitleCase(format(min_change$mes_y_ano, "%B %Y"))
-        valor_max <- round(max_change$cambio_pct_mensual, 2)
-        valor_min <- round(min_change$cambio_pct_mensual, 2)
+        mes_max <- tools::toTitleCase(format(max_c$mes_y_ano, "%B %Y"))
+        mes_min <- tools::toTitleCase(format(min_c$mes_y_ano, "%B %Y"))
+        valor_max <- round(max_c$cambio_pct_mensual, 2)
+        valor_min <- round(min_c$cambio_pct_mensual, 2)
         
         glue::glue(
           "Mayor incremento mensual: {mes_max} (+{valor_max}%). ",
@@ -159,7 +235,7 @@ server <- function(input, output, session) {
         )
       }, error = function(e) "")
       
-      # Renderizar PDF
+      # RENDERIZAR PDF
       rmarkdown::render(
         input         = tmp_rmd,
         output_format = rmarkdown::pdf_document(latex_engine = "xelatex"),
@@ -170,9 +246,9 @@ server <- function(input, output, session) {
           grafico_png = tmp_png,
           mensaje1    = mensaje_panel
         ),
-        envir = new.env(parent = globalenv())
+        envir = new.env(parent = globalenv()),
+        knit_root_dir = tmp_dir
       )
     }
   )
-  
 }

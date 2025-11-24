@@ -35,7 +35,7 @@ plot_data <- function(tipo, anio = NULL) {
     data <- IHH_anual
     data <- rename(data, date_col = year)
     data$year <- data$date_col
-    data$IHH <- data$IHH * 100 
+    data$IHH <- data$IHH
     
     # Crear un gráfico de tiempo
     data$tooltip_text <- paste("Año: ", data$year , "<br> IHH:" , round(data$IHH,1))
@@ -54,7 +54,7 @@ plot_data <- function(tipo, anio = NULL) {
   } else {
     data <- IHH_mensual
     data <- rename(data, date_col = mes_y_ano)
-    data$IHH <- data$IHH *100
+    data$IHH <- data$IHH
     data$month_completo <- mapeo_meses[data$month]
     data$tooltip_text <- paste("Año: ", data$year ,"<br> Mes:" , data$month_completo, "<br> IHH:" , round(data$IHH,1))
     

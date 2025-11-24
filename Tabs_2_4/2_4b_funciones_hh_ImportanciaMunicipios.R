@@ -43,12 +43,12 @@ col_palette <-  c(
 grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccionados = "") {
   if (tipo == 1 ) {
     df <- IHH_anual_total
-    df$IHH <- df$IHH * 100
+    df$IHH <- df$IHH
     df <- df %>%
       select("year", "IHH")
   } else if (tipo == 2) {
     df <- IHH_anual_producto
-    df$IHH <- df$IHH * 100
+    df$IHH <- df$IHH 
     df <- df %>%
       select("year","producto", "IHH")
     if (length(productos_seleccionados) == 0){
@@ -56,7 +56,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
     }
   } else if (tipo == 3) {
     df <- IHH_mensual_total
-    df$IHH <- df$IHH * 100
+    df$IHH <- df$IHH
     df <- df %>%
       select("mes_y_ano","year","month","IHH")
     if (anio_seleccionado != ""){
@@ -65,7 +65,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
     }
   } else if (tipo == 4) {
     df <- IHH_mensual_producto
-    df$IHH <- df$IHH * 100
+    df$IHH <- df$IHH
     df <- df %>%
       select("year","month","mes_y_ano","producto", "IHH")
     if (anio_seleccionado != ""){

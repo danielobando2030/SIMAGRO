@@ -185,6 +185,7 @@ ui <- fluidPage(
       12,
       HTML("
         <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA). <br>
+       <br>
         Este gráfico muestra la diferencia promedio de precios entre ciudades comparadas con Bogotá.<br>
         El tamaño del círculo representa la variabilidad interna del precio (desviación estándar).<br>
         Valores positivos indican precios mayores que Bogotá; valores negativos, menores.

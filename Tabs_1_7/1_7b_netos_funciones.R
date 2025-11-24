@@ -173,14 +173,22 @@ neto_grafica <- function(tipo, productos_seleccionados = "") {
       scale_color_manual(values = col_palette) +  
       theme_minimal()  
   }
+  Complemento_min=ifelse(min(df$total_importado)>0," de entradas por encima de las salidas",
+         ifelse(min(df$total_importado)==0," en el balance, es decir volumen de productos que ingresa igual al que sale",
+                " de salidas por encima de las entradas"))
   
-  min_ton<-formatC_custom((min(df$total_importado)*-1), format = "f", digits = 1)
-  fecha_min <- df$anio[which.min(df$total_importado)]
+  Complemento_max=ifelse(max(df$total_importado)>0," de entradas por encima de las salidas",
+                         ifelse(max(df$total_importado)==0," en el balance, es decir volumen de productos que ingresa igual al que sale",
+                                " de salidas por encima de las entradas"))
+  
+  
+  min_ton<-formatC_custom((min(abs(df$total_importado))), format = "f", digits = 1)
+  fecha_min <- df$anio[which.min(abs(df$total_importado))]
   df<-df%>%select(-tooltip_text)
-  max_balance <- formatC_custom(max(df$total_importado), format = "f", digits = 1)
-  producto_max_balance <- as.character(df$producto)[which.max(df$total_importado)]
-  anio_max <- as.character(df$anio)[which.max(df$total_importado)]
-  mes_max <- as.character(df$mes)[which.max(df$total_importado)]
+  max_balance <- formatC_custom(max(abs(df$total_importado)), format = "f", digits = 1)
+  producto_max_balance <- as.character(df$producto)[which.max(abs(df$total_importado))]
+  anio_max <- as.character(df$anio)[which.max(abs(df$total_importado))]
+  mes_max <- as.character(df$mes)[which.max(abs(df$total_importado))]
   
   p <- plotly::ggplotly(p_plano, tooltip = "text")
   return(list(
@@ -192,7 +200,9 @@ neto_grafica <- function(tipo, productos_seleccionados = "") {
     max_balance = max_balance,
     producto_max_balance = producto_max_balance,
     anio_max = anio_max,
-    mes_max = mes_max
+    mes_max = mes_max,
+    Complemento_min=Complemento_min,
+    Complemento_max=Complemento_max
   ))
   
 }

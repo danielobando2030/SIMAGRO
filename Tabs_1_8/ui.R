@@ -88,7 +88,7 @@ ui <- fluidPage(
              downloadButton("descargarDatos", "Datos"),
              shiny::a("GitHub", href="https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_1_8", target="_blank",
                       class = "btn btn-default shiny-action-button", icon("github")),
-             actionButton("reset", "Restrablecer",icon = icon("refresh")),
+             actionButton("reset", "Restablecer",icon = icon("refresh")),
               downloadButton("report", "Generar informe")
            )),
     

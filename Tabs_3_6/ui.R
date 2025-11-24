@@ -147,10 +147,11 @@ ui <- fluidPage(
     column(
       12, align = "left",
       HTML("
-        <b>Fuente:</b> cálculos propios a partir del SIPSA.<br><br>
+        <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+        <br>
         Las bandas representan ±2 desviaciones estándar de la media móvil de 20 días. 
         El 95% de los datos debería ubicarse dentro de estas bandas bajo normalidad. <br>
-        Los puntos rojos indican días atípicos.
+        Los puntos amarillos indican días atípicos.
       "),
       style = "font-size:12px; color:#4E4D4D; font-family: 'Prompt'; margin-top:15px;"
     )

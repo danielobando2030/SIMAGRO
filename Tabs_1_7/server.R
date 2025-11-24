@@ -97,9 +97,9 @@ output$descargar_ <- downloadHandler(
                        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
     mes <- nombres_meses[as.integer(mes)]  
   if (input$tipo == 1 | input$tipo==2){
-    values$subtitulo <- paste0("Hubo mayor diferencia en volumen de entradas y el volumen de salidas de alimentos en el año ",anio, " ingresando ", min_ton, " kilogramos más de las que salieron.")
+    values$subtitulo <- paste0("La menor diferencia entre volumen de entradas y salidas de alimentos se dá en el año ",anio, " regristrando ", min_ton, " kilogramos",resultado()$Complemento_min)
   } else if (input$tipo == 3 | input$tipo == 4){
-    values$subtitulo <- paste0("Hubo mayor diferencia en volumen de entradas y el volumen de salidas de alimentos en  ",mes, " del ",anio, " ingresando ", min_ton, " kilogramos más de las que salieron.") 
+    values$subtitulo <- paste0("La menor diferencia entre volumen de entradas y salidas de alimentos se dá en el mes de ",mes, " del año ",anio, " ingresando ", min_ton, " kilogramos",resultado()$Complemento_min) 
   }
   return(values$subtitulo)
     })
@@ -129,13 +129,13 @@ output$descargar_ <- downloadHandler(
       validate("No hay información disponible")
     } else {
       if (input$tipo == 1){
-        values$mensaje1 <- paste0("La menor dependencia de Cundinamarca hacia otros departamentos se dio en el año " ,anio, ", cuando el balance general alcanzó un máximo de ",resultado_data$max_balance," kilogramos.")
+        values$mensaje1 <- paste0("La mayor diferencia entre volumen de entradas y salidas de alimentos se dá en el año " ,anio, ", con un registro de ",resultado_data$max_balance," kilogramos",resultado_data$Complemento_max)
       } else if (input$tipo == 2){
-        values$mensaje1<- paste0(" La menor dependencia de Cundinamarca hacia otros departamentos se dio en el año ", anio, " cuando el balance general alcanzó un máximo de ",resultado_data$max_balance," para el producto ",resultado_data$producto_max_balance," kilogramos.")
+        values$mensaje1<- paste0("La mayor diferencia entre volumen de entradas y salidas de alimentos se dá en el año ", anio, ", con un registro de ",resultado_data$max_balance," kilogramos",resultado_data$Complemento_max," para el producto ",resultado_data$producto_max_balance," kilogramos")
       } else if (input$tipo == 3){
-        values$mensaje1 <- paste0("La menor dependencia de Cundinamarca hacia otros departamentos se dio en ",mes, " del ", anio, " cuando el balance general alcanzó un máximo de ", resultado_data$max_balance," kilogramos.")
+        values$mensaje1 <- paste0("La mayor diferencia entre volumen de entradas y salidas de alimentos se dá en el mes ",mes, " del año ", anio, ", con un registro de ", resultado_data$max_balance," kilogramos ",resultado_data$Complemento_max)
       } else if (input$tipo ==4){
-        values$mensaje1 <- paste0("La menor dependencia de Cundinamarca hacia otros departamentos se dio en ",mes, " del ", anio, " cuando el balance general alcanzó un máximo de ", resultado_data$max_balance," para el producto ", resultado_data$producto_max_balance," kilogramos.")
+        values$mensaje1 <- paste0("La mayor diferencia entre volumen de entradas y salidas de alimentos se dá en el mes ",mes, " del año ", anio, ", con un registro de ", resultado_data$max_balance," kilogramos",resultado_data$Complemento_max," para el producto ", resultado_data$producto_max_balance)
       }
     }
     return(values$mensaje1)

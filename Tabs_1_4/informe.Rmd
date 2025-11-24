@@ -93,11 +93,10 @@ tabla_kable
 ```{r, out.width = "95%", fig.align = "center", warning=FALSE, message=FALSE}
 print(params$plot)
 ```
-\fontsize{10}{10} \selectfont `r params$mensaje1`\
-
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\newline
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{Solo se tienen en cuenta las principales ciudades con centros de acopio en las que se recolecta información para el SIPSA.}\newline
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el ranking  de destinos de los alimentos con origen Cundinamarca, resaltando el porcentaje de volumen de productos que llegan a cada centro de abasto según SIPSA}\newline
+
+\fontsize{10}{10} \selectfont `r params$mensaje1`\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el ranking de destinos de los alimentos provenientes de Cundinamarca y el porcentaje de volumen que recibe cada centro de abasto. Solo se incluyen las principales ciudades donde el SIPSA recolecta información}
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

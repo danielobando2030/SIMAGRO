@@ -113,7 +113,7 @@ ui <- fluidPage(
     column(
       12,
       align = "left",
-      HTML("
+      HTML('
       <b>Fuente:</b> Elaboración propia con base en datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
 
       Este gráfico se calcula con base en el índice de Gini.<br><br>
@@ -128,9 +128,9 @@ ui <- fluidPage(
       y <em>Y<sub>i</sub></em> la proporción acumulada del volumen total de alimentos que reciben desde Cundinamarca.<br><br>
 
       El índice de Gini mide el grado de desigualdad en la distribución. 
-      Toma valores entre 0 y 1, donde 0 indica una distribución completamente equitativa 
+      Toma valores entre 0 y 100, donde 0 indica una distribución completamente equitativa 
       (todos los municipios destino reciben alimentos en igual proporción) 
-      y 1 indica la máxima concentración 
+      y 100 indica la máxima concentración 
       (un solo municipio concentra la totalidad del volumen recibido desde Cundinamarca).<br><br>
 
       Cuanto más cercana esté la curva de Lorenz a la línea de 45°, menor será la concentración 
@@ -140,7 +140,54 @@ ui <- fluidPage(
       <script>
         MathJax.Hub.Queue([\"Typeset\", MathJax.Hub]);
       </script>
-    "),
+      <!-- Tabla de rangos del coeficiente de Gini -->
+<table role="table" aria-label="Rangos del coeficiente de Gini" style="width:100%; border-collapse:collapse; font-family:Arial,Helvetica,sans-serif;">
+    <thead>
+    <tr style="background:#f2f2f2;">
+             <th style="text-align:left; padding:10px; border:1px solid #ddd;">Rango Gini</th>
+             <th style="text-align:left; padding:10px; border:1px solid #ddd;">Categoría</th>
+             <th style="text-align:left; padding:10px; border:1px solid #ddd;">Significado / Interpretación</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">0 – 20</td>
+             <td style="padding:10px; border:1px solid #ddd;">Muy bajo</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Distribución muy equilibrada entre muchos destinos. No hay dependencia marcada de uno o pocos destinos; alta diversidad.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">21 – 40</td>
+             <td style="padding:10px; border:1px solid #ddd;">Bajo</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Predomina una distribución relativamente equilibrada, con cierta concentración en algunos destinos pero sin dominio fuerte.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">41 – 60</td>
+             <td style="padding:10px; border:1px solid #ddd;">Moderado</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Concentración notable: algunos destinos absorben una proporción significativa del volumen enviado. Riesgo medio de dependencia hacia pocos destinos.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">61 – 80</td>
+             <td style="padding:10px; border:1px solid #ddd;">Alto</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Alta concentración: pocos destinos dominan el volumen enviado. Mayor vulnerabilidad ante cambios o restricciones en esos destinos.
+           </td>
+             </tr>
+             <tr>
+             <td style="padding:10px; border:1px solid #ddd;">81 – 100</td>
+             <td style="padding:10px; border:1px solid #ddd;">Muy alto</td>
+             <td style="padding:10px; border:1px solid #ddd;">
+             Concentración extrema: uno o muy pocos destinos concentran casi todo el volumen enviado. Dependencia crítica y riesgo elevado de interrupciones.
+           </td>
+             </tr>
+             </tbody>
+             </table>
+     '),
       style = "font-size:12px; color:#4E4D4D;
              text-align:left; font-family:'Prompt', sans-serif; 
              margin-top:20px;"

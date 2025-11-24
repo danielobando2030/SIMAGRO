@@ -114,9 +114,9 @@ Caja_y_Bigotes = function(ALIMENTO = NULL, formato = "numeric") {
     plotly::layout(
       hoverlabel = list(bgcolor = "white", font = list(size = 12)))
 S=BD[BD$var1==max(as.numeric(as.character(BD$var1))),][1,]    
-Texto=paste("En el año ",max(as.numeric(as.character(BD$var1)))," se puede observar que en el 25% de los meses se alcanza un volumen de alimentos menor o igual a ",format(S$q1,decimal.mark=",",big.mark="."),
-            "En el 50% de los meses se alcanza un volumen menor o igual a ",format(S$mediana,decimal.mark=",",big.mark="."),
-            "En el 75% de los meses alcanza un volumen menor o igual a  ",format(S$q3,decimal.mark=",",big.mark="."))
+Texto=paste0("En el año ",max(as.numeric(as.character(BD$var1)))," se puede observar que en el 25% de los meses se alcanza un volumen de alimentos menor o igual a ",format(S$q1,decimal.mark=",",big.mark="."),
+            ". En el 50% de los meses se alcanza un volumen menor o igual a ",format(S$mediana,decimal.mark=",",big.mark="."),
+            ". En el 75% de los meses alcanza un volumen menor o igual a  ",format(S$q3,decimal.mark=",",big.mark="."))
   # --- 8. Retorno ---
   return(list(
     grafico_plano = graf,

@@ -1,134 +1,196 @@
-################################################################################
-# Proyecto FAO - VP - 2025
-# Interfaz UI - Módulo 3_10: Precios de Insumos Agrícolas
-################################################################################
-# Autores: Luis Miguel García, Laura Quintero, Daniel Obando
-# Última edición: 2025/11/11
-################################################################################
+################################################################################-
+# Proyecto FAO
+# Visualización de DATOS – Precios de Insumos Agrícolas
+################################################################################-
+# Autores: Cristian Daniel Obando, Luis Miguel García
+# Fecha de creación: 09/11/2025
+# Fecha de última modificación: 11/11/2025
+################################################################################-
 
-library(shiny)
-library(plotly)
-library(dplyr)
+# Limpiar entorno
+rm(list = ls())
 
-# Cargar base para los selectInput iniciales
-data <- readRDS("data_precios_insumos_3_10.rds")
+# Paquetes
+################################################################################-
+library(readr); library(lubridate); library(dplyr); library(ggplot2); library(zoo)
+library(readxl); library(glue); library(tidyverse); library(gridExtra)
+library(corrplot); library(shiny); library(shinydashboard); library(plotly);library(scales)
+options(scipen = 999)
+################################################################################-
+source("3_10b_boxplot_insumos.R")
+
+
+
+################################################################################-
+# UI
+################################################################################-
 
 ui <- fluidPage(
   
   # ------------------------------------------------------------------
-  # Estilos institucionales
+  # Estilos institucionales FAO – Prompt + colores
   # ------------------------------------------------------------------
   tags$head(
-    tags$title("Precios de Insumos Agrícolas - FAO VP 2025"),
     tags$link(
       rel = "stylesheet",
-      href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
+      type = "text/css",
+      href = "https://fonts.googleapis.com/css2?family=Prompt&display=swap"
     ),
+    
     tags$style(HTML("
-      body { font-family: 'Prompt', sans-serif; background-color: #fafafa; }
-      h2, h4, h5 { color: #3D3D6B; }
-      .btn-faoc {
-        background-color: #6A0DAD;
-        border-color: #6A0DAD;
-        color: white;
-        font-weight: 500;
+      .main-header {
+        font-family: 'Prompt', sans-serif;
+        font-size: 40px;
+        color: #743639;
       }
-      .btn-faoc:hover {
-        background-color: #500985;
-        border-color: #500985;
-        color: white;
+      .sub-header {
+        font-family: 'Prompt', sans-serif;
+        font-size: 20px;
+        color: #743639;
       }
+      .main-header_2 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 20px;
+        color: #743639;
+      }
+      .sub-header2 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 15px;
+        color: #4E4D4D;
+      }
+      .sub-header3 {
+        font-family: 'Prompt', sans-serif;
+        font-size: 15px;
+        color: #4E4D4D;
+      }
+      .center {
+        display: flex;
+        justify-content: center;
+      }
+      .scrollable-content {
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: auto;
+      }
+      
     "))
   ),
   
   # ------------------------------------------------------------------
-  # Encabezado principal
+  # TÍTULO PRINCIPAL
   # ------------------------------------------------------------------
+  tags$h1(
+    "Distribución de precios de insumos agrícolas en el tiempo",
+    class = "main-header"
+  ),
+  tags$h1(
+    "Análisis histórico de precios de los insumos agrícolas en las centrales de abasto de Bogotá.",
+    class = "main-header_2"
+  ),
+  
   div(
-    h2("Distribución de precios de insumos agrícolas en el tiempo",
-       style = "font-weight:600; color:#3D3D6B; text-align:center;"),
-    h4("Análisis histórico por subgrupo y presentación de insumos agrícolas (SIPSA - DANE).",
-       style = "color:#5A5A5A; font-weight:400; text-align:center; margin-top:-10px; margin-bottom:5px;")
+    textOutput("subtitulo"),
+    class = "sub-header2",
+    style = "margin-bottom: 20px;"
   ),
   
-  br(),
-  
   # ------------------------------------------------------------------
-  # Filtros principales
+  # FILTROS
   # ------------------------------------------------------------------
   fluidRow(
-    column(4,
-           selectInput(
-             "subgrupo_sel", "Seleccione subgrupo:",
-             choices = sort(unique(data$subgrupos)),
-             selected = "Fungicidas"
-           )
+    column(
+      width = 3,
+      selectInput(
+        "subgrupo_sel",
+        "Subgrupo:",
+        choices = sort(unique(base_precios$subgrupos)),
+        selected = "Fungicidas"
+      )
     ),
-    column(4,
-           selectInput(
-             "presentacion_sel", "Seleccione presentación:",
-             choices = NULL
-           )
+    column(
+      width = 3,
+      uiOutput("ui1")
+      
+    )
+  ),
+  
+  # ------------------------------------------------------------------
+  # GRÁFICO + RECUADROS LATERALES
+  # ------------------------------------------------------------------
+  fluidRow(
+    column(
+      width = 9,
+      div(
+        plotlyOutput("grafico", height = "420px"),
+        # Botones — MISMO ORDEN QUE MÓDULO 1_10b
+        actionButton("descargar", "Gráfica", icon = icon("download")),
+        downloadButton("descargarDatos", "Datos"),
+        shiny::a(
+          "GitHub",
+          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_10",
+          target = "_blank",
+          class = "btn btn-default shiny-action-button",
+          icon("github")
+        ),
+        actionButton("reset", "Restablecer", icon = icon("refresh")),
+        downloadButton("report", "Generar informe")
+      )
     ),
-    column(4,
-           actionButton("reset", "Restablecer selección",
-                        icon = icon("rotate-left"),
-                        class = "btn btn-faoc",
-                        style = "width:100%; margin-top:25px;")
+    
+    # ------------------------------------------------------------------
+    # RECUADROS: mantengo mismo estilo y colores del módulo 1_10b
+    # ------------------------------------------------------------------
+    column(
+      width = 3,
+      div(
+        wellPanel(
+          textOutput("mensaje1"),
+          style = "background-color: #8A171C; color: #FFFFFF;"
+        )
+        
+        # Si deseas más recuadros descomentamos:
+        # wellPanel(textOutput("mensaje2"),
+        #           style = "background-color:#005A45; color:#FFFFFF;")
+      )
     )
   ),
   
-  br(),
-  
   # ------------------------------------------------------------------
-  # Gráfico principal
+  # TEXTO ACADÉMICO / ACLARACIONES
   # ------------------------------------------------------------------
   fluidRow(
-    column(12, align = "center",
-           plotlyOutput("grafico_boxplot", height = "500px")
-    )
-  ),
-  
-  br(),
-  
-  # ------------------------------------------------------------------
-  # Botones institucionales FAO (orden: Gráfica, Datos, GitHub, Restablecer, Informe)
-  # ------------------------------------------------------------------
-  fluidRow(
-    column(12, align = "center",
-           downloadButton("descargarGrafico", "Gráfica", class = "btn btn-faoc"),
-           downloadButton("descargarDatos", "Datos", class = "btn btn-faoc"),
-           shiny::a("GitHub",
-                    href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_10",
-                    target = "_blank",
-                    class = "btn btn-faoc",
-                    icon("github")),
-           actionButton("reset2", "Restablecer", icon = icon("refresh"), class = "btn btn-faoc"),
-           downloadButton("descargarPDF", "Generar informe", class = "btn btn-faoc")
-    )
-  ),
-  
-  br(),
-  
-  # ------------------------------------------------------------------
-  # Fuente de datos y aclaraciones
-  # ------------------------------------------------------------------
-  fluidRow(
-    column(12, align = "left",
-           HTML("Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) – DANE.<br>
-                 Los valores corresponden a precios promedio reportados para insumos agrícolas por presentación y subgrupo.<br>
-                 Los precios reflejan el costo por unidad estándar según la presentación (litro, kilogramo, etc.)."),
-           style = "font-size:12px; color:#5A5A5A; text-align:left;"
+    column(
+      width = 12,
+      align = "left",
+      HTML("
+        <b>Fuente:</b> Cálculos propios con base en el Sistema de Información de 
+        Precios y Abastecimiento del Sector Agropecuario – SIPSA (DANE).<br><br>
+
+        <p>Esta visualización muestra cómo varían los precios de los insumos agrícolas 
+        a lo largo del tiempo, discriminados por subgrupo y tipo de presentación.</p>
+
+        <ul>
+          <li><strong>Cajas del boxplot:</strong> representan la dispersión de precios dentro del subgrupo.</li>
+          <li><strong>Mediana:</strong> refleja el precio típico del subgrupo para la presentación seleccionada.</li>
+          <li><strong>Rango intercuartílico:</strong> indica qué tan estables o volátiles fueron los precios.</li>
+        </ul>
+
+        <p>Comparar entre subgrupos permite identificar insumos con mayor variabilidad de precios 
+        y posibles presiones de mercado.</p>
+      "),
+      style = "font-size:12px; color:#4E4D4D; text-align:left; 
+               font-family:'Prompt', sans-serif; margin-top:20px;"
     )
   ),
   
   # ------------------------------------------------------------------
-  # Logo institucional (pie de página)
+  # LOGO INSTITUCIONAL (PIE DE PÁGINA)
   # ------------------------------------------------------------------
   fluidRow(
     tags$div(
       tags$img(src = "logo_2.png", style = "width: 100%; margin: 0;"),
-      style = "width: 100%; margin:0;"
+      style = "width: 100%; margin: 0;"
     )
   )
 )
+

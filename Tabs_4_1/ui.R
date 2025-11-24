@@ -138,7 +138,11 @@ ui <- fluidPage(
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
+      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).</br>
+           </br>
+           Esta visualización permite identificar las principales rutas por las cuales se transportan los alimentos hacia Bogotá y Cundinamarca desde
+           los municipios de origen del abastecimiento, donde el tono de color más rojizo, y más grosor en la línea de la ruta
+           indican mayor importancia de la misma."),
       style="font-size:12px; color:#4E4D4D; font-family:'Prompt';"
     )
   ),

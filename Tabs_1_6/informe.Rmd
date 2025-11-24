@@ -98,10 +98,12 @@ canasta.}\
 ```{r, out.width = "90%", fig.align = "center", warning=FALSE}
 print(params$plot)
 ```
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
+
+
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 \fontsize{10}{10} \selectfont `r params$mensaje2`\
 
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{Fuente: Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{Solo se muestran los productos que representan al menos un 0,5\% del volumen total de productos de origen cundinamarques reportado en las centrales de abasto del SIPSA.}\
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

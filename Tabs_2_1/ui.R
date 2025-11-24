@@ -58,8 +58,8 @@ ui <- fluidPage(
       
     "))
   ),
-    tags$h1("Diversidad de proveedores de alimentos para Cundinamarca", class = "main-header"),
-    tags$h1("Analiza cuán concentrado está el suministro de alimentos hacia Cundinamarca según los municipios de origen", class = "main-header_2"),  
+    tags$h1("Diversidad de proveedores externos de alimentos para Cundinamarca", class = "main-header"),
+    tags$h1("Analiza cuán concentrado está el suministro externo de alimentos hacia Cundinamarca según los municipios de origen", class = "main-header_2"),  
   div(
     textOutput("subtitulo"),
     class = "sub-header2",
@@ -121,6 +121,13 @@ La diferencia entre ambas áreas es el Gini.
 En resumen: <strong>mientras más se alejen los datos de la igualdad perfecta,
 más alto será el Gini.</strong>
 </p>
+
+
+<p>
+<strong>Nota:</strong> En este analisis no se consideran municipios dentro de Cundinamarca
+</p>
+
+
     "),
       style = "font-size:12px; color:#4E4D4D; text-align:left; 
              font-family:'Prompt', sans-serif; margin-top:20px;"

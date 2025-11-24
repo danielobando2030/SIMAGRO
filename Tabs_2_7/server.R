@@ -137,25 +137,25 @@ output$subtitulo <- renderText({
     mes <- nombres_meses[as.integer(mes)]
     
     if (tipo == 2) {
-      values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el ", anio ," donde se registró un índice mínimo de " , min_vulnerabilidad, " para el producto: ",producto_min_vulnerabilidad,"."))
+      values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el ", anio ," donde se registró un índice mínimo de " , min_vulnerabilidad, " para el producto: ",producto_min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
       } else if (tipo == 3) {
-        values$subtitulo <- (paste0( "La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes, " del ",anio, " donde se registró un índice mínimo de ", min_vulnerabilidad,"."))
+        values$subtitulo <- (paste0( "La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes, " del ",anio, " donde se registró un índice mínimo de ", min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
     } else if (tipo == 4) {
-      values$subtitulo <- (paste0("La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes , " del ", anio, " donde se registró un índice mínimo de ", min_vulnerabilidad, " para el producto: ",  producto_min_vulnerabilidad,"."))
+      values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes , " del ", anio, " donde se registró un índice mínimo de ", min_vulnerabilidad, " para el producto: ",  producto_min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
     } else {
-      values$subtitulo <- (paste0("La menor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el",anio, " donde se registró un índice mínimo de " , min_vulnerabilidad,"."))
+      values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el",anio, " donde se registró un índice mínimo de " , min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
     }
     return(values$subtitulo)
   })
   
 # MENSAJES: MENSAJE 1   
   output$mensaje1 <- renderText({
-    values$mensaje1 <-("El índice de Gini permite conocer el nivel de concentración de los destinos de alimentos en Cundinamarca, un mayor índice refleja menos municipios de destino para los alimentos cuyo origen esta en Cundinamarca.")
+    values$mensaje1 <-"Este coeficiente mide el nivel de concentración en los destinos de los alimentos que salen de Cundinamarca. Valores altos indican que pocos destinos concentran la mayor parte del volumen enviado (menor diversidad); valores bajos reflejan una distribución más equilibrada entre los distintos destinos (mayor diversidad)."
     values$mensaje1  
     })
 #MENSAJE: MENSAJE 2  
   output$mensaje2 <- renderUI({
-    values$mensaje2 <- ("Este índice puede aumentar si incrementa la participación de un municipio sobre el volumen total o disminuye el número de municipios de destino.")
+    values$mensaje2 <- ("Cuidado! este índice puede aumentar si incrementa la participación de un municipio o unos pocos sobre el volumen total")
     values$mensaje2
     })
   

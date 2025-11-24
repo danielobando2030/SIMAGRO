@@ -82,11 +82,11 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mybrown}{Diversidad de proveedores de alimentos para Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Diversidad de proveedores externos de alimentos para Cundinamarca}\
 <!-- Subtitulo -->
-\fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre el nivel de dependencia de los municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre el nivel de dependencia de los municipios externos proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
 <!-- Grafica -->
-```{r, out.width = "90%",warning=FALSE,message=FALSE}
+```{r, out.width = "100%",warning=FALSE,message=FALSE}
 print(params$plot)
 ```
 \fontsize{8}{8} \selectfont \textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}\
@@ -94,7 +94,7 @@ print(params$plot)
 \fontsize{10}{10} \selectfont `r params$mensaje1`\
 
 
-\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra el porcentaje acumulado de municipios que envían sus productos a Cundinamarca. Cuanto más cercana esté la curva a la línea de 45$^{\circ}$, menor será la dependencia de Cundinamarca respecto a un grupo reducido de municipios.}\
+\fontsize{8}{8} \selectfont \textcolor{mybrown}{Esta visualización muestra qué porcentaje de municipios aporta al total de productos que llegan a Cundinamarca. Si la curva se acerca a la línea de 45$^{\circ}$, significa que muchos municipios participan de forma parecida. Si se aleja, quiere decir que Cundinamarca depende de pocos municipios para la mayor parte de su abastecimiento externo.}\
 
 
 \AddToShipoutPictureBG*{\includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}}

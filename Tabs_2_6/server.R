@@ -131,13 +131,13 @@ output$subtitulo <- renderText({
   producto_min_vulnerabilidad <- resultado$producto_min_vulnerabilidad
   
   if (tipo == 2) {
-    values$subtitulo <- (paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en el" ,anio," con un índice mínimo de" , min_Gini, " para el producto ",producto_min_vulnerabilidad ))
+    values$subtitulo <- (paste("La mayor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en el" ,anio," con un índice mínimo de " , min_Gini, " para el producto ",producto_min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de origenes, índices altos reflejan poca diversidad de los territorios"))
   } else if (tipo == 3) {
-    values$subtitulo <- (paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en ",mes, " del año ",anio, "con un índice mínimo de", min_Gini ))
+    values$subtitulo <- (paste("La mayor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en ",mes, " del año ",anio, "con un índice mínimo de ", min_Gini,". Índices bajos reflejan mayor diversidad de origenes, índices altos reflejan poca diversidad de los territorios"))
   } else if (tipo == 4) {
-    values$subtitulo <- (paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en ",mes, " del año ",anio, " con un índice mínimo ", min_Gini, "para el producto" ,producto_min_vulnerabilidad))
+    values$subtitulo <- (paste("La mayor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en ",mes, " del año ",anio, " con un índice mínimo ", min_Gini, " para el producto " ,producto_min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de origenes, índices altos reflejan poca diversidad de los territorios"))
   } else {
-    values$subtitulo <-(paste("La menor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en el ",anio," con un índice mínimo de", min_Gini ))
+    values$subtitulo <-(paste("La mayor variedad de territorios conectados por el flujo de alimentos desde otros territorios hacia Cundinamarca se registró en el ",anio," con un índice mínimo de ", min_Gini,". Índices bajos reflejan mayor diversidad de origenes, índices altos reflejan poca diversidad de los territorios"))
   }
   return(values$subtitulo)
 })
@@ -150,13 +150,13 @@ output$subtitulo <- renderText({
   
 # Mensaje: MENSAJE 1  
   output$mensaje1 <- renderText({
-    values$mensaje1 <- ("El índice de Gini permite medir la concentración de los orígenes de alimentos. Un índice más alto indica alta dependencia de unos pocos municipios de origen para los alimentos que llegan a las principales plazas de abasto de Cundinamarca")
+    values$mensaje1 <- ("Este coeficiente mide el nivel de concentración en los orígenes de los alimentos que ingresan a Cundinamarca. Valores altos indican que pocos orígenes concentran la mayor parte del volumen ingresado (menor diversidad); valores bajos reflejan una distribución más equilibrada entre los distintos orígenes (mayor diversidad).")
     values$mensaje1
     })
   
 # Mensaje: MENSAJE 2
   output$mensaje2 <- renderUI({
-    values$mensaje2 <-("Este índice puede aumentar si incrementa la participación de un municipio o unos pocos sobre el volumen total")
+    values$mensaje2 <-("Cuidado! este índice puede aumentar si incrementa la participación de un municipio o unos pocos sobre el volumen total")
     values$mensaje2
     })
   

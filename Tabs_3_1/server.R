@@ -140,25 +140,22 @@ server <- function(input, output, session) {
       glue("grafico_precios_{Sys.Date()}.png")
     },
     content = function(file) {
+      
       res <- grafico_reactivo()
       
       # Guardar widget temporal HTML
       temp_html <- tempfile(fileext = ".html")
       htmlwidgets::saveWidget(as_widget(res$grafico), temp_html, selfcontained = TRUE)
       
-      # Capturar imagen visible del gráfico
+      # Capturar imagen visible del gráfico y guardarla en el archivo "file"
       webshot2::webshot(
         temp_html,
-        file = grafico_path,
+        file = file,         # ⬅⬅⬅ AQUÍ VA EL PNG FINAL
         vwidth = 1200,
         vheight = 800,
         zoom = 2,
         delay = 0.5
       )
-      
-      if (!file.exists(grafico_path)) {
-        stop(glue("No se generó el archivo PNG del gráfico: {grafico_path}"))
-      }
     }
   )
   

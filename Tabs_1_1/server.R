@@ -1,11 +1,11 @@
 # Proyecto FAO
-# Visualizacion de DATOS 2  - abastecimeinto en Medellin 
+# Visualizacion de DATOS   - abastecimeinto en bogota 
 ################################################################################-
 #Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 20/03/2024
-#Fecha de ultima modificacion: 23/04/2024
-################################################################################-
-# Limpiar el entorno de trabajo
+#Fecha de creacion: 03/04/2024
+#Modificado: Cristian Daniel Obando,m Luis Miguel Garcia
+#Fecha de ultima modificacion: 10/11/2025
+
 rm(list=ls())
 # Paquetes 
 # install.packages("Sweave")
@@ -118,17 +118,24 @@ server <- function(input, output, session) {
 values <- reactiveValues(mensaje1 = NULL)
 output$mensaje1 <- renderText({
   resultado_data <- resultado()
+  
+  complemento= switch(input$variable,
+                                  "1" = "A nivel global",
+                                  "2" = "A nivel local",
+                                  "3" ="Por fuera de cundinamarca",
+                                  NULL)
+                     
   if (nrow(resultado_data$datos) == 0) {
     validate("No hay información disponible")
   } else {
   if ( is.null(input$municipios) || input$municipios < 1) {
     values$mensaje1 <- "No hay información disponible"
   } else if (input$variable == 1) {
-    values$mensaje1 <- paste0("Para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max,digits = 1), " % del volumen total.")
+    values$mensaje1 <- paste0(complemento,", para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max,digits = 1), " % del volumen total.")
   } else if (input$variable == 2){
-    values$mensaje1 <- paste0("Para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen local.")
+    values$mensaje1 <- paste0(complemento,", para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen local.")
   } else{
-    values$mensaje1 <- paste0("Para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen externo.")
+    values$mensaje1 <- paste0(complemento,", para el producto y periodo de tiempo  seleccionado, ",resultado()$lugar_max, " se destaca como el principal proveedor de alimentos en las centrales de abasto de Bogotá, representando el ", round(resultado()$porcentaje_max, digits = 1), " % del volumen externo.")
   }
   return(values$mensaje1)
 }})

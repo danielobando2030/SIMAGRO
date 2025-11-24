@@ -137,7 +137,7 @@ ui <- fluidPage(
     column(9,
            div(
              leafletOutput("grafico", height = "450px"),
-             actionButton("descargar", "Gráfica",  icon=icon("download"), class="btn-faoc"),
+             downloadButton("descargar", "Gráfica", class = "btn-faoc"),
              downloadButton("descargarDatos", "Datos", class="btn-faoc"),
              a(
                tagList(icon("github"), " GitHub"),
@@ -180,7 +180,10 @@ ui <- fluidPage(
   # ====================== FUENTE ======================
   fluidRow(
     column(12,
-           HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA)."),
+           HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+                <br>
+                La visualización muestra la diferencia de precios promedio del producto con respecto a las centrales de abasto de Bogotá como referencia en los precios de Cundinamarca.<br>
+               <br>"),
            class="nota-metodo")
   ),
   

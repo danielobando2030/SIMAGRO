@@ -144,19 +144,36 @@ ui <- fluidPage(
     column(
       3,
       div(
-        # Primer cuadro: mensaje 1
+        # Primer cuadro — color #DBC21F
         wellPanel(
           textOutput("mensaje1"),
-          class = "well-panel-fao"
+          style = "
+        background-color:#DBC21F !important;
+        color:white !important;
+        font-weight:bold !important;
+        border-radius:8px !important;
+        padding:15px !important;
+        font-size:14px !important;
+        margin-bottom:15px !important;
+        border:none !important;
+      "
         ),
         
-        # Segundo cuadro: mensaje 2
+        # Segundo cuadro — color #B6A534
         wellPanel(
           textOutput("mensaje2"),
-          class = "well-panel-fao"
+          style = "
+        background-color:#B6A534 !important;
+        color:white !important;
+        font-weight:bold !important;
+        border-radius:8px !important;
+        padding:15px !important;
+        font-size:14px !important;
+        border:none !important;
+      "
         ),
         
-        style = "margin-left: 20px;"  # espacio contra el gráfico
+        style = "margin-left:20px;"
       )
     )
   ),
@@ -170,8 +187,9 @@ ui <- fluidPage(
     column(
       12, align = "left",
       HTML("
-        <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
-        Este módulo presenta el escalafón mensual de precios mayoristas por ciudad.
+        <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+        <br>
+        Este módulo presenta el escalafón mensual de los precios mayoristas por ciudad y mes.
       "),
       style = "font-size:12px; color:#4E4D4D;"
     )

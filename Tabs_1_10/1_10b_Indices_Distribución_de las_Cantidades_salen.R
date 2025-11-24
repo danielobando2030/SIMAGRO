@@ -1,9 +1,9 @@
 #Proyecto FAO
 #Procesamiento datos SIPSA
 ################################################################################-
-#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 24/02/2024
-#Fecha de ultima modificacion: 24/02/2024
+# Autores: Cristian Daniel Obando Arbeláez, Luis Miguel García
+# Fecha de creación: 24/02/2024
+# Fecha de ultima modificacion: 24/02/2024
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())
@@ -114,9 +114,9 @@ Caja_y_Bigotes = function(ALIMENTO = NULL, formato = "numeric") {
     plotly::layout(
       hoverlabel = list(bgcolor = "white", font = list(size = 12)))
 S=BD[BD$var1==max(as.numeric(as.character(BD$var1))),][1,]    
-Texto=paste("En el año ",max(as.numeric(as.character(BD$var1)))," se puede observar que en el 25% de los meses se alcanza un volumen de alimentos menor o igual a ",format(S$q1,decimal.mark=",",big.mark="."),
-              "En el 50% de los meses se alcanza un volumen menor o igual a ",format(S$mediana,decimal.mark=",",big.mark="."),
-              "En el 75% de los meses alcanza un volumen menor o igual a  ",format(S$q3,decimal.mark=",",big.mark="."))
+Texto=paste0("En el año ",max(as.numeric(as.character(BD$var1)))," se puede observar que en el 25% de los meses se alcanza un volumen de alimentos menor o igual a ",format(S$q1,decimal.mark=",",big.mark="."),
+              ". En el 50% de los meses se alcanza un volumen menor o igual a ",format(S$mediana,decimal.mark=",",big.mark="."),
+              ". En el 75% de los meses alcanza un volumen menor o igual a  ",format(S$q3,decimal.mark=",",big.mark="."),".")
   # --- 8. Retorno ---
   return(list(
     grafico_plano = graf,
@@ -127,5 +127,5 @@ Texto=paste("En el año ",max(as.numeric(as.character(BD$var1)))," se puede obse
   ))
 }
 
-Caja_y_Bigotes(ALIMENTO ="Repollo",formato="numeric")
-Caja_y_Bigotes(ALIMENTO =NULL,formato="numeric")
+#Caja_y_Bigotes(ALIMENTO ="Repollo",formato="numeric")
+#Caja_y_Bigotes(ALIMENTO =NULL,formato="numeric")
