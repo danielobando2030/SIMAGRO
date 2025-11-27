@@ -13,7 +13,7 @@ rm(list = ls())
 pacman::p_load(
   readr, readxl, dplyr, tidyr, janitor, lubridate, stringr, geosphere,
   arrow, osrm, sf, ggplot2, jsonlite, purrr, leaflet, scales, htmltools,
-  callr,leaflet
+  callr,leaflet, mapview
 )
 
 options(scipen = 999)
@@ -55,19 +55,24 @@ data_merged <- data_merged %>%
 
 graficar_rutas <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
   
-  # Filtro condicional ---------------------------------------------------------
+  # Filtros ---------------------------------------------------------
   if (!is.null(Año)) df <- df %>% filter(anio == Año)
   if (!is.null(Mes)) df <- df %>% filter(mes == Mes)
   if (!is.null(Producto)) df <- df %>% filter(producto == Producto)
   
-  # Evitar duplicados ----------------------------------------------------------
+  # Evitar duplicados ----------------------------------------------
   df <- df %>% distinct(codigo_mpio_destino, codigo_mpio_origen, .keep_all = TRUE)
+  
+  # Si no hay datos → devolver mapa vacío pero exportable ----------
   if (nrow(df) == 0) {
-    message("No hay datos disponibles para los filtros aplicados.")
-    return(NULL)
+    return(
+      leaflet() %>% 
+        addTiles() %>% 
+        addControl("No hay datos disponibles", position = "topright")
+    )
   }
   
-  # Escalado y color -----------------------------------------------------------
+  # Paleta ----------------------------------------------------------
   pal <- colorNumeric(
     palette = c("#332728", "#4F3032", "#743639", "#983136", "#BC222A"),
     domain = df$importancia_ruta
@@ -82,43 +87,41 @@ graficar_rutas <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
       importancia_txt = sprintf("%.2f%%", importancia_ruta * 100)
     )
   
-  # Verificar columnas de coordenadas -----------------------------------------
+  # Filtrar rutas válidas ------------------------------------------
   df <- df %>% filter(!is.na(routes_coords_str), routes_coords_str != "")
   
-  # Convertir rutas a lista de coordenadas ------------------------------------
+  if (nrow(df) == 0) {
+    return(
+      leaflet() %>% 
+        addTiles() %>% 
+        addControl("No hay rutas disponibles", position = "topright")
+    )
+  }
+  
+  # Parse rutas -----------------------------------------------------
   rutas_list <- purrr::map(df$routes_coords_str, function(coords_str) {
-    coords_str <- as.character(coords_str)
-    if (is.na(coords_str) || coords_str == "") return(NULL)
-    coords <- str_split(coords_str, ";")[[1]]
+    coords <- str_split(as.character(coords_str), ";")[[1]]
     mat <- do.call(rbind, str_split(coords, ","))
     suppressWarnings(matrix(as.numeric(mat), ncol = 2, byrow = FALSE))
   })
   
-  # Crear mapa base ------------------------------------------------------------
-  titulo <- paste0(
-    ifelse(!is.null(Producto) && Producto != "", paste0("Producto: ", Producto, " | "), ""),
-    ifelse(!is.null(Año) && Año != "", paste0("Año: ", Año, " | "), ""),
-    ifelse(!is.null(Mes) && Mes != "", paste0("Mes: ", Mes), "")
-  )
+  valid_idx <- which(!purrr::map_lgl(rutas_list, ~ is.null(.x) || any(is.na(.x))))
   
-  titulo_html <- HTML(paste0("<strong>", titulo, "</strong>"))
+  # Mapa base -------------------------------------------------------
+  titulo <- paste0(
+    ifelse(!is.null(Producto), paste0("Producto: ", Producto, " | "), ""),
+    ifelse(!is.null(Año), paste0("Año: ", Año, " | "), ""),
+    ifelse(!is.null(Mes), paste0("Mes: ", Mes), "")
+  )
   
   map <- leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
     addTiles() %>%
-    addControl(as.character(titulo_html), position = "topright")
+    addControl(titulo, position = "topright")
   
-  # Filtrar rutas válidas ------------------------------------------------------
-  valid_idx <- which(!purrr::map_lgl(rutas_list, is.null))
-  
-  # Añadir líneas --------------------------------------------------------------
+  # Agregar líneas --------------------------------------------------
   for (i in valid_idx) {
     coords <- rutas_list[[i]]
-    if (nrow(coords) < 2 || any(is.na(coords))) next
-    
-    label_txt <- paste0(
-      "Origen: ", df$mpio_origen_fmt[i], " (", df$depto_origen_fmt[i], ")<br>",
-      "Importancia de la ruta: ", df$importancia_txt[i]
-    )
+    if (is.null(coords) || nrow(coords) < 2) next
     
     map <- map %>%
       addPolylines(
@@ -127,13 +130,17 @@ graficar_rutas <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
         color = df$color_hex[i],
         weight = df$grosor[i],
         opacity = 0.8,
-        label = htmltools::HTML(label_txt),
-        labelOptions = labelOptions(noHide = FALSE, direction = "top")
+        label = htmltools::HTML(
+          paste0(
+            "Origen: ", df$mpio_origen_fmt[i], " (", df$depto_origen_fmt[i], ")<br>",
+            "Importancia: ", df$importancia_txt[i]
+          )
+        )
       )
   }
   
-  # Leyenda --------------------------------------------------------------------
-  map %>%
+  # Leyenda ---------------------------------------------------------
+  map <- map %>%
     addLegend(
       "bottomright",
       pal = pal,
@@ -142,7 +149,10 @@ graficar_rutas <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
       labFormat = labelFormat(suffix = "%", transform = function(x) x * 100),
       opacity = 0.9
     )
+  
+  return(map)
 }
+
 
 ################################################################################-
 # Ejemplo de uso directo (fuera de Shiny)

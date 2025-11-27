@@ -59,7 +59,7 @@ ui <- fluidPage(
       }
     "))
   ),
-  tags$h1("Destino de los alimentos de origen cundinamarques", class = "main-header"),
+  tags$h1("Ciudades destino de los alimentos (volumen)  de Cundinamarca", class = "main-header"),
   tags$h1("Descubre las principales ciudades receptores de alimentos con origen Cundinamarca según el SIPSA.", class = "main-header_2"),
   #div(
   #  textOutput("subtitulo"),

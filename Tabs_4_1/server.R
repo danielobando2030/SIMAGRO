@@ -99,24 +99,33 @@ server <- function(input, output, session) {
   })
   
   # -----------------------------------------------------------
-  # Descargar gráfica
+  # Descargar gráfica (Leaflet) — versión estable con mapshot
   # -----------------------------------------------------------
   grafico_plano <- reactive({
     res <- resultado()
     if (is.character(res)) return(NULL)
     
-    tmp_html <- tempfile(fileext=".html")
-    tmp_png  <- tempfile(fileext=".png")
+    tmp_html <- tempfile(fileext = ".html")
+    tmp_png  <- tempfile(fileext = ".png")
     
-    saveWidget(res$grafico_leaf, tmp_html, selfcontained=TRUE)
-    webshot2::webshot(tmp_html, tmp_png, vwidth=1600, vheight=1000)
+    htmlwidgets::saveWidget(res$grafico_leaf, tmp_html, selfcontained = TRUE)
+    
+    webshot2::webshot(
+      tmp_html, 
+      tmp_png,
+      vwidth  = 1600,
+      vheight = 1000
+    )
     
     tmp_png
   })
   
   output$descargar <- downloadHandler(
     filename = function(){
-      paste0("grafica_rutas_", input$anio, "_", mes_nombre_a_numero[input$mes], "_", input$producto, ".png")
+      paste0("grafica_rutas_", input$anio, "_",
+             mes_nombre_a_numero[input$mes], "_",
+             gsub(" ", "_", input$producto),
+             ".png")
     },
     content = function(file){
       file.copy(grafico_plano(), file)

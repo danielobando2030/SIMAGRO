@@ -50,10 +50,11 @@ server <- function(input, output, session) {
   })
   
   ###########################################################################
-  # 1. INICIALIZAR SELECTINPUTS
+  # 1. INICIALIZAR SELECTINPUTS  (CAMBIO MINIMO)
   ###########################################################################
   observe({
     
+    # Se ejecuta SOLO AL INICIAR, porque no depende de inputs
     updateSelectInput(session, "anio",
                       choices  = sort(unique(data_cierres_final$anio)),
                       selected = ifelse(2024 %in% data_cierres_final$anio, 2024,
@@ -67,7 +68,7 @@ server <- function(input, output, session) {
                       selected = "12")
     
     updateSelectInput(session, "producto",
-                      choices  = sort(unique(data_cierres_final$producto)),
+                      choices = sort(unique(data_cierres_final$producto)),
                       selected = ifelse("Aguacate Hass" %in% data_cierres_final$producto,
                                         "Aguacate Hass",
                                         data_cierres_final$producto[1]))
@@ -92,6 +93,36 @@ server <- function(input, output, session) {
     if (nrow(df) == 0) return(NULL)
     df
   })
+  
+  ###########
+  
+  output$descargar <- downloadHandler(
+    filename = function() {
+      glue("grafico_rutas_{input$anio}_{input$mes}_{input$producto}.png")
+    },
+    content = function(file) {
+      
+      df <- datos_filtrados()
+      if (is.null(df)) {
+        showNotification("No hay datos para generar el mapa.", type = "error")
+        return(NULL)
+      }
+      
+      # 1. Crear mapa leaflet
+      mapa <- graficar_rutas_color_importancia(
+        df,
+        Año      = input$anio,
+        Mes      = as.integer(input$mes),
+        Producto = input$producto
+      )
+      
+      # 2. Exportar PNG usando tu función robusta (que ya tienes)
+      tmp_png <- grafico_plano(mapa)
+      
+      # 3. Copiar al archivo final
+      file.copy(tmp_png, file, overwrite = TRUE)
+    }
+  )
   
   ###########################################################################
   # 3. MENSAJE 1 (TEXTO DERECHO)
@@ -166,18 +197,31 @@ server <- function(input, output, session) {
   })
   
   ###########################################################################
-  # 7. RESET
+  # 7. RESET (con bloqueo de eventos JS para evitar loop)
   ###########################################################################
   observeEvent(input$reset, {
-    updateSelectInput(session, "anio", selected = 2024)
-    updateSelectInput(session, "mes", selected = "12")
+    
+    # Bloquear eventos de checkboxes mientras se actualizan
+    session$sendCustomMessage("block_checkbox_events", TRUE)
+    
+    # Asegurar que se re-activen aunque falle algo
+    on.exit({
+      session$sendCustomMessage("block_checkbox_events", FALSE)
+    }, add = TRUE)
+    
+    # Actualizar selects
+    updateSelectInput(session, "anio",     selected = 2024)
+    updateSelectInput(session, "mes",      selected = "12")
     updateSelectInput(session, "producto", selected = "Aguacate Hass")
     
+    # Actualizar checkboxes
     rutas <- c("r_Noroccidente","r_Nororiente","r_Norte",
                "r_Oriente","r_Suroriente","r_Sur",
                "r_Suroccidente","r_Occidente")
     
-    for (r in rutas) updateCheckboxInput(session, r, TRUE)
+    for (r in rutas) {
+      updateCheckboxInput(session, r, TRUE)
+    }
   })
   
   ###########################################################################

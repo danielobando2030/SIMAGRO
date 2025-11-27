@@ -167,7 +167,46 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
   return(map)
 }
 
-
+# -------------------------------------------------------------------------
+# FUNCIÓN ROBUSTA PARA EXPORTAR UN LEAFLET A PNG  (100% FUNCIONAL)
+# -------------------------------------------------------------------------
+grafico_plano <- function(mapa_leaflet) {
+  
+  if (is.null(mapa_leaflet)) return(NULL)
+  
+  tmp_dir  <- tempdir()
+  tmp_html <- file.path(tmp_dir, "mapa_tmp.html")
+  tmp_png  <- file.path(tmp_dir, "mapa_tmp.png")
+  
+  # 1. Guardar HTML sin que falle
+  ok1 <- tryCatch({
+    htmlwidgets::saveWidget(
+      widget = mapa_leaflet,
+      file   = tmp_html,
+      selfcontained = TRUE
+    )
+    TRUE
+  }, error = function(e) FALSE)
+  
+  if (!ok1) return(NULL)
+  
+  # 2. Capturar PNG con webshot2 (Chrome integrado)
+  ok2 <- tryCatch({
+    webshot2::webshot(
+      url    = tmp_html,
+      file   = tmp_png,
+      vwidth = 1600,
+      vheight = 900,
+      zoom   = 1,
+      delay  = 1
+    )
+    TRUE
+  }, error = function(e) FALSE)
+  
+  if (!ok2) return(NULL)
+  
+  return(tmp_png)
+}
 
 
 # ---- Ejemplo de uso ----

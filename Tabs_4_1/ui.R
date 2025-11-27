@@ -71,7 +71,7 @@ ui <- fluidPage(
       .shiny-download-link {
         background-color: transparent !important;
         border: 1.6px solid #cccccc !important;
-        color: #4E4D4D !important;
+        color:#4E4D4D !important;
         font-weight:500 !important;
         border-radius:6px !important;
         height:36px !important;
@@ -105,7 +105,8 @@ ui <- fluidPage(
       9,
       leafletOutput("grafico", height=480),
       br(),
-      actionButton("descargar", "Gráfica", icon=icon("download"), class="btn-faoc"),
+      # ⬇⬇⬇ AQUÍ VA EL CAMBIO IMPORTANTE ⬇⬇⬇
+      downloadButton("descargar", "Gráfica", class="btn-faoc"),
       downloadButton("descargarDatos", "Datos", class="btn-faoc"),
       a("GitHub", href="https://github.com/danielobando2030/SIMAGRO",
         target="_blank", class="btn-faoc", icon("github")),
@@ -115,7 +116,6 @@ ui <- fluidPage(
     
     column(
       3,
-      
       div(class="panel-981338",
           div("Municipio con mayor importancia"),
           div(textOutput("region_mas_importante"))
@@ -126,7 +126,6 @@ ui <- fluidPage(
           div(textOutput("region_menos_importante"))
       ),
       
-      # PANEL 3: SOLO EL MENSAJE — SIN TÍTULO
       div(class="panel-4F3032",
           div(textOutput("mensaje_interpretativo"))
       )

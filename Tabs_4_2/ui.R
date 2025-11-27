@@ -1,6 +1,6 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# UI – Mapa de Rutas por Regiones (estilo módulo 3_9 Huella de Carbono)
+# UI – Mapa de Rutas por Regiones (versión FINAL sin loop)
 ################################################################################-
 
 library(shiny)
@@ -11,11 +11,24 @@ source("4_2b_cierres_rutas_abastecimiento.R")  # contiene graficar_rutas_color_i
 ui <- fluidPage(
   
   ###########################################################################
-  # SCRIPT PARA CHECKBOXES MANUALES
+  # SCRIPTS JS PARA CHECKBOXES (con bloqueo y SIN LOOP)
   ###########################################################################
+  
+  # Variable global JS
+  tags$script("window.blockCheckboxEvents = false;"),
+  
+  # Handler para activar/desactivar bloqueo desde el servidor
+  tags$script("
+    Shiny.addCustomMessageHandler('block_checkbox_events', function(value){
+      window.blockCheckboxEvents = value;
+    });
+  "),
+  
+  # Script que envía cambios SOLO cuando no está bloqueado (versión corregida)
   tags$script("
     $(document).on('change', 'input[type=checkbox]', function() {
-      Shiny.setInputValue(this.id, this.checked, {priority: 'event'});
+      if (window.blockCheckboxEvents) return;
+      Shiny.setInputValue(this.id, this.checked, {priority: 'defer'});
     });
   "),
   
@@ -26,8 +39,8 @@ ui <- fluidPage(
     tags$title("Mapa de rutas por cierres – FAO 2025"),
     
     tags$link(
-      rel="stylesheet", type="text/css",
-      href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
+      rel = "stylesheet", type = "text/css",
+      href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
     ),
     
     tags$style(HTML("
@@ -74,10 +87,9 @@ ui <- fluidPage(
 
       /* BOTONES FAO */
       .btn-faoc,
-      .btn,
-      .btn-default,
       .shiny-download-link,
-      .shiny-action-button {
+      .shiny-action-button,
+      .btn {
         background-color: transparent !important;
         border: 1px solid #bfbfbf !important;
         color: #4E4D4D !important;
@@ -176,43 +188,36 @@ ui <- fluidPage(
                          style="accent-color:#e31a1c;"),
               tags$label("Noroccidente", `for`="r_Noroccidente")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Nororiente", checked="checked",
                          style="accent-color:#ff7f00;"),
               tags$label("Nororiente", `for`="r_Nororiente")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Norte", checked="checked",
                          style="accent-color:#6a3d9a;"),
               tags$label("Norte", `for`="r_Norte")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Oriente", checked="checked",
                          style="accent-color:#1f78b4;"),
               tags$label("Oriente", `for`="r_Oriente")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Suroriente", checked="checked",
                          style="accent-color:#b2df8a;"),
               tags$label("Suroriente", `for`="r_Suroriente")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Sur", checked="checked",
                          style="accent-color:#b15928;"),
               tags$label("Sur", `for`="r_Sur")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Suroccidente", checked="checked",
                          style="accent-color:#a6cee3;"),
               tags$label("Suroccidente", `for`="r_Suroccidente")
           ),
-          
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Occidente", checked="checked",
                          style="accent-color:#33a02c;"),
@@ -235,7 +240,7 @@ ui <- fluidPage(
         leafletOutput("grafico", height="480px"),
         br(),
         
-        actionButton("descargar", "Gráfica", icon = icon("download"), class="btn-faoc"),
+        downloadButton("descargar", "Gráfica", class="btn-faoc"),
         downloadButton("descargarDatos", "Datos", class="btn-faoc"),
         
         tags$a(
@@ -272,19 +277,19 @@ ui <- fluidPage(
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-          <br> Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca. Las
-           Líneas más gruesas indican mayor importancia de la ruta de abastecimiento."),
+      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+           Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca. 
+           Las líneas más gruesas indican mayor importancia de la ruta de abastecimiento."),
       class="footer-text"
     )
   ),
   
   ###########################################################################
-  # LOGO FINAL
+  # LOGO INFERIOR
   ###########################################################################
   fluidRow(
     tags$div(
-      tags$img(src="logo_2.png", style="width:100%; margin:0; padding:0;"),
+      tags$img(src="logo_4.png", style="width:100%; margin:0; padding:0;"),
       style="width:100%; margin:0;"
     )
   )

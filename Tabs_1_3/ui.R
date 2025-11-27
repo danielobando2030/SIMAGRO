@@ -61,7 +61,7 @@ ui <- fluidPage(
       }
     "))
   ),
-  tags$h1("Contribución de Cundinamarca al Abastecimiento Nacional", class = "main-header"),
+  tags$h1("Contribución de Cundinamarca al Abastecimiento de otros departamentos", class = "main-header"),
   tags$h1("Descubre la proporción del volumen de alimentos enviados desde Cundinamarca hacia otros departamentos del país", class = "main-header_2"),
   #div(
   # textOutput("subtitulo"),

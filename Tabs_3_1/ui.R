@@ -8,6 +8,9 @@ library(plotly)
 library(dplyr)
 library(stringr)
 
+
+Sys.setlocale("LC_TIME", "Spanish")
+
 ui <- fluidPage(
   
   # ------------------------------------------------------------------
