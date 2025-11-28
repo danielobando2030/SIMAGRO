@@ -31,6 +31,25 @@ rutas       <- readRDS("rutas_abas.rds")
 # Unir rutas a base principal
 data_merged <- left_join(data_merged, rutas, by = c("codigo_mpio_origen"))
 
+# ============================================================
+# ELIMINAR VARIABLES QUE EL DASHBOARD NO NECESITA
+# ============================================================
+data_merged <- data_merged %>% 
+  select(
+    # FILTROS
+    anio, mes, producto,
+    
+    # MAPA
+    codigo_mpio_destino,
+    codigo_mpio_origen,
+    mpio_origen,
+    depto_origen,
+    routes_coords_str,
+    
+    # CÁLCULOS
+    suma_kg
+  )
+
 # Liberar memoria
 remove(rutas)
 

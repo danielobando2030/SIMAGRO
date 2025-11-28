@@ -28,6 +28,22 @@ latex_escape <- function(txt) {
   return(txt)
 }
 
+html_to_latex <- function(txt) {
+  if (is.null(txt) || is.na(txt)) return("")
+  
+  # 1. Escapar caracteres problemáticos para LaTeX
+  txt <- gsub("%", "\\\\%", txt)
+  txt <- gsub("&", "\\\\&", txt)
+  txt <- gsub("#", "\\\\#", txt)
+  txt <- gsub("_", "\\\\_", txt)
+  
+  # 2. Convertir <b>...</b> a \textbf{...}
+  txt <- gsub("<b>", "\\\\textbf{", txt)
+  txt <- gsub("</b>", "}", txt)
+  
+  return(txt)
+}
+
 # Cargar función y datos
 
 server <- function(input, output, session) {
@@ -48,12 +64,7 @@ server <- function(input, output, session) {
     rutas
   })
   
-  html_to_latex <- function(txt){
-    txt <- gsub("<b>", "\\\\textbf{", txt)
-    txt <- gsub("</b>", "}", txt)
-    return(txt)
-  }
-  
+
   
   ###########################################################################
   # 1. INICIALIZAR SELECTINPUTS  (CAMBIO MINIMO)
@@ -163,7 +174,7 @@ server <- function(input, output, session) {
   ###########################################################################
   # 4. MENSAJE 2 (TEXTO DERECHO)
   ###########################################################################
-  mensaje2_reactivo <- reactive({
+  mensaje2_reactivo <- function(raw = FALSE) {
     df <- datos_filtrados()
     if (is.null(df)) return("Sin datos")
     
@@ -175,11 +186,14 @@ server <- function(input, output, session) {
     
     rutas_txt <- paste(str_to_title(ranking$region_geo), collapse = ", ")
     
-    txt <- glue("Las rutas de abastecimiento en Cundinamarca por orden de importancia en el periodo y para el
-producto seleccionado son: {rutas_txt}.")
+    txt <- glue(
+      "Las rutas de abastecimiento en Cundinamarca por orden de importancia en el periodo y para el ",
+      "producto seleccionado son: {rutas_txt}."
+    )
     
-    latex_escape(txt)
-  })
+    if (raw) return(txt)          # para el PDF (texto plano, sin escapar)
+    return(latex_escape(txt))     # para el panel derecho (como antes)
+  }
   
   ###########################################################################
   # 4. MENSAJE 3 (TEXTO DERECHO)
@@ -350,6 +364,8 @@ producto seleccionado son: {rutas_txt}.")
         grafico_png = tmp_png,
         logo_sup    = logo_sup,
         logo_inf    = logo_inf,
+        
+        # Textos convertidos a LaTeX (sin <b>)
         mensaje1    = html_to_latex(mensaje1_reactivo(raw = TRUE)),
         mensaje2    = html_to_latex(mensaje2_reactivo(raw = TRUE)),
         mensaje3    = html_to_latex(mensaje3_reactivo(raw = TRUE))

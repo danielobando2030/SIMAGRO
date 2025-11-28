@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.28)  28 NOV 2025 14:26
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.28)  28 NOV 2025 13:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**C:/Users/Usuario/AppData/Local/Temp/RtmpeQ9h32/informe_corr_7adccfb1b21/informe_correlacion.tex
-(c:/Users/Usuario/AppData/Local/Temp/RtmpeQ9h32/informe_corr_7adccfb1b21/informe_correlacion.tex
+**C:/Users/Usuario/AppData/Local/Temp/RtmpeQ9h32/file7adc52444970.tex
+(c:/Users/Usuario/AppData/Local/Temp/RtmpeQ9h32/file7adc52444970.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-14>
 (c:/Users/Usuario/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -643,8 +643,8 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
 ) (c:/Users/Usuario/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/bookmark/bkm-dvipdfm.def
 File: bkm-dvipdfm.def 2023-12-10 v1.31 bookmark driver for dvipdfm (HO)
 \BKM@id=\count343
-)) (./informe_correlacion.aux)
-\openout1 = `informe_correlacion.aux'.
+)) (./file7adc52444970.aux)
+\openout1 = `file7adc52444970.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 88.
 LaTeX Font Info:    ... okay on input line 88.
@@ -958,37 +958,23 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 99.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/n' will be
-(Font)              scaled to size 14.0pt on input line 107.
+(Font)              scaled to size 14.0pt on input line 110.
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 112.
-File: ../../../../AppData/Local/Temp/RtmpeQ9h32/informe_corr_7adccfb1b21/grafico_tmp.png Graphic file (type bmp)
-<../../../../AppData/Local/Temp/RtmpeQ9h32/informe_corr_7adccfb1b21/grafico_tmp.png>
+(Font)              scaled to size 12.0pt on input line 115.
+File: ../../../../AppData/Local/Temp/RtmpeQ9h32/file7adc58d414e.png Graphic file (type bmp)
+<../../../../AppData/Local/Temp/RtmpeQ9h32/file7adc58d414e.png>
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/n' will be
-(Font)              scaled to size 8.0pt on input line 124.
+(Font)              scaled to size 8.0pt on input line 127.
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/b/n' will be
-(Font)              scaled to size 8.0pt on input line 126.
-LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/b/n' will be
-(Font)              scaled to size 12.0pt on input line 134.
+(Font)              scaled to size 8.0pt on input line 129.
 
 LaTeX Font Warning: Font shape `TU/Prompt-Regular.ttf(0)/m/sl' undefined
-(Font)              using `TU/Prompt-Regular.ttf(0)/m/n' instead on input line 173.
+(Font)              using `TU/Prompt-Regular.ttf(0)/m/n' instead on input line 151.
 
 File: www/logo_3.png Graphic file (type bmp)
 <www/logo_3.png>
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/sl' will be
-(Font)              scaled to size 10.0pt on input line 173.
-
-Package fancyhdr Warning: \headheight is too small (56.9055pt): 
-(fancyhdr)                Make it at least 60.08264pt, for example:
-(fancyhdr)                \setlength{\headheight}{60.08264pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-3.17714pt}.
-
-[1
-
-]
-File: www/logo_3.png Graphic file (type bmp)
-<www/logo_3.png>
+(Font)              scaled to size 10.0pt on input line 151.
 
 Package fancyhdr Warning: \headheight is too small (56.9055pt): 
 (fancyhdr)                Make it at least 60.08264pt, for example:
@@ -998,7 +984,9 @@ Package fancyhdr Warning: \headheight is too small (56.9055pt):
 
 File: www/logo_4.png Graphic file (type bmp)
 <www/logo_4.png>
-[2] (./informe_correlacion.aux)
+[1
+
+] (./file7adc52444970.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-14>
@@ -1008,12 +996,12 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 18632 strings out of 470180
- 343075 string characters out of 5476331
- 894820 words of memory out of 5000000
- 46985 multiletter control sequences out of 15000+600000
+ 18631 strings out of 470180
+ 342509 string characters out of 5476331
+ 894811 words of memory out of 5000000
+ 46984 multiletter control sequences out of 15000+600000
  631326 words of font info for 74 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,11n,116p,434b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,11n,116p,406b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on informe_correlacion.pdf (2 pages).
+Output written on file7adc52444970.pdf (1 page).
