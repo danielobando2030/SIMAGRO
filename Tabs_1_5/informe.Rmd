@@ -85,7 +85,7 @@ tabla_kable
 
 ```
 <!-- Titulo del tablaro -->
-\fontsize{15}{15} \selectfont \textcolor{mybrown}{Principales alimentos en centrales de abasto de Bogotá, por volumen de ingreso}\
+\fontsize{15}{15} \selectfont \textcolor{mybrown}{Principales productos por volumen que ingresan a Bogotá}\
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Visualiza los alimentos más destacados en las centrales de abasto de Bogotá, basado en su volumen de entrada}\
 <!-- Subtitulo dinamico -->

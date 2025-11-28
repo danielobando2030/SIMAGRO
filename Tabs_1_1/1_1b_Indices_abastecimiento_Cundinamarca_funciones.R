@@ -140,8 +140,10 @@ importancia <- function(tipo, Año = NULL, Mes = NULL, municipios = 10, Producto
   )
   df$tooltip_text <- paste0("Ciudad de origen: ", df$mpio_origen, "<br>Porcentaje: ", round(df$columna_porcentaje*100,digits = 1),"%")
   
+
     graf <- ggplot(df, aes(x =  forcats::fct_reorder(municipio_r, as.numeric(all_of(columna_porcentaje))), y = as.numeric(all_of(columna_porcentaje)), fill =  mpio_origen, text = tooltip_text)) +
     geom_bar(stat = "identity") +
+    ylim(c(0,max(df$columna_porcentaje)*1.3))+
     geom_text(aes(label = scales::percent(as.numeric(all_of(columna_porcentaje)), accuracy = 0.1)), hjust = 0, color ="#4E4D4D",family = "sans") +
     coord_flip() +
     labs(x = " ", y = "Porcentaje", title = " ") +

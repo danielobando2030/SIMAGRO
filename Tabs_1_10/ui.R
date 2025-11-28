@@ -59,7 +59,7 @@ ui <- fluidPage(
       
     "))
   ),
-    tags$h1("Distribución del volumen mensual de alimentos que salen de Cundinamarca por año", class = "main-header"),  
+    tags$h1("Distribución del volumen de alimentos que salen de Cundinamarca", class = "main-header"),  
   div(
     textOutput("subtitulo"),
     class = "sub-header2",

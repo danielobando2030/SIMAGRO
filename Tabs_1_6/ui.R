@@ -56,7 +56,7 @@ ui <- fluidPage(
       }
     "))
   ),
-  tags$h1("Cundinamarca en los mercados: Principales productos por volumen", class = "main-header"),
+  tags$h1("Principales productos de Cundinamarca por volumen en los mercados", class = "main-header"),
   tags$h1("Principales productos de Cundinamarca en otros mercados: volumen y composición de la canasta.", class = "main-header_2"),
   div(
     textOutput("subtitulo"),

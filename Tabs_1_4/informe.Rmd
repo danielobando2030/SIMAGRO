@@ -88,7 +88,7 @@ tabla_kable
 
 <!-- Titulo del tablaro -->
 \fontsize{14}{14} \selectfont \textcolor{mybrown}{Ciudades destino de los alimentos (volumen)  de Cundinamarca}\
-\fontsize{12}{11} \selectfont \textcolor{mybrown}{Descubre las principales ciudades receptores de alimentos con origen Cundinamarca según el SIPSA.}\
+\fontsize{12}{11} \selectfont \textcolor{mybrown}{Descubre las principales ciudades que reciben alimentos con origen Cundinamarca según el SIPSA.}\
 <!-- Grafica -->
 ```{r, out.width = "95%", fig.align = "center", warning=FALSE, message=FALSE}
 print(params$plot)

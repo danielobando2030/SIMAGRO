@@ -60,7 +60,7 @@ ui <- fluidPage(
     "))
   ),
   tags$h1("Ciudades destino de los alimentos (volumen)  de Cundinamarca", class = "main-header"),
-  tags$h1("Descubre las principales ciudades receptores de alimentos con origen Cundinamarca según el SIPSA.", class = "main-header_2"),
+  tags$h1("Descubre las principales ciudades que reciben alimentos con origen Cundinamarca según el SIPSA.", class = "main-header_2"),
   #div(
   #  textOutput("subtitulo"),
   #  class = "sub-header2",

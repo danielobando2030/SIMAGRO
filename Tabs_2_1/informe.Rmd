@@ -82,7 +82,7 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mybrown}{Diversidad de proveedores externos de alimentos para Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Nivel de concentración de municipios que proveen alimentos a Cundinamarca}\
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre el nivel de dependencia de los municipios externos proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
 <!-- Grafica -->

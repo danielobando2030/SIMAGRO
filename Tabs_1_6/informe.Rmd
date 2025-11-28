@@ -88,7 +88,7 @@ tabla_kable
 
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mybrown}{Cundinamarca en los mercados: Principales productos por volumen}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Principales productos de Cundinamarca por volumen en los mercados}\
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Principales productos de Cundinamarca en otros mercados: volumen y composición de la 
 canasta.}\

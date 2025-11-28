@@ -76,7 +76,7 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mybrown}{Distribución de la cantidad de productos que salen de Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Distribución del volumen de alimentos que salen de Cundinamarca}\
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Descubre cómo se comporta la cantidad mensual de productos que salen de Cundinamarca según el SIPSA.}\
 <!-- Grafica -->

@@ -55,7 +55,7 @@ ui <- fluidPage(
       }
     "))
   ),
-  tags$h1("Principales alimentos en centrales de abasto de Bogotá, por porcentaje de volumen de ingreso", class = "main-header"),
+  tags$h1("Principales productos por volumen que ingresan a Bogotá", class = "main-header"),
   tags$h1("Visualiza los alimentos más destacados en las centrales de abasto de Bogotá, basado en su volumen de entrada", class = "main-header_2"),
   div(
     textOutput("subtitulo"),

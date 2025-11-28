@@ -82,7 +82,7 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{mybrown}{Diversidad de destinos de los alimentos de Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{mybrown}{Nivel de concentración de municipios destino de alimentos de Cundinamarca}\
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{mybrown}{Analiza cuán concentrado está el suministro de alimentos desde Cundinamarca hacia los municipios de destino sin tener en cuenta a Bogotá.}\
 <!-- Grafica -->
