@@ -1,10 +1,9 @@
-#Proyecto FAO
-#INDICE DE IMPORTANCIA DE LOS MUNICIPIOS EN EL ABASTECIMIENTO DE ANTIOQUIA
-#FUNCIONES
-################################################################################
-#Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 24/04/2024
-#Fecha de ultima modificacion: 24/04/2024
+# Proyecto FAO
+# Visualizacion de DATOS   - abastecimeinto en bogota 
+################################################################################-
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia,Juan Carlos Muñoz Mora, Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################
 # Paquetes 
 library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)

@@ -1,9 +1,9 @@
 # Proyecto FAO
 # Visualizacion de DATOS   - abastecimeinto en resto 
 ################################################################################-
-#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 20/03/2024
-#Fecha de ultima modificacion: 23/04/2024
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
+#Fecha de creacion: 09/11/2025
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())

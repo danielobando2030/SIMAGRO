@@ -2,8 +2,9 @@
 # Proyecto FAO - VP - 2025
 # Servidor - Módulo 3_10: Precios de Insumos Agrícolas
 ################################################################################
-# Autores: Cristian Daniel Obando, Luis Miguel García, Laura Quintero
-# Última edición: 2025/11/11
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
+#Fecha de creacion: 09/11/2025
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################
 
 # Paquetes

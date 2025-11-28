@@ -1,9 +1,9 @@
 #Proyecto FAO
 #Procesamiento datos SIPSA
 ################################################################################-
-# Autores: Cristian Daniel Obando Arbeláez, Luis Miguel García
-# Fecha de creación: 24/02/2024
-# Fecha de ultima modificacion: 24/02/2024
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
+#Fecha de creacion: 09/11/2025
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())

@@ -1,9 +1,9 @@
 #Proyecto FAO
 #INDICE Herfindahl–Hirschman - shiny 2 - De donde viene la comida (municipios)
 ################################################################################
-#Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 14/03/2024
-#Fecha de ultima modificacion: 21/02/2024
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
+#Fecha de creacion: 09/11/2025
+#Fecha de ultima modificacion: 28/11/2025
 # Funcion 8
 ################################################################################
 # Paquetes 

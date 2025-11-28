@@ -29,7 +29,6 @@ latex_escape <- function(txt) {
 }
 
 # Cargar función y datos
-source("4_2b_cierres_rutas_abastecimiento.R")   
 
 server <- function(input, output, session) {
   
@@ -48,6 +47,13 @@ server <- function(input, output, session) {
     if (isTRUE(input$r_Occidente))    rutas <- c(rutas, "Occidente")
     rutas
   })
+  
+  html_to_latex <- function(txt){
+    txt <- gsub("<b>", "\\\\textbf{", txt)
+    txt <- gsub("</b>", "}", txt)
+    return(txt)
+  }
+  
   
   ###########################################################################
   # 1. INICIALIZAR SELECTINPUTS  (CAMBIO MINIMO)
@@ -127,30 +133,32 @@ server <- function(input, output, session) {
   ###########################################################################
   # 3. MENSAJE 1 (TEXTO DERECHO)
   ###########################################################################
-  mensaje1_reactivo <- reactive({
+  
+  mensaje1_reactivo <- function(raw = FALSE) {
     df <- datos_filtrados()
     if (is.null(df)) return("Sin datos")
     
-    resumen <- df %>% 
+    resumen_mes <- df %>% 
       group_by(region_geo) %>% 
       summarise(
-        prop_region = mean(prop_region_producto, na.rm = TRUE),
-        kg_region   = sum(suma_kg, na.rm = TRUE),
+        kg = sum(suma_kg, na.rm = TRUE),
         .groups = "drop"
       )
     
-    if (nrow(resumen) == 0) return("Sin datos")
+    total_mes <- sum(resumen_mes$kg, na.rm = TRUE)
     
-    top <- resumen %>% slice_max(prop_region, n = 1)
+    top <- resumen_mes %>% slice_max(kg, n = 1)
+    pct <- round((top$kg / total_mes) * 100, 1)
     
     txt <- glue(
-      "La ruta más importante es {str_to_title(top$region_geo)}, ",
-      "representando el {round(top$prop_region * 100, 1)}% ",
-      "del volumen total ({format(top$kg_region, big.mark='.', decimal.mark=',')} kg)."
+      "La ruta externa al departamento más importante para el abastecimiento de Cundinamarca es ",
+      "<b>{str_to_title(top$region_geo)}</b>, ",
+      "representando el <b>{pct}%</b> del total de volumen de ingreso a las principales centrales de abasto."
     )
     
-    latex_escape(txt)
-  })
+    if (raw) return(txt)
+    return(latex_escape(txt))
+  }
   
   ###########################################################################
   # 4. MENSAJE 2 (TEXTO DERECHO)
@@ -167,16 +175,78 @@ server <- function(input, output, session) {
     
     rutas_txt <- paste(str_to_title(ranking$region_geo), collapse = ", ")
     
-    txt <- glue("Las rutas por orden de importancia son: {rutas_txt}.")
+    txt <- glue("Las rutas de abastecimiento en Cundinamarca por orden de importancia en el periodo y para el
+producto seleccionado son: {rutas_txt}.")
     
     latex_escape(txt)
   })
   
   ###########################################################################
+  # 4. MENSAJE 3 (TEXTO DERECHO)
+  ###########################################################################
+  
+  mensaje3_reactivo <- function(raw = FALSE) {
+    # Data filtrada por año, mes y producto (todas las rutas)
+    df_mes <- data_cierres_final %>%
+      filter(
+        anio == input$anio,
+        mes == as.integer(input$mes),
+        producto == input$producto
+      )
+    
+    if (nrow(df_mes) == 0) return("Sin datos")
+    
+    # Total del mes
+    total_mes <- sum(df_mes$suma_kg, na.rm = TRUE)
+    
+    # Rutas seleccionadas por el usuario
+    sel <- rutas_seleccionadas()
+    
+    # ----- CASO 1: TODAS LAS RUTAS ESTÁN SELECCIONADAS → PÉRDIDA = 100% -----
+    todas_rutas <- c("Noroccidente","Nororiente","Norte","Oriente",
+                     "Suroriente","Sur","Suroccidente","Occidente")
+    
+    if (setequal(sel, todas_rutas)) {
+      
+      txt <- glue(
+        "Un hipotético cierre de las rutas seleccionadas podría reducir el ",
+        "abastecimiento de alimentos en un <b>100%</b>, ",
+        "al dejar de ingresar <b>{format(total_mes, big.mark='.', decimal.mark=',')}</b> ",
+        "toneladas a las principales centrales de abasto de Bogotá."
+      )
+      
+      if (raw) return(txt)
+      return(latex_escape(txt))
+    }
+    
+    # ----- CASO 2: ALGUNA RUTA FUE DESMARCADA → cálculo real -----
+    df_cerradas <- df_mes %>% filter(!region_geo %in% sel)
+    
+    ton_perdidas <- sum(df_cerradas$suma_kg, na.rm = TRUE)
+    pct <- round((ton_perdidas / total_mes) * 100, 1)
+    
+    txt <- glue(
+      "Un hipotético cierre de las rutas seleccionadas podría reducir el ",
+      "abastecimiento de alimentos en un <b>{pct}%</b>, ",
+      "al dejar de ingresar <b>{format(ton_perdidas, big.mark='.', decimal.mark=',')}</b> ",
+      "toneladas a las principales centrales de abasto de Bogotá."
+    )
+    
+    if (raw) return(txt)
+    return(latex_escape(txt))
+  }
+  
+  ###########################################################################
   # 5. TEXTO PANEL DERECHO
   ###########################################################################
-  output$municipio_mas_importante <- renderText(mensaje1_reactivo())
-  output$ranking_rutas            <- renderText(mensaje2_reactivo())
+  output$municipio_mas_importante <- renderUI({
+    HTML(mensaje1_reactivo(raw = TRUE))
+  })
+  output$ranking_rutas <- renderText(mensaje2_reactivo())
+  
+  output$impacto_cierre <- renderUI({
+    HTML(mensaje3_reactivo(raw = TRUE))
+  })
   
   ###########################################################################
   # 6. MAPA
@@ -280,8 +350,9 @@ server <- function(input, output, session) {
         grafico_png = tmp_png,
         logo_sup    = logo_sup,
         logo_inf    = logo_inf,
-        mensaje1    = mensaje1_reactivo(),
-        mensaje2    = mensaje2_reactivo()
+        mensaje1    = html_to_latex(mensaje1_reactivo(raw = TRUE)),
+        mensaje2    = html_to_latex(mensaje2_reactivo(raw = TRUE)),
+        mensaje3    = html_to_latex(mensaje3_reactivo(raw = TRUE))
       )
       
       showNotification("Generando informe PDF...", duration=NULL, id="pdf_n")

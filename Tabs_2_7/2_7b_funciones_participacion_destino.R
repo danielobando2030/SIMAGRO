@@ -2,9 +2,9 @@
   #INDICE Herfindahl–Hirschman - Exportaciones 1 - Hacia donde va la comida que se produce en Antioquia
   # Funciones
   ################################################################################
-  #Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
-  #Fecha de creacion: 29/04/2024
-  #Fecha de ultima modificacion:29/04/2024
+  #Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
+  #Fecha de creacion: 09/11/2025
+  #Fecha de ultima modificacion: 28/11/2025
   ################################################################################
   # Paquetes 
   library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)

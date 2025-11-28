@@ -8,8 +8,9 @@ params:
   grafico_png: NA
   logo_sup: NA
   logo_inf: NA
-  mensaje1: NA        # <<<<<<<<<< AÑADIDO
-  mensaje2: NA        # <<<<<<<<<< AÑADIDO
+  mensaje1: NA
+  mensaje2: NA
+  mensaje3: NA    # <<<<<< AGREGADO
 output:
   pdf_document:
     latex_engine: xelatex
@@ -116,11 +117,11 @@ knitr::include_graphics(params$grafico_png)
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
-\vspace{0.2cm}
+\vspace{0.25cm}
 
 \begingroup
 \fontsize{10}{10}\selectfont
-\textcolor{grayA}{`r params$mensaje1`}
+\textcolor{grayA}{`r params$mensaje3`}
 \endgroup
 
 \vspace{0.25cm}
@@ -128,6 +129,13 @@ knitr::include_graphics(params$grafico_png)
 \begingroup
 \fontsize{10}{10}\selectfont
 \textcolor{grayA}{`r params$mensaje2`}
+\endgroup
+
+\vspace{0.25cm}
+
+\begingroup
+\fontsize{10}{10}\selectfont
+\textcolor{grayA}{`r params$mensaje1`}
 \endgroup
 
 \vspace{0.45cm}

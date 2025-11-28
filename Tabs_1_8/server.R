@@ -1,9 +1,9 @@
-#Proyecto FAO
-#Procesamiento datos SIPSA
-################################################################################
-#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 21/04/2024
-#Fecha de ultima modificacion: 21/04/2024
+# Proyecto FAO
+# Visualizacion de DATOS   - abastecimeinto en bogota 
+################################################################################-
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia,Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################
 # Limpiar el entorno de trabajo
 rm(list=ls())

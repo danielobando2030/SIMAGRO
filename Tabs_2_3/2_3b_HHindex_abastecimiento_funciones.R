@@ -1,9 +1,9 @@
-#Proyecto FAO
-#INDICE Herfindahl–Hirschman - Abastecimiento tablero 1 
-################################################################################
-#Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 14/03/2024
-#Fecha de ultima modificacion: 21/02/2024
+# Proyecto FAO
+# Visualizacion de DATOS   - abastecimeinto en bogota 
+################################################################################-
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia,Juliana Lalinde, Laura Quintero, Germán Angulo
+#Fecha de creacion: 03/04/2024
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################
 # Paquetes 
 ################################################################################

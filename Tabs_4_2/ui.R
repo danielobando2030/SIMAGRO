@@ -1,6 +1,6 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# UI – Mapa de Rutas por Regiones (versión FINAL sin loop)
+# UI – Mapa de Rutas por Regiones (versión FINAL con TRES MENSAJES)
 ################################################################################-
 
 library(shiny)
@@ -14,17 +14,14 @@ ui <- fluidPage(
   # SCRIPTS JS PARA CHECKBOXES (con bloqueo y SIN LOOP)
   ###########################################################################
   
-  # Variable global JS
   tags$script("window.blockCheckboxEvents = false;"),
   
-  # Handler para activar/desactivar bloqueo desde el servidor
   tags$script("
     Shiny.addCustomMessageHandler('block_checkbox_events', function(value){
       window.blockCheckboxEvents = value;
     });
   "),
   
-  # Script que envía cambios SOLO cuando no está bloqueado (versión corregida)
   tags$script("
     $(document).on('change', 'input[type=checkbox]', function() {
       if (window.blockCheckboxEvents) return;
@@ -63,9 +60,9 @@ ui <- fluidPage(
         font-weight: 500;
       }
 
-      /* PANEL ROJO OSCURO */
+      /* PANEL PRIMERO (mensaje3) — NUEVO COLOR */
       .panel-rojo-oscuro {
-        background-color:#8A171C !important;
+        background-color:#332728 !important;
         color:white !important;
         font-weight:bold;
         border-radius:8px;
@@ -74,7 +71,7 @@ ui <- fluidPage(
         min-height:120px;
       }
 
-      /* PANEL ROJO CLARO */
+      /* PANEL ROJO CLARO (mensaje2) */
       .panel-rojo-claro {
         background-color:#BC222A !important;
         color:white !important;
@@ -85,7 +82,18 @@ ui <- fluidPage(
         min-height:120px;
       }
 
-      /* BOTONES FAO */
+      /* PANEL ROJO OSCURO 2 (mensaje1) */
+      .panel-rojo-oscuro-2 {
+        background-color:#8A171C !important;
+        color:white !important;
+        font-weight:bold;
+        border-radius:8px;
+        padding:15px;
+        margin-bottom:15px;
+        min-height:120px;
+      }
+
+      /* BOTONES */
       .btn-faoc,
       .shiny-download-link,
       .shiny-action-button,
@@ -99,8 +107,7 @@ ui <- fluidPage(
         margin-right: 6px !important;
         height: 36px !important;
       }
-      .btn-faoc:hover,
-      .btn:hover {
+      .btn-faoc:hover, .btn:hover {
         background-color: #e6e6e6 !important;
       }
 
@@ -146,7 +153,6 @@ ui <- fluidPage(
   div(
     fluidRow(
       
-      # Año
       column(
         3,
         selectInput("anio", "Año:",
@@ -154,7 +160,6 @@ ui <- fluidPage(
                     selected = 2024)
       ),
       
-      # Mes
       column(
         3,
         selectInput(
@@ -168,7 +173,6 @@ ui <- fluidPage(
         )
       ),
       
-      # Producto
       column(
         3,
         selectInput("producto", "Producto:",
@@ -176,7 +180,7 @@ ui <- fluidPage(
                     selected = "Aguacate Hass")
       ),
       
-      # Checkboxes
+      # CHECKBOXES
       column(
         3,
         tags$label("Regiones a mostrar:"),
@@ -186,42 +190,42 @@ ui <- fluidPage(
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Noroccidente", checked="checked",
                          style="accent-color:#e31a1c;"),
-              tags$label("Noroccidente", `for`="r_Noroccidente")
+              tags$label("Noroccidente")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Nororiente", checked="checked",
                          style="accent-color:#ff7f00;"),
-              tags$label("Nororiente", `for`="r_Nororiente")
+              tags$label("Nororiente")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Norte", checked="checked",
                          style="accent-color:#6a3d9a;"),
-              tags$label("Norte", `for`="r_Norte")
+              tags$label("Norte")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Oriente", checked="checked",
                          style="accent-color:#1f78b4;"),
-              tags$label("Oriente", `for`="r_Oriente")
+              tags$label("Oriente")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Suroriente", checked="checked",
                          style="accent-color:#b2df8a;"),
-              tags$label("Suroriente", `for`="r_Suroriente")
+              tags$label("Suroriente")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Sur", checked="checked",
                          style="accent-color:#b15928;"),
-              tags$label("Sur", `for`="r_Sur")
+              tags$label("Sur")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Suroccidente", checked="checked",
                          style="accent-color:#a6cee3;"),
-              tags$label("Suroccidente", `for`="r_Suroccidente")
+              tags$label("Suroccidente")
           ),
           div(class="ruta-item",
               tags$input(type="checkbox", id="r_Occidente", checked="checked",
                          style="accent-color:#33a02c;"),
-              tags$label("Occidente", `for`="r_Occidente")
+              tags$label("Occidente")
           )
         )
       )
@@ -229,11 +233,10 @@ ui <- fluidPage(
   ),
   
   ###########################################################################
-  # MAPA + PANEL DERECHO
+  # MAPA + PANEL DERECHO (3 MENSAJES)
   ###########################################################################
   fluidRow(
     
-    # MAPA + BOTONES
     column(
       9,
       div(
@@ -257,14 +260,22 @@ ui <- fluidPage(
       )
     ),
     
-    # PANEL DERECHO
     column(
       3,
+      
+      # --- PRIMER PANEL: AHORA mensaje3 (COLOR NUEVO) ---
       div(class="panel-rojo-oscuro",
-          htmlOutput("municipio_mas_importante")
+          htmlOutput("impacto_cierre")
       ),
+      
+      # --- SEGUNDO PANEL: mensaje2 ---
       div(class="panel-rojo-claro",
           htmlOutput("ranking_rutas")
+      ),
+      
+      # --- TERCER PANEL: mensaje1 ---
+      div(class="panel-rojo-oscuro-2",
+          htmlOutput("municipio_mas_importante")
       )
     )
   ),

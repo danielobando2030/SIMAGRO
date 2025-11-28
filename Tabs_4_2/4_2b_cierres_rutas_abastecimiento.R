@@ -1,60 +1,62 @@
-#Proyecto FAO
-#Procesamiento datos SIPSA
+# Proyecto FAO - Procesamiento datos SIPSA
 ################################################################################-
-#Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
-#Fecha de creacion: 24/02/2024
-#Fecha de ultima modificacion: 24/02/2024
+# Autores: Juliana Lalinde, Laura Quintero, Germán Angulo
+# Optimización por ChatGPT - 2025
 ################################################################################-
-# Limpiar el entorno de trabajo
-# Paquetes 
-################################################################################-
-pacman::p_load(readr,readxl, dplyr, tidyr, janitor, lubridate, stringr, geosphere,
-               arrow, osrm, sf, ggplot2, jsonlite, purrr, leaflet, scales, stringr)
+
+pacman::p_load(
+  readr, readxl, dplyr, tidyr, janitor, lubridate,
+  stringr, geosphere, arrow, osrm, sf, ggplot2,
+  jsonlite, purrr, leaflet, scales
+)
+
 options(scipen = 999)
 
-
 ################################################################################-
-
-## Cargamos la base de datos de origen destino 
-
-## Importancia relativa a carretera
+# 1. CARGA DE BASES
+################################################################################-
 
 data_merged <- readRDS("data_sin_rutas.rds")
 rutas       <- readRDS("rutas_abas.rds")
 
-data_cierres_final <- left_join(data_merged, rutas, by = c("codigo_mpio_origen"))
+data_cierres_final <- left_join(
+  data_merged,
+  rutas,
+  by = c("codigo_mpio_origen")
+)
 
 remove(rutas, data_merged)
 
-## Importancia relativa a carretera
+################################################################################-
+# 2. CÁLCULOS DE IMPORTANCIA
+################################################################################-
 
 data_cierres_final <- data_cierres_final %>%
-                      group_by(anio, mes, producto) %>%
-                      mutate(total_kilogramos_año_mes_producto = sum(suma_kg, na.rm = TRUE)) %>%
-                      ungroup()
-
+  group_by(anio, mes, producto) %>%
+  mutate(total_kilogramos_año_mes_producto = sum(suma_kg, na.rm = TRUE)) %>%
+  ungroup()
 
 data_cierres_final <- data_cierres_final %>%
-                      group_by(anio, mes, producto, codigo_mpio_origen) %>%
-                      mutate(total_kilogramos_año_mes_producto_mpio = sum(suma_kg, na.rm = TRUE)) %>%
-                      ungroup()
+  group_by(anio, mes, producto, codigo_mpio_origen) %>%
+  mutate(total_kilogramos_año_mes_producto_mpio = sum(suma_kg, na.rm = TRUE)) %>%
+  ungroup()
 
+data_cierres_final <- data_cierres_final %>%
+  mutate(importancia_ruta =
+           total_kilogramos_año_mes_producto_mpio /
+           total_kilogramos_año_mes_producto)
 
-data_cierres_final$importancia_ruta <- data_cierres_final$total_kilogramos_año_mes_producto_mpio/data_cierres_final$total_kilogramos_año_mes_producto
-
+################################################################################-
+# 3. CÁLCULO DE ÁNGULO Y REGIONES
+################################################################################-
 
 data_cierres_final <- data_cierres_final %>%
   mutate(
-    # Calculamos el ángulo (bearing) desde Bogotá hasta el municipio de origen
     bearing = bearing(
       cbind(LONGITUD_BOG, LATITUD_BOG),
       cbind(LONGITUD, LATITUD)
     ),
-    
-    # Ajustamos los ángulos negativos (para que todos estén entre 0 y 360 grados)
     bearing = ifelse(bearing < 0, bearing + 360, bearing),
-    
-    # Clasificamos según el ángulo en 8 regiones
     region_geo = case_when(
       bearing >= 337.5 | bearing < 22.5   ~ "Norte",
       bearing >= 22.5  & bearing < 67.5   ~ "Nororiente",
@@ -68,37 +70,64 @@ data_cierres_final <- data_cierres_final %>%
     )
   )
 
+################################################################################-
+# 4. PROPORCIÓN POR REGIÓN
+################################################################################-
 
 data_cierres_final <- data_cierres_final %>%
   group_by(producto, region_geo) %>%
-  mutate(
-    total_region_producto = sum(importancia_ruta, na.rm = TRUE)  # total por producto y región
-  ) %>%
+  mutate(total_region_producto = sum(importancia_ruta, na.rm = TRUE)) %>%
   group_by(producto) %>%
   mutate(
-    total_producto = sum(importancia_ruta, na.rm = TRUE),        # total global del producto
-    prop_region_producto = total_region_producto / total_producto  # proporción regional
+    total_producto = sum(importancia_ruta, na.rm = TRUE),
+    prop_region_producto = total_region_producto / total_producto
   ) %>%
   ungroup()
 
+#################################################################################
+# 5. *** OPTIMIZACIÓN — QUEDARSE SOLO CON VARIABLES ÚTILES ***
+#################################################################################
 
-#######
+data_cierres_final <- data_cierres_final %>%
+  select(
+    # filtros
+    anio, mes, producto,
+    
+    # identificación
+    codigo_mpio_destino, codigo_mpio_origen,
+    mpio_destino, mpio_origen, depto_origen,
+    
+    # volumen
+    suma_kg,
+    
+    # coordenadas y rutas
+    LATITUD, LONGITUD, LATITUD_BOG, LONGITUD_BOG,
+    routes_coords_str,
+    
+    # variables calculadas
+    total_kilogramos_año_mes_producto,
+    total_kilogramos_año_mes_producto_mpio,
+    importancia_ruta,
+    bearing,
+    region_geo,
+    prop_region_producto
+  )
+
+################################################################################-
+# 6. FUNCIÓN DE MAPA
+################################################################################-
 
 graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Producto = NULL) {
   
-  # 1. Filtrar
   if (!is.null(Año)) df <- df %>% filter(anio == Año)
   if (!is.null(Mes)) df <- df %>% filter(mes == Mes)
   if (!is.null(Producto)) df <- df %>% filter(producto == Producto)
   
-  # 2. Evitar duplicados
   df <- df %>% distinct(codigo_mpio_destino, codigo_mpio_origen, .keep_all = TRUE)
   if (nrow(df) == 0) return(NULL)
   
-  # 3. Grosor
   df <- df %>% mutate(grosor = scales::rescale(as.numeric(prop_region_producto), to = c(1, 10)))
   
-  # 4. Colores
   df <- df %>% mutate(
     color_region = case_when(
       region_geo == "Noroccidente"  ~ "#e31a1c",
@@ -113,10 +142,8 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
     )
   )
   
-  # 5. Asegurar texto
   df <- df %>% mutate(across(everything(), as.character))
   
-  # 6. Parsear coordenadas
   rutas_list <- purrr::map(df$routes_coords_str, function(coords_str) {
     if (is.na(coords_str) || coords_str == "") return(NULL)
     coords <- stringr::str_split(coords_str, ";")[[1]]
@@ -124,16 +151,12 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
     suppressWarnings(matrix(as.numeric(mat), ncol = 2, byrow = FALSE))
   })
   
-  # *** 7. ELIMINADO: no crear ningún título ***
+  map <- leaflet(options = leafletOptions(preferCanvas = TRUE)) %>% addTiles()
   
-  # 8. Mapa SIN título ni objetos HTML que generen espacio
-  map <- leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
-    addTiles()
-  
-  # 9. Añadir líneas
   valid_idx <- which(!purrr::map_lgl(rutas_list, is.null))
   for (i in valid_idx) {
     coords <- rutas_list[[i]]
+    
     lbl_text <- sprintf(
       "Origen: %s (%s). Región: %s. Proporción regional del producto: %.2f%%",
       df$mpio_origen[i],
@@ -142,34 +165,32 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
       as.numeric(df$prop_region_producto[i]) * 100
     )
     
-    map <- map %>%
-      addPolylines(
-        lng = coords[, 1],
-        lat = coords[, 2],
-        color = df$color_region[i],
-        weight = as.numeric(df$grosor[i]),
-        opacity = 0.85,
-        label = lbl_text,
-        labelOptions = labelOptions(noHide = FALSE, direction = "top")
-      )
+    map <- map %>% addPolylines(
+      lng = coords[, 1],
+      lat = coords[, 2],
+      color = df$color_region[i],
+      weight = as.numeric(df$grosor[i]),
+      opacity = 0.85,
+      label = lbl_text,
+      labelOptions = labelOptions(noHide = FALSE, direction = "top")
+    )
   }
   
-  # 10. Leyenda
-  map <- map %>%
-    addLegend(
-      position = "bottomright",
-      colors = unique(df$color_region),
-      labels = unique(df$region_geo),
-      title = "Regiones geográficas",
-      opacity = 0.9
-    )
+  map <- map %>% addLegend(
+    position = "bottomright",
+    colors = unique(df$color_region),
+    labels = unique(df$region_geo),
+    title = "Regiones geográficas",
+    opacity = 0.9
+  )
   
   return(map)
 }
 
-# -------------------------------------------------------------------------
-# FUNCIÓN ROBUSTA PARA EXPORTAR UN LEAFLET A PNG  (100% FUNCIONAL)
-# -------------------------------------------------------------------------
+################################################################################-
+# 7. FUNCIÓN DE EXPORTACIÓN A PNG
+################################################################################-
+
 grafico_plano <- function(mapa_leaflet) {
   
   if (is.null(mapa_leaflet)) return(NULL)
@@ -178,19 +199,13 @@ grafico_plano <- function(mapa_leaflet) {
   tmp_html <- file.path(tmp_dir, "mapa_tmp.html")
   tmp_png  <- file.path(tmp_dir, "mapa_tmp.png")
   
-  # 1. Guardar HTML sin que falle
   ok1 <- tryCatch({
-    htmlwidgets::saveWidget(
-      widget = mapa_leaflet,
-      file   = tmp_html,
-      selfcontained = TRUE
-    )
+    htmlwidgets::saveWidget(mapa_leaflet, tmp_html, selfcontained = TRUE)
     TRUE
   }, error = function(e) FALSE)
   
   if (!ok1) return(NULL)
   
-  # 2. Capturar PNG con webshot2 (Chrome integrado)
   ok2 <- tryCatch({
     webshot2::webshot(
       url    = tmp_html,
@@ -208,14 +223,6 @@ grafico_plano <- function(mapa_leaflet) {
   return(tmp_png)
 }
 
-
-# ---- Ejemplo de uso ----
-mapa <- graficar_rutas_color_importancia(
-  data_cierres_final,
-  Año = 2018,
-  Mes = "11",
-  Producto = "Maracuyá"
-)
-mapa
-
-
+################################################################################-
+# FIN ARCHIVO
+################################################################################-

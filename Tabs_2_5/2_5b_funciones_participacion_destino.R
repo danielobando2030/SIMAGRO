@@ -5,7 +5,15 @@
   #Autores: Juan Carlos, Juliana Lalinde, Laura Quintero, Germán Angulo
   #Fecha de creacion: 29/04/2024
   #Fecha de ultima modificacion:29/04/2024
-  ################################################################################
+  # Proyecto FAO
+  # Visualizacion de DATOS   - abastecimeinto en bogota 
+  ################################################################################-
+  #Autores: Cristian Daniel Obando, Luis Miguel Garcia,Juliana Lalinde, Laura Quintero, Germán Angulo
+  #Fecha de creacion: 03/04/2024
+  #Fecha de ultima modificacion: 28/11/2025
+  
+  
+   ################################################################################
   # Paquetes 
   library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)
   library(glue);library(tidyverse);library(DT);library(tools)

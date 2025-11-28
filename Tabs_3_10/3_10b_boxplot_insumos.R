@@ -1,6 +1,5 @@
 ######
 # Author:       Luis Miguel García
-#               Laura Quintero
 #               Daniel Obando
 # First Edited: 2025/08/24
 # Last Editor:  2025/09/12

@@ -2,9 +2,9 @@
 # Proyecto FAO
 # Visualización de DATOS – Precios de Insumos Agrícolas
 ################################################################################-
-# Autores: Cristian Daniel Obando, Luis Miguel García
-# Fecha de creación: 09/11/2025
-# Fecha de última modificación: 11/11/2025
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
+#Fecha de creacion: 09/11/2025
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################-
 
 # Limpiar entorno

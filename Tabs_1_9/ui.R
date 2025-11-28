@@ -1,9 +1,9 @@
 # Proyecto FAO
 # Visualizacion de DATOS   - abastecimeinto en resto 
 ################################################################################-
-#Autores: Cristian Daniel Obando,m Luis Miguel Garcia
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia, Juan Carlos Muñoz Mora
 #Fecha de creacion: 09/11/2025
-#Fecha de ultima modificacion: 10/11/2025
+#Fecha de ultima modificacion: 28/11/2025
 ################################################################################-
 # Limpiar el entorno de trabajo
 rm(list=ls())
