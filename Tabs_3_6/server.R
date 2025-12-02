@@ -202,7 +202,6 @@ server <- function(input, output, session) {
         df_atip2 <- df_atip %>%
           mutate(
             dia = format(fecha, "%d de %B"),
-            # EVITAR el símbolo $ (lo escapamos)
             precio_fmt = paste0("\\$", format(round(precio,0), big.mark=".", decimal.mark=","))
           )
         
@@ -216,6 +215,26 @@ server <- function(input, output, session) {
       # ================= Copiar informe ======================
       tempReport <- file.path(tempdir(), "informe.Rmd")
       file.copy("informe.Rmd", tempReport, overwrite = TRUE)
+      
+      # ================= Copiar fuentes al tempdir ==================
+      file.copy("Prompt-Regular.ttf",
+                file.path(tempdir(), "Prompt-Regular.ttf"),
+                overwrite = TRUE)
+      
+      file.copy("Prompt-Black.ttf",
+                file.path(tempdir(), "Prompt-Black.ttf"),
+                overwrite = TRUE)
+      
+      # ================= Copiar logos al tempdir ==================
+      dir.create(file.path(tempdir(), "www"), showWarnings = FALSE)
+      
+      file.copy("www/logo_3.png",
+                file.path(tempdir(), "www/logo_3.png"),
+                overwrite = TRUE)
+      
+      file.copy("www/logo_4.png",
+                file.path(tempdir(), "www/logo_4.png"),
+                overwrite = TRUE)
       
       # ================= Render ================================
       rmarkdown::render(
@@ -244,3 +263,4 @@ server <- function(input, output, session) {
     updateSelectInput(session, "anio", selected = "2024")
   })
 }
+

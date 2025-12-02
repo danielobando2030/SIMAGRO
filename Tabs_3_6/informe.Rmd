@@ -9,7 +9,7 @@ params:
   lista_atipicos: NA
   mensaje1: NA
   logo_sup: "www/logo_3.png"
-  logo_inf: "www/logo_2.png"
+  logo_inf: "www/logo_4.png"
 
 output:
   pdf_document:
@@ -26,7 +26,9 @@ header-includes:
   - \usepackage{eso-pic}
   - \usepackage{adjustbox}
 
-  - \setmainfont{Prompt-Regular.ttf}
+  # AQUÍ VIENE LA PARTE IMPORTANTE:
+  - \setmainfont{Prompt}[Path=./, UprightFont=Prompt-Regular.ttf, BoldFont=Prompt-Black.ttf]
+
   - \definecolor{mygreen}{RGB}{78,77,77}
   - \definecolor{grayA}{RGB}{78,77,77}
 
@@ -37,7 +39,6 @@ header-includes:
   - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
   - \setlength{\headheight}{2cm}
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
