@@ -71,7 +71,8 @@ server <- function(input, output, session) {
       group_by(mes_y_ano) %>%
       summarise(valor = mean(.data[[input$variable]], na.rm = TRUE), .groups = "drop")
     
-    # --- Gráfico interactivo plotly ---
+    tick_format <- if (input$anio == "Todos los años") "%B %Y" else "%B"
+    
     grafico_interactivo <- plot_ly(
       data = df_linea,
       x = ~mes_y_ano,
@@ -82,11 +83,15 @@ server <- function(input, output, session) {
       marker = list(color = col_grafico, size = 6)
     ) %>%
       layout(
-        xaxis = list(title = "Fecha"),
+        xaxis = list(
+          title = "Fecha",
+          tickformat = tick_format   # ⬅⬅ aquí se ajusta automáticamente
+        ),
         yaxis = list(title = ""),
         hovermode = "x unified",
         hoverlabel = list(bgcolor = "white", font = list(color = "black")),
-        margin = list(l = 50, r = 30, t = 30, b = 50)
+        margin = list(l = 50, r = 30, t = 30, b = 50),
+        locale = "es"
       )
     
     # --- Cálculos resumen ---
@@ -131,7 +136,8 @@ server <- function(input, output, session) {
   
   # --- 5. Render gráfico ---
   output$grafico <- renderPlotly({
-    grafico_reactivo()$grafico
+    grafico_reactivo()$grafico %>%
+      config(locale = "es")
   })
   
   # --- 6. Descargar gráfico visible (PNG exacto) ---

@@ -8,7 +8,6 @@ library(plotly)
 library(dplyr)
 library(stringr)
 
-
 Sys.setlocale("LC_TIME", "Spanish")
 
 ui <- fluidPage(
@@ -18,11 +17,25 @@ ui <- fluidPage(
   # ------------------------------------------------------------------
   tags$head(
     tags$title("Comportamiento de precios mayoristas - Bogotá"),
+    
+    # Fuente Prompt
     tags$link(
       rel = "stylesheet",
       type = "text/css",
       href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
     ),
+    
+    # ⭐ LO MÁS IMPORTANTE ⭐
+    # Plotly en español → permite meses como "enero", "febrero", etc.
+    tags$script("
+    document.addEventListener('DOMContentLoaded', function() {
+      if (Plotly) {
+        Plotly.setPlotConfig({locale: 'es'});
+      }
+    });
+  "),
+    
+    # ---- ESTILOS INSTITUCIONALES ----
     tags$style(HTML("
       body { font-family: 'Prompt', sans-serif; background-color: #fafafa; color:#4E4D4D; }
 
@@ -35,6 +48,7 @@ ui <- fluidPage(
       .main-header_2 {
         font-size: 20px;
         color: #6D673E;
+        font-weight: 500;
       }
 
       .sub-header2 {
@@ -53,6 +67,8 @@ ui <- fluidPage(
         color: #4E4D4D !important;
         font-weight: 500;
         border-radius: 6px;
+        padding: 6px 15px;
+        margin-right: 5px;
       }
 
       .btn-faoc:hover {
@@ -63,10 +79,11 @@ ui <- fluidPage(
   ),
   
   # ------------------------------------------------------------------
-  # TÍTULOS EXACTAMENTE COMO EL OTRO DASHBOARD
+  # TÍTULOS EXACTAMENTE COMO TU OTRO MÓDULO FAO
   # ------------------------------------------------------------------
   tags$h1("Comportamiento de los precios en el tiempo", class = "main-header"),
-  tags$h1("Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.", class = "main-header_2"),
+  tags$h1("Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.", 
+          class = "main-header_2"),
   
   div(
     textOutput("subtitulo"),
@@ -87,9 +104,11 @@ ui <- fluidPage(
     column(3, uiOutput("anioUI")),
     column(3,
            selectInput("variable", "Variable a graficar:",
-                       choices = c("Precio promedio" = "precio_prom",
-                                   "Cambio porcentual mensual" = "cambio_pct",
-                                   "Cambio porcentual anual" = "cambio_pct_anual"),
+                       choices = c(
+                         "Precio promedio" = "precio_prom",
+                         "Cambio porcentual mensual" = "cambio_pct",
+                         "Cambio porcentual anual" = "cambio_pct_anual"
+                       ),
                        selected = "precio_prom")
     )
   ),
@@ -100,9 +119,12 @@ ui <- fluidPage(
   # Subtítulo dinámico
   # ------------------------------------------------------------------
   fluidRow(
-    column(12, align = "center",
-           h5(textOutput("subtitulo2"),
-              style = "margin-bottom:10px; font-weight:500; color:#4E4D4D;")
+    column(
+      12, align = "center",
+      h5(
+        textOutput("subtitulo2"),
+        style = "margin-bottom:10px; font-weight:500; color:#4E4D4D;"
+      )
     )
   ),
   
@@ -125,17 +147,22 @@ ui <- fluidPage(
   br(),
   
   # ------------------------------------------------------------------
-  # Botones
+  # Botones FAO-VP
   # ------------------------------------------------------------------
   fluidRow(
     column(12, align = "center",
+           
            downloadButton("descargar", "Gráfica", class = "btn btn-faoc"),
            downloadButton("descargarDatos", "Datos", class = "btn btn-faoc"),
+           
            a("GitHub",
              href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_1",
-             target = "_blank", class = "btn btn-faoc", icon("github")),
+             target = "_blank",
+             class = "btn btn-faoc", icon("github")),
+           
            actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
-           downloadButton("descargarInforme", "Generar informe", class = "btn-faoc")
+           
+           downloadButton("descargarInforme", "Generar informe", class = "btn btn-faoc")
     )
   ),
   
@@ -145,17 +172,17 @@ ui <- fluidPage(
   # Nota metodológica
   # ------------------------------------------------------------------
   fluidRow(
-    column(12,
-           align = "left",
-           HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-                 <br>
-                 La visualización permite analizar el comportamiento de los precios promedios del alimento en el tiempo y tasas de variación."),
-           style = "font-size:12px; text-align:left;"
+    column(
+      12,
+      align = "left",
+      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+           La visualización permite analizar el comportamiento de los precios promedios del alimento en el tiempo y tasas de variación."),
+      style = "font-size:12px; text-align:left;"
     )
   ),
   
   # ------------------------------------------------------------------
-  # Logo
+  # Logo INFERIOR
   # ------------------------------------------------------------------
   fluidRow(
     tags$div(

@@ -87,8 +87,8 @@ ui <- fluidPage(
   ##############################################################################
   # TÍTULOS (MISMA DISPOSICIÓN QUE ABASTECIMIENTO)
   ##############################################################################
-  tags$h1("Bandas de precios normalizados por producto", class = "main-header"),
-  tags$h1("Detección de días con precios atípicos en los mercados mayoristas", class = "main-header_2"),
+  tags$h1("Días con precios atípicos en los mercados mayoristas", class = "main-header"),
+  tags$h1("Detección de días con precios muy alejados del promedio", class = "main-header_2"),
   
   div(
     textOutput("subtitulo"),

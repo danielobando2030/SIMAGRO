@@ -144,8 +144,8 @@ ui <- fluidPage(
   ###########################################################################
   # TITULOS
   ###########################################################################
-  tags$h1("Rutas de abastecimiento por regiones geográficas", class="main-header"),
-  tags$h2("Participación de las rutas de cierre según región y producto", class="main-header_2"),
+  tags$h1("Impacto del cierre de vías de acceso en el abastecimiento de Bogotá", class="main-header"),
+  tags$h2("Importancia de la ruta por región ante un posible cierre de vías", class="main-header_2"),
   
   ###########################################################################
   # FILTROS
