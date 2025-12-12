@@ -146,13 +146,34 @@ ui <- fluidPage(
   fluidRow(
     column(
       12, align = "left",
-      HTML("
-        <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-        <br>
-        Las bandas representan ±2 desviaciones estándar de la media móvil de 20 días. 
-        El 95% de los datos debería ubicarse dentro de estas bandas bajo normalidad. <br>
-        Los puntos amarillos indican días atípicos.
-      "),
+      
+      withMathJax(HTML("
+      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+
+      Las bandas representan &plusmn;2 desviaciones estándar de la media móvil de 20 días. 
+      El 95% de los datos debería ubicarse dentro de estas bandas bajo supuestos de normalidad.<br><br>
+
+      La estandarización se calcula como:<br><br>
+
+      \\[
+      \\text{Precio normalizado}_t = P_t - \\overline{P}_{t,20}
+      \\]
+
+      donde \\(P_t\\) es el precio del día y \\(\\overline{P}_{t,20}\\) es la media móvil de los últimos 20 días.<br><br>
+
+      Las bandas superior e inferior se definen como:<br><br>
+
+      \\[
+      \\text{Banda superior} = +2 \\cdot \\sigma_{t,20},
+      \\qquad
+      \\text{Banda inferior} = -2 \\cdot \\sigma_{t,20}
+      \\]
+
+      donde \\(\\sigma_{t,20}\\) es la desviación estándar móvil de 20 días.<br><br>
+
+      Los puntos amarillos indican días clasificados como atípicos.
+    ")),
+      
       style = "font-size:12px; color:#4E4D4D; font-family: 'Prompt'; margin-top:15px;"
     )
   ),

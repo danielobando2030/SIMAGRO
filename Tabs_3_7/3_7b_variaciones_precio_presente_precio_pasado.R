@@ -34,6 +34,15 @@ head(data)
 
 ## Función
 
+formato_es <- function(x, dec = 2) {
+  format(
+    round(x, dec),
+    big.mark = ".",
+    decimal.mark = ",",
+    scientific = FALSE
+  )
+}
+
 calc_cambio_mensual <- function(data, producto, anio) {
   
   Sys.setlocale("LC_TIME", "Spanish_Colombia.UTF-8")
@@ -44,7 +53,10 @@ calc_cambio_mensual <- function(data, producto, anio) {
       mes_y_ano = as.Date(paste0(mes_y_ano, "-01")),
       anio = year(mes_y_ano)
     ) %>%
-    filter(tolower(producto) == tolower(!!producto), anio == !!anio) %>%
+    filter(
+      tolower(producto) == tolower(!!producto),
+      anio == !!anio
+    ) %>%
     arrange(mes_y_ano) %>%
     mutate(
       cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100
@@ -53,49 +65,56 @@ calc_cambio_mensual <- function(data, producto, anio) {
   
   if (nrow(df) == 0) return(NULL)
   
+  # Tooltip con formato español
   df <- df %>%
     mutate(
       text_label = paste0(
         "Mes: ", tools::toTitleCase(format(mes_y_ano, "%B %Y")),
-        "<br>Precio promedio: ", round(precio_prom, 2),
-        "<br>Cambio % mensual: ", round(cambio_pct_mensual, 2), "%"
+        "<br>Precio promedio: $", formato_es(precio_prom, 0),
+        "<br>Cambio mensual: ", formato_es(cambio_pct_mensual, 2), "%"
       )
     )
   
-  fig <- plot_ly(df,
-                 x = ~mes_y_ano,
-                 y = ~cambio_pct_mensual,
-                 type = 'scatter',
-                 mode = 'lines+markers',
-                 line = list(color = '#DBC21F', width = 2),
-                 marker = list(color = '#DBC21F', size = 8),
-                 text = ~text_label,
-                 hoverinfo = 'text',
-                 showlegend = FALSE) %>%
-    
-    add_lines(y = 0,
-              x = ~mes_y_ano,
-              line = list(color = 'rgba(155,48,255,0.3)', dash = 'dash'),
-              showlegend = FALSE,
-              inherit = FALSE,
-              hoverinfo = "none") %>%
+  # Valores bonitos para el eje Y
+  ticks_y <- pretty(df$cambio_pct_mensual)
+  
+  # Gráfico
+  fig <- plot_ly(
+    data = df,
+    x = ~mes_y_ano,
+    y = ~cambio_pct_mensual,
+    type = "scatter",
+    mode = "lines+markers",
+    line = list(color = "#DBC21F", width = 2),
+    marker = list(color = "#DBC21F", size = 8),
+    text = ~text_label,
+    hoverinfo = "text",
+    showlegend = FALSE
+  ) %>%
     
     layout(
-      title = list(text = NULL),   # ELIMINA TITULOS AUTOMÁTICOS
+      title = NULL,
       xaxis = list(
         title = "Mes",
         tickvals = df$mes_y_ano,
         ticktext = tools::toTitleCase(format(df$mes_y_ano, "%b")),
-        tickangle = -45,
-        tickfont = list(size = 12)
+        tickangle = -45
       ),
-      yaxis = list(title = "Cambio % mensual"),
+      yaxis = list(
+        title = "Cambio % mensual",
+        tickvals = ticks_y,
+        ticktext = formato_es(ticks_y, 2),
+        
+        # ⭐⭐ NUEVO: AMPLIAR EJE Y PARA QUE SE VEAN TODOS LOS LABELS ⭐⭐
+        range = c(min(ticks_y) - 5, max(ticks_y) + 5),
+        dtick = 5,
+        
+        zeroline = FALSE
+      ),
       hovermode = "x unified"
     )
   
-  # Asegurar que NO quede un título residual
   fig$x$layout$title <- NULL
-  
   return(fig)
 }
 

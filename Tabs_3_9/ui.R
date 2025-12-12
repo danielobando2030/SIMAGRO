@@ -176,7 +176,10 @@ ui <- fluidPage(
       12,
       HTML("
         <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-        Emisiones estimadas según distancias y factores IPCC/DEFRA/FAO.<br><br>
+        Emisiones estimadas para distancias y factores según: <br>
+        Panel Intergubernamental sobre el Cambio Climático (IPCC) <br>
+        Departamento de Medio Ambiente, Alimentación y Asuntos Rurales (DEFRA) <br>
+        Organización de las Naciones Unidas para la Alimentación y la Agricultura (FAO)
       "),
       class = "footer-text"
     )
@@ -187,7 +190,7 @@ ui <- fluidPage(
   ###########################################################################
   fluidRow(
     tags$div(
-      tags$img(src = 'logo_2.png', style = "width: 100%; margin: 0;"),
+      tags$img(src = 'logo_4.png', style = "width: 100%; margin: 0;"),
       style = "width: 100%; margin: 0;"
     )
   )

@@ -131,7 +131,7 @@ ui <- fluidPage(
            selectInput("producto", "Seleccione producto:", productos, selected = "Aguacate")
     ),
     column(3,
-           selectInput("anio", "Seleccione año:", anios, selected = "2014")
+           selectInput("anio", "Seleccione año:", anios, selected = "2024")
     )
   ),
   

@@ -130,8 +130,8 @@ output$mensaje1 <- renderText({
     validate("No hay información disponible")
   } else {
     values$mensaje1 <- paste(
-      "El coeficiente de Gini obtenido es", round(resultado_data$gini_, 2), 
-      ". Esta medida refleja el nivel de concentración o dependencia frente a los proveedores: valores cercanos a 1 indican una alta dependencia de unos pocos proveedores, mientras que valores cercanos a 0 representan una distribución más equilibrada de la dependencia entre todos los proveedores. ",
+      "El coeficiente de Gini obtenido es", format(round(resultado_data$gini_*100, 2),decimal.mark=",",big.mark="."), 
+      ". Esta medida refleja el nivel de concentración o dependencia frente a los proveedores: valores cercanos a 100 indican una alta dependencia de unos pocos proveedores, mientras que valores cercanos a 0 representan una distribución más equilibrada de la dependencia entre todos los proveedores. ",
       "Según el valor estimado, el nivel de concentración se clasifica como ",
       ifelse(resultado_data$gini_ < 0.20, "muy baja",
              ifelse(resultado_data$gini_ < 0.40, "baja",

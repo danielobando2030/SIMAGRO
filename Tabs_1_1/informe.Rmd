@@ -85,7 +85,7 @@ tabla_kable <- df %>%
 tabla_kable
 ```
 <!-- Titulo del tablaro -->
-\fontsize{14}{14} \selectfont \textcolor{gray}{Municipios proveedores de alimentos para Cundinamarca}\
+\fontsize{14}{14} \selectfont \textcolor{gray}{Municipios de procedencia de alimentos para Cundinamarca}\
 <!-- Subtitulo -->
 \fontsize{12}{12} \selectfont \textcolor{gray}{Descubre los principales municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.}\
 <!-- Grafica -->

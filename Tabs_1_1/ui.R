@@ -61,7 +61,7 @@ ui <- fluidPage(
       
     "))
   ),
-    tags$h1("Municipios proveedores de alimentos para Cundinamarca", class = "main-header"),
+    tags$h1("Municipios de procedencia de alimentos para Cundinamarca", class = "main-header"),
     tags$h1("Descubre los principales municipios proveedores de alimentos que ingresan a Cundinamarca según el SIPSA.", class = "main-header_2"),  
   div(
     textOutput("subtitulo"),

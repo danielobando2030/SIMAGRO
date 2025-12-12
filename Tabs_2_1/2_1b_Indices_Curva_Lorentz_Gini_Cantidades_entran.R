@@ -72,6 +72,7 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
   Salida=Salida%>%arrange(Part)
   Salida$Part_cum = cumsum(Salida$Part)
   Salida$one_cum = cumsum(rep(1, nrow(Salida))/nrow(Salida))
+  Salida$can_cum = cumsum(rep(1, nrow(Salida)))
   fila_inicial <- Salida[1, ]  # tomar estructura para conservar columnas
   fila_inicial[,] <- NA        # limpiar valores
   fila_inicial$Part <- 0
@@ -88,7 +89,8 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
   
   # Gráfico
 
-  Salida$tooltip_text <- paste0("<br> % Municipios acumulados: ", scales::percent(Salida$one_cum,accuracy=0.1), "<br> % Volumen acumulados:", scales::percent(Salida$Part_cum,accuracy=0.1))
+  Salida$tooltip_text <- paste0("<br> % Municipios acumulados: ", scales::percent(Salida$one_cum,accuracy=0.1), "<br> % Volumen acumulados:", scales::percent(Salida$Part_cum,accuracy=0.1),
+                                "<br>  Número de municipios: ", format(Salida$can_cum,accuracy=0.1,decimal.mark=",",big.mark=","))
   
 
   
@@ -108,7 +110,7 @@ Lorentz_GINI = function(ANO=NULL, ALIMENTO=NULL, MES=NULL){
     
     # texto Gini
     annotate("text", x=0.1, y=0.85, 
-             label=paste0("Gini = ", round(gini, 2)), 
+             label=paste0("Gini = ", format(round(gini*100, 2),decimal.mark=",",big.mark=".")), 
              hjust=0, size=5, color="#4F3032", fontface="bold") +
     # etiquetas y escalas
     labs(x="Proporción acumulada de municipios de origen",

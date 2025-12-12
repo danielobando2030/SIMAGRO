@@ -8,7 +8,7 @@
 # Paquetes 
 ################################################################################
 library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)
-library(glue);library(tidyverse);library(extrafont);library(plotly);library(arrow)
+library(glue);library(tidyverse);library(extrafont);library(plotly);library(arrow);library(scales)
 options(scipen = 999)
 ################################################################################
 rm(list = ls())
@@ -38,7 +38,7 @@ plot_data <- function(tipo, anio = NULL) {
     data$IHH <- data$IHH
     
     # Crear un gráfico de tiempo
-    data$tooltip_text <- paste("Año: ", data$year , "<br> IHH:" , round(data$IHH,1))
+    data$tooltip_text <- paste("Año: ", data$year , "<br> IHH:" , format(round(data$IHH,1),decimal.mark=",",big.mark="."))
     p_plano <- ggplot(data, aes_string(x = "date_col", y = "IHH")) +
       geom_line(color = "#983136") +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
@@ -49,6 +49,12 @@ plot_data <- function(tipo, anio = NULL) {
       scale_x_continuous(
         breaks = data$year
       ) +
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",   # separador de miles
+          decimal.mark = ","  # separador decimal
+        )
+      )+
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
     
   } else {
@@ -56,12 +62,12 @@ plot_data <- function(tipo, anio = NULL) {
     data <- rename(data, date_col = mes_y_ano)
     data$IHH <- data$IHH
     data$month_completo <- mapeo_meses[data$month]
-    data$tooltip_text <- paste("Año: ", data$year ,"<br> Mes:" , data$month_completo, "<br> IHH:" , round(data$IHH,1))
+    data$tooltip_text <- paste("Año: ", data$year ,"<br> Mes:" , data$month_completo, "<br> IHH:" , format(round(data$IHH,1),decimal.mark=",",big.mark="."))
     
     
     # Si se especificó un año, filtrar los datos para ese año
     if (!is.null(anio)) {
-    data$tooltip_text <- paste("Año: ", data$year , "<br> Mes:" , data$month_completo,  "<br> IHH:" , round(data$IHH,1))
+    data$tooltip_text <- paste("Año: ", data$year , "<br> Mes:" , data$month_completo,  "<br> IHH:" , format(round(data$IHH,1),decimal.mark=",",big.mark="."))
       data <- data %>% filter(year == anio)
     }
     # Crear un gráfico de tiempo
@@ -73,7 +79,14 @@ plot_data <- function(tipo, anio = NULL) {
       scale_color_manual(values = "#983136") +  # Establecer el color de la línea
       theme(text = element_text( size = 12))+
       scale_x_date(date_breaks = "4 month", date_labels = "%Y-%m") +  # Establecer el formato de fecha
-      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+      scale_y_continuous(
+      labels = label_number(
+        big.mark = ".",   # separador de miles
+        decimal.mark = ","  # separador decimal
+      )
+    )
+    
     # Establecer la fuente y el tamaño del texto
       
     if (!is.null(anio)) {

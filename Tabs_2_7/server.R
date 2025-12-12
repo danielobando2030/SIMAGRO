@@ -124,7 +124,7 @@ output$subtitulo <- renderText({
   }
     resultado <- grafica_indice(input$tipo, anio, input$producto)
     tipo <- input$tipo
-    min_vulnerabilidad <- resultado$min_vulnerabilidad
+    min_vulnerabilidad <- format(resultado$min_vulnerabilidad,decimal.mark=",",big.mark=".")
     fecha_min_vulnerabilidad <- resultado$fecha_min_vulnerabilidad
     producto_min_vulnerabilidad <- resultado$producto_min_vulnerabilidad
     fecha_min_vulnerabilidad <- as.character(fecha_min_vulnerabilidad)
@@ -143,7 +143,7 @@ output$subtitulo <- renderText({
     } else if (tipo == 4) {
       values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en ", mes , " del ", anio, " donde se registró un índice mínimo de ", min_vulnerabilidad, " para el producto: ",  producto_min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
     } else {
-      values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el",anio, " donde se registró un índice mínimo de " , min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
+      values$subtitulo <- (paste0("La mayor variedad de territorios conectado por el flujo de alimentos desde Cundinamarca hacia otras plazas fue en el ",anio, " donde se registró un índice mínimo de " , min_vulnerabilidad,". Índices bajos reflejan mayor diversidad de destinos, índices altos reflejan poca diversidad de los territorios"))
     }
     return(values$subtitulo)
   })

@@ -116,7 +116,7 @@ output$subtitulo <- renderText({
   
   resultado <- grafica_indice_mun(input$tipo, anio, input$producto)
   tipo <- input$tipo
-  min_Gini <- resultado$min_vulnerabilidad
+  min_Gini <- format(resultado$min_vulnerabilidad,decimal.mark=",",big.mark=".")
   fecha_min_vulnerabilidad <- resultado$fecha_min_vulnerabilidad
   producto_min_vulnerabilidad <- resultado$producto_min_vulnerabilidad
   fecha_min_vulnerabilidad <- as.character(fecha_min_vulnerabilidad)

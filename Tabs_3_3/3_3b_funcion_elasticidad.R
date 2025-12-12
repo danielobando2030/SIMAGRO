@@ -1,6 +1,6 @@
 ###############################
-##### Libraries ############### 
-############################### 
+##### Libraries ###############
+###############################
 
 pacman::p_load(readr, lubridate, dplyr, ggplot2, zoo, readxl, glue, 
                tidyverse, gridExtra, corrplot, plotly, arrow) 
@@ -10,7 +10,9 @@ options(encoding = "UTF-8")
 
 data <- readRDS("base_elasticidad_3_3.rds") %>% ungroup()
 
-#######
+###########################################################
+### FUNCIÓN COMPLETA CON TOOLTIP NUEVO Y EJES VISIBLES  ###
+###########################################################
 
 grafico_producto_anual <- function(data, producto_sel, anio_sel) {
   
@@ -30,52 +32,99 @@ grafico_producto_anual <- function(data, producto_sel, anio_sel) {
   df <- df %>%
     mutate(
       mes = month(mes_y_ano),
-      mes_label = factor(meses_es[mes], levels = meses_es)
+      mes_label = meses_es[mes],
+      elasticidad = ifelse(is.na(elasticidad), 0, elasticidad),
+      suma_ton = suma_kg / 1000
     )
   
-  df_plot <- df %>%
-    mutate(elasticidad = ifelse(is.na(elasticidad), 0, elasticidad))
+  # ================================
+  # FORMATEOS LATAM CORREGIDOS
+  # ================================
   
-  fig <- plot_ly(df_plot, x = ~mes, hovermode = "x unified") %>%
-    add_lines(y = ~precio_prom, name = "Precio promedio",
-              line = list(color="#494634", width=2, dash="dash")) %>%
+  precio_txt <- format(round(df$precio_prom, 0),
+                       big.mark=".", decimal.mark=",")
+  
+  ton_txt <- format(round(df$suma_ton, 2),
+                    nsmall = 2, big.mark=".", decimal.mark=",")
+  
+  elast_txt <- format(round(df$elasticidad, 2),
+                      nsmall = 2, big.mark=".", decimal.mark=",")
+  
+  # ================================
+  # GRÁFICO
+  # ================================
+  
+  fig <- plot_ly(df, x = ~mes_label, hovermode = "x unified") %>%
     
-    add_lines(y = ~suma_kg, name="Cantidades (kg)",
-              line=list(color="#6D673E", width=2, dash="dashdot"), 
-              yaxis="y2") %>%
+    add_lines(
+      y = ~precio_prom,
+      name = "Precio promedio",
+      line = list(color="#494634", width=2, dash="dash"),
+      customdata = precio_txt,
+      hovertemplate = paste0(
+        "<b>Mes:</b> %{x}<br>",
+        "<b>Precio promedio:</b> %{customdata}<br>",
+        "<extra></extra>"
+      )
+    ) %>%
     
-    add_lines(y = ~elasticidad, name="Elasticidad",
-              line=list(color="#DBC21F", width=2), yaxis="y3") %>%
+    add_lines(
+      y = ~suma_ton,
+      name = "Cantidad (t)",
+      line = list(color="#6D673E", width=2, dash="dot"),
+      yaxis = "y2",
+      customdata = ton_txt,
+      hovertemplate = paste0(
+        "<b>Mes:</b> %{x}<br>",
+        "<b>Cantidad (t):</b> %{customdata}<br>",
+        "<extra></extra>"
+      )
+    ) %>%
+    
+    add_lines(
+      y = ~elasticidad,
+      name = "Elasticidad",
+      line = list(color="#DBC21F", width=2),
+      yaxis = "y3",
+      customdata = elast_txt,
+      hovertemplate = paste0(
+        "<b>Mes:</b> %{x}<br>",
+        "<b>Elasticidad:</b> %{customdata}<br>",
+        "<extra></extra>"
+      )
+    ) %>%
     
     layout(
-      xaxis = list(
-        tickvals = 1:12,
-        ticktext = meses_es
-      ),
+      xaxis = list(title = ""),
       
       yaxis = list(
-        title = "",
-        showticklabels = FALSE
+        title = "Precio",
+        showgrid = FALSE,
+        showline = TRUE,
+        linecolor = "#494634"
       ),
       
       yaxis2 = list(
-        title = "",
+        title = "Toneladas",
         overlaying = "y",
         side = "right",
-        showticklabels = FALSE
+        showline = TRUE,
+        linecolor = "#6D673E"
       ),
       
       yaxis3 = list(
-        title = "",
+        title = list(text="Elasticidad", standoff=2),
         overlaying = "y",
         side = "right",
-        position = 1.05,
-        showticklabels = FALSE
-      )
+        position = 1.02,
+        showline = TRUE,
+        linecolor = "#DBC21F"
+      ),
+      
+      legend = list(orientation = "h", y = -0.2),
+      locale = "es"
     )
   
   return(fig)
 }
-# --- Ejemplo de uso ---
-#grafico_producto_anual(data, "Aguacate", 2013)
 

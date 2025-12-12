@@ -44,6 +44,21 @@ html_to_latex <- function(txt) {
   return(txt)
 }
 
+# -----------------------------------------------------------
+# Formato porcentaje español (coma decimal, sin ceros inútiles)
+# -----------------------------------------------------------
+formato_pct_es <- function(x, digits = 1) {
+  x <- x * 100
+  if (abs(x - round(x)) < 1e-8) {
+    paste0(formatC(round(x), format = "f", digits = 0), "%")
+  } else {
+    paste0(
+      formatC(x, format = "f", digits = digits, decimal.mark = ","),
+      "%"
+    )
+  }
+}
+
 # Cargar función y datos
 
 server <- function(input, output, session) {
@@ -159,12 +174,12 @@ server <- function(input, output, session) {
     total_mes <- sum(resumen_mes$kg, na.rm = TRUE)
     
     top <- resumen_mes %>% slice_max(kg, n = 1)
-    pct <- round((top$kg / total_mes) * 100, 1)
+    pct_txt <- formato_pct_es(top$kg / total_mes)
     
     txt <- glue(
       "La ruta externa al departamento más importante para el abastecimiento de Cundinamarca es ",
       "<b>{str_to_title(top$region_geo)}</b>, ",
-      "representando el <b>{pct}%</b> del total de volumen de ingreso a las principales centrales de abasto."
+      "representando el <b>{pct_txt}</b> del total de volumen de ingreso a las principales centrales de abasto."
     )
     
     if (raw) return(txt)

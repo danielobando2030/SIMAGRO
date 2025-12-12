@@ -61,7 +61,6 @@ server <- function(input, output, session) {
   output$grafico <- renderPlotly({
     res <- resultado()
     
-    # --- Si no hay datos o res no trae gráfico válido ---
     if (is.null(res) || is.null(res$grafico)) {
       return(
         plot_ly() %>%
@@ -79,7 +78,6 @@ server <- function(input, output, session) {
       )
     }
     
-    # --- Si sí hay gráfico ---
     res$grafico
   })
   
@@ -90,15 +88,16 @@ server <- function(input, output, session) {
   
   output$subtitulo <- renderText({
     res <- resultado()
+    
     if (is.null(res)) {
       values$subtitulo <- "Visualizando diferencias promedio de precios por producto y año seleccionados."
     } else {
       values$subtitulo <- glue(
         "Producto: {input$producto} | Año: {input$anio}. ",
         "El precio más bajo se observó en {res$ciudad_min} (",
-        formatC(res$precio_min, big.mark = ",", digits = 0, format = "f"),
+        formatC(res$precio_min, big.mark = ".", decimal.mark = ",", digits = 0, format = "f"),
         " pesos menos que Bogotá), y el más alto en {res$ciudad_max} (",
-        formatC(res$precio_max, big.mark = ",", digits = 0, format = "f"),
+        formatC(res$precio_max, big.mark = ".", decimal.mark = ",", digits = 0, format = "f"),
         " pesos más que Bogotá)."
       )
     }
@@ -107,15 +106,19 @@ server <- function(input, output, session) {
   
   output$mensaje1 <- renderText({
     res <- resultado()
+    
     if (is.null(res)) {
       values$mensaje1 <- "No hay información disponible."
     } else {
-      avg_sd <- round(mean(res$datos$dev, na.rm = TRUE), 0)
+      avg_sd <- mean(res$datos$dev, na.rm = TRUE)
+      
       values$mensaje1 <- glue(
-        "La desviación estándar promedio fue de {format(avg_sd, big.mark = ',', decimal.mark='.')}, ",
+        "La desviación estándar promedio fue de ",
+        "{formatC(avg_sd, format='f', digits=0, big.mark='.', decimal.mark=',')}, ",
         "indicando el grado de variabilidad de precios entre ciudades."
       )
     }
+    
     values$mensaje1
   })
   
@@ -156,10 +159,10 @@ server <- function(input, output, session) {
       webshot2::webshot(
         tmp_html,
         file   = tmp_png,
-        vwidth = 2800,      # mucho más grande
-        vheight = 1800,     # alta resolución
-        zoom = 1.5,         # más zoom interno de webshot
-        delay  = 1
+        vwidth = 2800,
+        vheight = 1800,
+        zoom = 1.5,
+        delay = 1
       )
       
       file.copy(tmp_png, file, overwrite = TRUE)
@@ -177,7 +180,6 @@ server <- function(input, output, session) {
       res <- resultado()
       req(res)
       
-      # ---- Convertir el plotly a PNG para el informe ----
       tmp_html <- tempfile(fileext = ".html")
       tmp_png  <- tempfile(fileext = ".png")
       
@@ -192,7 +194,7 @@ server <- function(input, output, session) {
         file   = tmp_png,
         vwidth = 1600,
         vheight = 900,
-        delay  = 1
+        delay = 1
       )
       
       temp_pdf <- tempfile(fileext = ".pdf")
@@ -207,7 +209,7 @@ server <- function(input, output, session) {
           datos       = res$datos,
           grafico_png = tmp_png,
           resumen     = values$subtitulo,
-          mensaje1    = values$mensaje1    # <--- AÑADIR ESTO
+          mensaje1    = values$mensaje1
         ),
         envir         = new.env(parent = globalenv()),
         knit_root_dir = getwd(),
@@ -223,7 +225,7 @@ server <- function(input, output, session) {
   # Botón Reset
   ###############################################################################
   observeEvent(input$reset, {
-    updateSelectInput(session, "anio", selected = "2014")
+    updateSelectInput(session, "anio", selected = "2024")
     updateSelectInput(session, "producto", selected = "Aguacate")
   })
 }

@@ -114,10 +114,16 @@ output$subtitulo <- renderText({
   tipo <- input$tipo
   anio <- ifelse(is.null(input$anio) || input$anio == "todo", NA, input$anio)
   
+  if ((input$tipo == 3 || input$tipo == 4)&&is.na(anio)) {
+    return("Debe seleccionar un año.")
+  }
+  
+  
+  
   # Ejecutar función que trae resultados
   resultado <- grafica_indice_mun(tipo, anio, input$producto)
   
-  max_IHH <- round(resultado$max_vulnerabilidad, 1)
+  max_IHH <- format(round(resultado$max_vulnerabilidad, 1),decimal.mark=",",big.mark=".")
   fecha <- as.character(resultado$fecha_max_vulnerabilidad)
   producto_max <- resultado$producto_max_vulnerabilidad
   

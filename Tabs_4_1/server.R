@@ -2,7 +2,7 @@
 # Proyecto FAO - VP - 2025
 # Servidor - Mapa de Rutas (versión corregida y final)
 ################################################################################-
-# Autores: Luis Miguel García, Juliana Lalinde, Laura Quintero, Germán Angulo
+# Autores: Juliana Lalinde, Laura Quintero, Germán Angulo, Luis Miguel García, Daniel Obando
 # Fecha: 13/11/2025
 ################################################################################-
 
@@ -14,6 +14,21 @@ library(htmlwidgets); library(webshot); library(magick); library(shinyscreenshot
 library(knitr); library(rmarkdown); library(leaflet); library(scales); library(stringr); library(purrr)
 
 options(scipen = 999)
+
+# -----------------------------------------------------------
+# Formato porcentaje español (coma decimal, sin ceros innecesarios)
+# -----------------------------------------------------------
+formato_pct_es <- function(x, digits = 1) {
+  x <- x * 100
+  if (abs(x - round(x)) < 1e-8) {
+    paste0(formatC(round(x), format = "f", digits = 0), "%")
+  } else {
+    paste0(
+      formatC(x, format = "f", digits = digits, decimal.mark = ","),
+      "%"
+    )
+  }
+}
 
 # -----------------------------------------------------------
 # Cargar función y datos 
@@ -180,13 +195,13 @@ server <- function(input, output, session) {
       # MENSAJE 1 — mayor
       mensaje1 <- {
         top <- df %>% group_by(mpio_origen) %>%
-          summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
+          summarise(valor = sum(importancia_ruta, na.rm = TRUE), .groups="drop") %>%
           arrange(desc(valor)) %>% slice_head(n=1)
         
-        if(nrow(top)==0) "—"
+        if (nrow(top) == 0) "—"
         else paste0(
           str_to_title(str_to_lower(top$mpio_origen)),
-          " (", sprintf('%.1f%%', top$valor*100), ")"
+          " (", formato_pct_es(top$valor), ")"
         )
       }
       
@@ -195,13 +210,13 @@ server <- function(input, output, session) {
         bottom <- df %>% 
           filter(importancia_ruta > 0) %>%
           group_by(mpio_origen) %>%
-          summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
+          summarise(valor = sum(importancia_ruta, na.rm = TRUE), .groups="drop") %>%
           arrange(valor) %>% slice_head(n=1)
         
-        if(nrow(bottom)==0) "—"
+        if (nrow(bottom) == 0) "—"
         else paste0(
           str_to_title(str_to_lower(bottom$mpio_origen)),
-          " (", sprintf('%.1f%%', bottom$valor*100), ")"
+          " (", formato_pct_es(bottom$valor), ")"
         )
       }
       
@@ -243,15 +258,15 @@ server <- function(input, output, session) {
     
     top <- df %>%
       group_by(mpio_origen) %>%
-      summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
+      summarise(valor = sum(importancia_ruta, na.rm = TRUE), .groups="drop") %>%
       arrange(desc(valor)) %>%
       slice_head(n=1)
     
-    if (nrow(top)==0) return("—")
+    if (nrow(top) == 0) return("—")
     
     nombre <- str_to_title(str_to_lower(top$mpio_origen))
     
-    paste0(nombre, " (", sprintf("%.1f%%", top$valor*100), ")")
+    paste0(nombre, " (", formato_pct_es(top$valor), ")")
   })
   
   output$region_menos_importante <- renderText({
@@ -262,15 +277,15 @@ server <- function(input, output, session) {
     
     bottom <- df %>%
       group_by(mpio_origen) %>%
-      summarise(valor=sum(importancia_ruta, na.rm=TRUE), .groups="drop") %>%
+      summarise(valor = sum(importancia_ruta, na.rm = TRUE), .groups="drop") %>%
       arrange(valor) %>%
       slice_head(n=1)
     
-    if (nrow(bottom)==0) return("—")
+    if (nrow(bottom) == 0) return("—")
     
     nombre <- str_to_title(str_to_lower(bottom$mpio_origen))
     
-    paste0(nombre, " (", sprintf("%.1f%%", bottom$valor*100), ")")
+    paste0(nombre, " (", formato_pct_es(bottom$valor), ")")
   })
   
   output$mensaje_interpretativo <- renderText({

@@ -189,7 +189,8 @@ ui <- fluidPage(
       HTML("
         <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
         <br>
-        Este módulo presenta el escalafón mensual de los precios mayoristas por ciudad y mes.
+        Este módulo presenta el escalafón mensual de los precios mayoristas por ciudad y mes, donde el primer puesto implica
+        el precio más alto del alimento en el país.
       "),
       style = "font-size:12px; color:#4E4D4D;"
     )

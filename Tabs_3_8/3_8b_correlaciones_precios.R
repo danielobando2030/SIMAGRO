@@ -91,52 +91,97 @@ data$mes <- month(data$mes_y_ano)
 
 ##### Funcion de correlación
 
-
 correlacion_precios <- function(data, anio){
   
-  # Filtrar por año
+  # --- Filtrar por año ---
   df <- data %>%
     filter(anio == !!anio) %>%
     select(producto, mes_y_ano, precio_prom) %>%
     distinct()
   
-  # Pasar a formato ancho
-  df_wide <- df %>%
-    pivot_wider(names_from = producto, values_from = precio_prom)
+  # --- Pasar a ancho ---
+  df_wide <- df %>% pivot_wider(names_from = producto, values_from = precio_prom)
+  df_mat  <- df_wide %>% select(-mes_y_ano)
   
-  # Quitar columna de fechas
-  df_mat <- df_wide %>% select(-mes_y_ano)
-  
-  # Calcular matriz de correlaciones
+  # --- Matriz de correlaciones ---
   cor_mat <- cor(df_mat, use = "pairwise.complete.obs")
   
-  # Nombres con mayúscula inicial
+  # --- Names con mayúscula ---
   productos <- str_to_title(colnames(cor_mat))
   colnames(cor_mat) <- productos
   rownames(cor_mat) <- productos
   
-  # Crear gráfico interactivo con Plotly
+  # --- Customdata con formato latino ---
+  custom_latam <- matrix(
+    format(round(cor_mat, 2), decimal.mark = ",", big.mark = "."),
+    nrow = nrow(cor_mat),
+    ncol = ncol(cor_mat),
+    dimnames = dimnames(cor_mat)
+  )
+  
+  # --- Gráfico Plotly ---
   fig <- plot_ly(
     z = cor_mat,
     x = productos,
     y = productos,
     type = "heatmap",
+    
+    customdata = custom_latam,
+    text = custom_latam,
+    hoverinfo = "text",
+    
     colorscale = list(
       list(0, "#494634"),
       list(0.5, "white"),
       list(1, "#DBC21F")
     ),
     zmin = -1, zmax = 1,
-    hovertemplate = paste(
-      "<b>%{x}</b> vs <b>%{y}</b><br>",
-      "Correlación: %{z:.2f}<extra></extra>"
+    
+    # ---- LEYENDA CON COMA ----
+    colorbar = list(
+      title = "Correlación",
+      tickvals = seq(-1, 1, 0.5),
+      ticktext = format(seq(-1, 1, 0.5), decimal.mark = ",", big.mark = "."),
+      tickfont = list(size = 10)
     )
   ) %>%
     layout(
-      title = list(text = paste("Matriz de correlación de precios de productos -", anio),
-                   x = 0.5, font = list(size = 16)),
-      xaxis = list(title = "", tickangle = 45),
-      yaxis = list(title = "", autorange = "reversed")
+      title = list(
+        text = paste("Matriz de correlación de precios de productos -", anio),
+        x = 0.5, 
+        font = list(size = 16)
+      ),
+      
+      xaxis = list(
+        title = "",
+        tickangle = 45,
+        automargin = TRUE,
+        tickfont = list(size = 9)
+      ),
+      
+      yaxis = list(
+        title = "",
+        type = "category",
+        autorange = "reversed",
+        tickmode = "array",
+        tickvals = productos,
+        ticktext = productos,
+        automargin = TRUE,
+        tickfont = list(size = 9)
+      ),
+      
+      hoverlabel = list(
+        align = "left",
+        bgcolor = "white",
+        font = list(color = "#333333")
+      ),
+      
+      margin = list(
+        l = 180,
+        r = 20,
+        b = 60,
+        t = 60
+      )
     )
   
   return(list(

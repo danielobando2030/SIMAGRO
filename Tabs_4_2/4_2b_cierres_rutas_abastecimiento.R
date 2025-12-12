@@ -12,6 +12,21 @@ pacman::p_load(
 
 options(scipen = 999)
 
+# -----------------------------------------------------------
+# Formato porcentaje español (coma decimal, sin ceros inútiles)
+# -----------------------------------------------------------
+formato_pct_es <- function(x, digits = 2) {
+  x <- x * 100
+  if (abs(x - round(x)) < 1e-8) {
+    paste0(formatC(round(x), format = "f", digits = 0), "%")
+  } else {
+    paste0(
+      formatC(x, format = "f", digits = digits, decimal.mark = ","),
+      "%"
+    )
+  }
+}
+
 ################################################################################-
 # 1. CARGA DE BASES
 ################################################################################-
@@ -134,7 +149,7 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
       region_geo == "Nororiente"    ~ "#ff7f00",
       region_geo == "Norte"         ~ "#6a3d9a",
       region_geo == "Oriente"       ~ "#1f78b4",
-      region_geo == "Suroriente"    ~ "#b2df8a",
+      region_geo == "Suroriente"    ~ "#D4AF37",
       region_geo == "Sur"           ~ "#b15928",
       region_geo == "Suroccidente"  ~ "#a6cee3",
       region_geo == "Occidente"     ~ "#33a02c",
@@ -157,12 +172,11 @@ graficar_rutas_color_importancia <- function(df, Año = NULL, Mes = NULL, Produc
   for (i in valid_idx) {
     coords <- rutas_list[[i]]
     
-    lbl_text <- sprintf(
-      "Origen: %s (%s). Región: %s. Proporción regional del producto: %.2f%%",
-      df$mpio_origen[i],
-      df$depto_origen[i],
-      df$region_geo[i],
-      as.numeric(df$prop_region_producto[i]) * 100
+    lbl_text <- paste0(
+      "Origen: ", df$mpio_origen[i], " (", df$depto_origen[i], "). ",
+      "Región: ", df$region_geo[i], ". ",
+      "Proporción regional del producto: ",
+      formato_pct_es(as.numeric(df$prop_region_producto[i]), digits = 2)
     )
     
     map <- map %>% addPolylines(

@@ -48,6 +48,14 @@ server <- function(input, output, session) {
       mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100) %>%
       filter(!is.na(cambio_pct_mensual))
     
+    # Ticks formateados en español
+    ticks_y <- pretty(df$cambio_pct_mensual)
+    ticks_y_lbl <- format(
+      round(ticks_y, 2),
+      decimal.mark = ",",
+      big.mark = "."
+    )
+    
     plot_ly(
       df,
       x = ~mes_y_ano,
@@ -58,14 +66,16 @@ server <- function(input, output, session) {
       marker = list(color = '#DBC21F', size = 8),
       text = ~paste0(
         "Mes: ", format(mes_y_ano, "%B %Y"),
-        "<br>Cambio mensual: ", round(cambio_pct_mensual, 2), "%"
+        "<br>Cambio mensual: ", format(round(cambio_pct_mensual, 2),
+                                       decimal.mark = ",", big.mark = "."), "%"
       ),
       hoverinfo = "text"
     ) %>%
       add_lines(
         y = 0,
         x = ~mes_y_ano,
-        line = list(color = "rgba(155,48,255,0.3)", dash = "dash"),
+        line = list(color = "rgba(100, 100, 100, 0.7)", dash = "dot", width = 1.5),
+        hoverinfo = "none",
         showlegend = FALSE
       ) %>%
       layout(
@@ -73,11 +83,28 @@ server <- function(input, output, session) {
         xaxis = list(
           title = "Mes",
           tickvals = df$mes_y_ano,
-          ticktext = tools::toTitleCase(format(df$mes_y_ano, "%B")),
-          tickangle = -90,
-          tickfont = list(size = 12)
+          ticktext = tools::toTitleCase(format(df$mes_y_ano, "%b")),
+          tickangle = -45
         ),
-        yaxis = list(title = "Cambio % mensual"),
+        yaxis = list(
+          title = "Cambio % mensual",
+          
+          tickmode = "array",
+          tickvals = ticks_y,
+          ticktext = formato_es(ticks_y, 2),
+          
+          # --- LÍNEAS CRÍTICAS PARA QUE SE VEAN TODOS ---
+          automargin = TRUE,
+          tickson = "boundaries",
+          ticks = "outside",
+          tickfont = list(size = 14),
+          constrain = "range",
+          
+          # Rango ampliado para más aire visual
+          range = c(min(ticks_y) - 5, max(ticks_y) + 5),
+          
+          zeroline = FALSE
+        ),
         hovermode = "x unified"
       )
   })
@@ -87,7 +114,7 @@ server <- function(input, output, session) {
   })
   
   ##############################################################################
-  # PANEL LATERAL: MAYOR CAMBIO
+  # PANEL LATERAL: MAYOR CAMBIO  (CON FORMATO LATAM)
   ##############################################################################
   output$mayorCambio <- renderUI({
     df <- data_filtrada()
@@ -103,15 +130,26 @@ server <- function(input, output, session) {
     
     mes_max <- tools::toTitleCase(format(max_c$mes_y_ano, "%B %Y"))
     mes_min <- tools::toTitleCase(format(min_c$mes_y_ano, "%B %Y"))
-    valor_max <- round(max_c$cambio_pct_mensual, 2)
-    valor_min <- round(min_c$cambio_pct_mensual, 2)
+    
+    # ⭐ FORMATO LATINO — coma decimales, punto miles
+    valor_max <- format(
+      round(max_c$cambio_pct_mensual, 2),
+      decimal.mark = ",",
+      big.mark = "."
+    )
+    
+    valor_min <- format(
+      round(min_c$cambio_pct_mensual, 2),
+      decimal.mark = ",",
+      big.mark = "."
+    )
     
     HTML(glue::glue("
-      <div class='panel-cambio'>
-        <p><b>Mayor incremento mensual:</b><br>{mes_max} (+{valor_max}%)</p>
-        <p><b>Mayor reducción mensual:</b><br>{mes_min} ({valor_min}%)</p>
-      </div>
-    "))
+    <div class='panel-cambio'>
+      <p><b>Mayor incremento mensual:</b><br>{mes_max} (+{valor_max}%)</p>
+      <p><b>Mayor reducción mensual:</b><br>{mes_min} ({valor_min}%)</p>
+    </div>
+  "))
   })
   
   ##############################################################################

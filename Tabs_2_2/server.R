@@ -129,11 +129,12 @@ output$mensaje1 <- renderText({
   if (nrow(resultado_data$datos) == 0) {
     validate("No hay información disponible")
   } else {
+    
     values$mensaje1 <- paste(
-      "Se obtiene un coeficiente de Gini de", round(resultado_data$gini_, 2), ". ",
+      "Se obtiene un coeficiente de Gini de",format(round(resultado_data$gini_*100, 2),decimal.mark=",",big.mark="."), ". ",
       "Esta medida refleja el nivel de concentración o dependencia del mercado: ",
       "valores cercanos a 0 indican una distribución equilibrada entre los municipios, ",
-      "mientras que valores cercanos a 1 señalan una alta concentración en pocos municipios. ",
+      "mientras que valores cercanos a 100 señalan una alta concentración en pocos municipios. ",
       "Según su valor, la dependencia es ",
       ifelse(resultado_data$gini_ < 0.20, "muy baja",
              ifelse(resultado_data$gini_ < 0.40, "baja",

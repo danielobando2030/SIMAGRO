@@ -69,31 +69,28 @@ visualizar_ranking <- function(data, producto, anio) {
   # gráfico interactivo
   fig <- plot_ly()
   
-  # 1️⃣ Otros
+  # --- 1️⃣ Otros (SIN ETIQUETA, SOLO HOVER) ---
   fig <- fig %>%
     add_trace(
       data = data_otros,
       x = ~mes_label,
       y = ~precio_prom,
       type = 'scatter',
-      mode = 'markers+text',
-      text = ~ciudad,
-      textposition = 'right middle',
-      textfont = list(size = 7, color = "#B0B0B0"),
+      mode = 'markers',              # <<< SOLO MARCADORES
       hoverinfo = 'text',
       hovertext = ~hover_text,
       marker = list(size = 8, color = "#B0B0B0", line = list(width = 1, color = "#6D673E")),
       showlegend = FALSE
     )
   
-  # 2️⃣ Bogotá al frente
+  # --- 2️⃣ Bogotá (ÚNICA CON NOMBRE EN EL GRÁFICO) ---
   fig <- fig %>%
     add_trace(
       data = data_bogota,
       x = ~mes_label,
       y = ~precio_prom,
       type = 'scatter',
-      mode = 'markers+text',
+      mode = 'markers+text',         # <<< ESTA SÍ MUESTRA TEXTO SIEMPRE
       text = ~ciudad,
       textposition = 'right middle',
       textfont = list(size = 10, color = "#DBC21F"),

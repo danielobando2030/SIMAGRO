@@ -1,7 +1,7 @@
 # Proyecto FAO
 # Visualizacion de DATOS   - abastecimeinto en bogota 
 ################################################################################-
-#Autores: Cristian Daniel Obando, Luis Miguel Garcia,Juan Carlos Muñoz, MoraJuliana Lalinde, Laura Quintero, Germán Angulo
+#Autores: Cristian Daniel Obando, Luis Miguel Garcia,Juan Carlos Muñoz Mora, Juliana Lalinde, Laura Quintero, Germán Angulo
 #Fecha de creacion: 03/04/2024
 #Fecha de ultima modificacion: 28/11/2025
 ################################################################################

@@ -147,8 +147,11 @@ server <- function(input, output, session) {
     
     elast_media <- mean(elast, na.rm = TRUE)
     
+    # === FORMATO LATAM (coma decimal) ===
+    elast_media_txt <- gsub("\\.", ",", sprintf('%.2f', elast_media))
+    
     glue(
-      "La elasticidad promedio del producto fue de {sprintf('%.2f', elast_media)}, ",
+      "La elasticidad promedio del producto fue de {elast_media_txt}, ",
       "indicando el grado de sensibilidad del precio ante variaciones en la oferta."
     )
   })
@@ -161,14 +164,15 @@ server <- function(input, output, session) {
     req(res)
     
     elast <- res$datos$elasticidad
-    if (all(is.na(elast))) {
-      return("No existen datos de elasticidad para esta selección.")
-    }
+    if (all(is.na(elast))) return("No existen datos de elasticidad para esta selección.")
     
     elast_media <- mean(elast, na.rm = TRUE)
     
+    # === FORMATO LATAM ===
+    elast_media_txt <- gsub("\\.", ",", sprintf('%.2f', elast_media))
+    
     glue(
-      "La elasticidad promedio del producto fue de {sprintf('%.2f', elast_media)}, ",
+      "La elasticidad promedio del producto fue de {elast_media_txt}, ",
       "indicando el grado de sensibilidad del precio ante variaciones en la oferta."
     )
   })

@@ -25,8 +25,7 @@ ui <- fluidPage(
       href = "https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap"
     ),
     
-    # ⭐ LO MÁS IMPORTANTE ⭐
-    # Plotly en español → permite meses como "enero", "febrero", etc.
+    # Plotly en español (meses en español)
     tags$script("
     document.addEventListener('DOMContentLoaded', function() {
       if (Plotly) {
@@ -35,26 +34,13 @@ ui <- fluidPage(
     });
   "),
     
-    # ---- ESTILOS INSTITUCIONALES ----
+    # Estilos FAO
     tags$style(HTML("
       body { font-family: 'Prompt', sans-serif; background-color: #fafafa; color:#4E4D4D; }
 
-      .main-header {
-        font-size: 40px;
-        color: #6D673E;
-        font-weight: 700;
-      }
-
-      .main-header_2 {
-        font-size: 20px;
-        color: #6D673E;
-        font-weight: 500;
-      }
-
-      .sub-header2 {
-        font-size: 15px;
-        color:#4E4D4D;
-      }
+      .main-header { font-size: 40px; color: #6D673E; font-weight: 700; }
+      .main-header_2 { font-size: 20px; color: #6D673E; font-weight: 500; }
+      .sub-header2 { font-size: 15px; color:#4E4D4D; }
 
       h5, label, p, .stat-value, .stat-title,
       .shiny-input-container, .control-label {
@@ -79,7 +65,7 @@ ui <- fluidPage(
   ),
   
   # ------------------------------------------------------------------
-  # TÍTULOS EXACTAMENTE COMO TU OTRO MÓDULO FAO
+  # TÍTULOS FAO
   # ------------------------------------------------------------------
   tags$h1("Comportamiento de los precios en el tiempo", class = "main-header"),
   tags$h1("Análisis histórico de precios de alimentos en las centrales de abasto de Bogotá.", 
@@ -132,14 +118,17 @@ ui <- fluidPage(
   # Gráfico + Panel lateral
   # ------------------------------------------------------------------
   fluidRow(
+    
+    # --- Gráfico ---
     column(9, align = "center",
            plotlyOutput("grafico", height = "450px")
     ),
     
+    # --- Panel lateral (REORDENADO) ---
     column(3,
-           uiOutput("texto_volatil"),
-           uiOutput("texto_promedio_cambio"),
-           uiOutput("texto_mes_max_anual"),
+           uiOutput("texto_mes_max_anual"),      # ← AHORA PRIMERO
+           uiOutput("texto_volatil"),            # ← SEGUNDO
+           uiOutput("texto_promedio_cambio"),    # ← TERCERO
            style = "padding:0px; margin-top:20px;"
     )
   ),
@@ -182,7 +171,7 @@ ui <- fluidPage(
   ),
   
   # ------------------------------------------------------------------
-  # Logo INFERIOR
+  # Logo inferior
   # ------------------------------------------------------------------
   fluidRow(
     tags$div(

@@ -1,19 +1,18 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# UI – Mapa de Rutas por Regiones (versión FINAL con TRES MENSAJES)
+# UI – Mapa de Rutas por Regiones (layout 7/5 + filtros corregidos)
 ################################################################################-
 
 library(shiny)
 library(leaflet)
 
-source("4_2b_cierres_rutas_abastecimiento.R")  # contiene graficar_rutas_color_importancia
+source("4_2b_cierres_rutas_abastecimiento.R")  # graficar_rutas_color_importancia
 
 ui <- fluidPage(
   
   ###########################################################################
   # SCRIPTS JS PARA CHECKBOXES (con bloqueo y SIN LOOP)
   ###########################################################################
-  
   tags$script("window.blockCheckboxEvents = false;"),
   
   tags$script("
@@ -60,7 +59,7 @@ ui <- fluidPage(
         font-weight: 500;
       }
 
-      /* PANEL PRIMERO (mensaje3) — NUEVO COLOR */
+      /* PANELES */
       .panel-rojo-oscuro {
         background-color:#332728 !important;
         color:white !important;
@@ -70,8 +69,6 @@ ui <- fluidPage(
         margin-bottom:15px;
         min-height:120px;
       }
-
-      /* PANEL ROJO CLARO (mensaje2) */
       .panel-rojo-claro {
         background-color:#BC222A !important;
         color:white !important;
@@ -81,8 +78,6 @@ ui <- fluidPage(
         margin-bottom:15px;
         min-height:120px;
       }
-
-      /* PANEL ROJO OSCURO 2 (mensaje1) */
       .panel-rojo-oscuro-2 {
         background-color:#8A171C !important;
         color:white !important;
@@ -111,7 +106,7 @@ ui <- fluidPage(
         background-color: #e6e6e6 !important;
       }
 
-      /* CHECKBOX GRID 4x2 */
+      /* CHECKBOX GRID */
       .rutas-container {
         display: flex;
         flex-wrap: wrap;
@@ -144,137 +139,134 @@ ui <- fluidPage(
   ###########################################################################
   # TITULOS
   ###########################################################################
-  tags$h1("Impacto del cierre de vías de acceso en el abastecimiento de Bogotá", class="main-header"),
-  tags$h2("Importancia de la ruta por región ante un posible cierre de vías", class="main-header_2"),
+  tags$h1(
+    "Impacto del cierre de vías de acceso en el abastecimiento de Bogotá",
+    class = "main-header"
+  ),
+  tags$h2(
+    "Importancia de la ruta por región ante un posible cierre de vías",
+    class = "main-header_2"
+  ),
   
   ###########################################################################
-  # FILTROS
+  # FILTROS (2 / 2 / 3 / 5)
   ###########################################################################
-  div(
-    fluidRow(
-      
-      column(
-        3,
-        selectInput("anio", "Año:",
-                    choices = sort(unique(data_cierres_final$anio)),
-                    selected = 2024)
-      ),
-      
-      column(
-        3,
-        selectInput(
-          "mes", "Mes:",
-          choices = setNames(
-            sprintf("%02d", 1:12),
-            c("Enero","Febrero","Marzo","Abril","Mayo","Junio",
-              "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
-          ),
-          selected = "12"
-        )
-      ),
-      
-      column(
-        3,
-        selectInput("producto", "Producto:",
-                    choices = sort(unique(data_cierres_final$producto)),
-                    selected = "Aguacate Hass")
-      ),
-      
-      # CHECKBOXES
-      column(
-        3,
-        tags$label("Regiones a mostrar:"),
-        div(
-          class="rutas-container",
-          
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Noroccidente", checked="checked",
-                         style="accent-color:#e31a1c;"),
-              tags$label("Noroccidente")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Nororiente", checked="checked",
-                         style="accent-color:#ff7f00;"),
-              tags$label("Nororiente")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Norte", checked="checked",
-                         style="accent-color:#6a3d9a;"),
-              tags$label("Norte")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Oriente", checked="checked",
-                         style="accent-color:#1f78b4;"),
-              tags$label("Oriente")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Suroriente", checked="checked",
-                         style="accent-color:#b2df8a;"),
-              tags$label("Suroriente")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Sur", checked="checked",
-                         style="accent-color:#b15928;"),
-              tags$label("Sur")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Suroccidente", checked="checked",
-                         style="accent-color:#a6cee3;"),
-              tags$label("Suroccidente")
-          ),
-          div(class="ruta-item",
-              tags$input(type="checkbox", id="r_Occidente", checked="checked",
-                         style="accent-color:#33a02c;"),
-              tags$label("Occidente")
-          )
+  fluidRow(
+    
+    column(
+      2,
+      selectInput("anio", "Año:",
+                  choices = sort(unique(data_cierres_final$anio)),
+                  selected = 2024)
+    ),
+    
+    column(
+      2,
+      selectInput(
+        "mes", "Mes:",
+        choices = setNames(
+          sprintf("%02d", 1:12),
+          c("Enero","Febrero","Marzo","Abril","Mayo","Junio",
+            "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+        ),
+        selected = "12"
+      )
+    ),
+    
+    column(
+      3,
+      selectInput("producto", "Producto:",
+                  choices = sort(unique(data_cierres_final$producto)),
+                  selected = "Aguacate Hass")
+    ),
+    
+    # REGIONES MÁS ANCHO
+    column(
+      5,
+      tags$label("Regiones a mostrar:"),
+      div(
+        class = "rutas-container",
+        
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Noroccidente", checked="checked",
+                       style="accent-color:#e31a1c;"),
+            tags$label("Noroccidente")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Nororiente", checked="checked",
+                       style="accent-color:#ff7f00;"),
+            tags$label("Nororiente")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Norte", checked="checked",
+                       style="accent-color:#6a3d9a;"),
+            tags$label("Norte")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Oriente", checked="checked",
+                       style="accent-color:#1f78b4;"),
+            tags$label("Oriente")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Suroriente", checked="checked",
+                       style="accent-color:#D4AF37;"),
+            tags$label("Suroriente")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Sur", checked="checked",
+                       style="accent-color:#b15928;"),
+            tags$label("Sur")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Suroccidente", checked="checked",
+                       style="accent-color:#a6cee3;"),
+            tags$label("Suroccidente")
+        ),
+        div(class="ruta-item",
+            tags$input(type="checkbox", id="r_Occidente", checked="checked",
+                       style="accent-color:#33a02c;"),
+            tags$label("Occidente")
         )
       )
     )
   ),
   
   ###########################################################################
-  # MAPA + PANEL DERECHO (3 MENSAJES)
+  # MAPA + PANEL DERECHO (7 / 5)
   ###########################################################################
   fluidRow(
     
     column(
-      9,
-      div(
-        leafletOutput("grafico", height="480px"),
-        br(),
-        
-        downloadButton("descargar", "Gráfica", class="btn-faoc"),
-        downloadButton("descargarDatos", "Datos", class="btn-faoc"),
-        
-        tags$a(
-          href="https://github.com/danielobando2030/SIMAGRO",
-          target="_blank",
-          class="btn-faoc",
-          icon("github"),
-          tags$span("GitHub")
-        ),
-        
-        actionButton("reset", "Restablecer", icon=icon("refresh"), class="btn-faoc"),
-        
-        downloadButton("descargarPDF", "Generar informe", class="btn-faoc")
-      )
+      7,
+      leafletOutput("grafico", height = "480px"),
+      br(),
+      
+      downloadButton("descargar", "Gráfica", class = "btn-faoc"),
+      downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
+      
+      tags$a(
+        href = "https://github.com/danielobando2030/SIMAGRO",
+        target = "_blank",
+        class = "btn-faoc",
+        icon("github"),
+        tags$span("GitHub")
+      ),
+      
+      actionButton("reset", "Restablecer",
+                   icon = icon("refresh"), class = "btn-faoc"),
+      
+      downloadButton("descargarPDF", "Generar informe", class = "btn-faoc")
     ),
     
     column(
-      3,
-      
-      # --- PRIMER PANEL: AHORA mensaje3 (COLOR NUEVO) ---
-      div(class="panel-rojo-oscuro",
+      5,
+      div(class = "panel-rojo-oscuro",
           htmlOutput("impacto_cierre")
       ),
-      
-      # --- SEGUNDO PANEL: mensaje2 ---
-      div(class="panel-rojo-claro",
+      div(class = "panel-rojo-claro",
           htmlOutput("ranking_rutas")
       ),
-      
-      # --- TERCER PANEL: mensaje1 ---
-      div(class="panel-rojo-oscuro-2",
+      div(class = "panel-rojo-oscuro-2",
           htmlOutput("municipio_mas_importante")
       )
     )
@@ -288,10 +280,12 @@ ui <- fluidPage(
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
-           Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca. 
-           Las líneas más gruesas indican mayor importancia de la ruta de abastecimiento."),
-      class="footer-text"
+      HTML(
+        "<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br><br>
+         Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca. 
+         Las líneas más gruesas indican mayor importancia de la ruta de abastecimiento."
+      ),
+      class = "footer-text"
     )
   ),
   
@@ -300,8 +294,9 @@ ui <- fluidPage(
   ###########################################################################
   fluidRow(
     tags$div(
-      tags$img(src="logo_4.png", style="width:100%; margin:0; padding:0;"),
-      style="width:100%; margin:0;"
+      tags$img(src = "logo_4.png",
+               style = "width:100%; margin:0; padding:0;"),
+      style = "width:100%; margin:0;"
     )
   )
 )

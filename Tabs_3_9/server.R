@@ -1,9 +1,6 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# SERVER - Huella de Carbono (versión estable funcional)
-################################################################################-
-# Autores: Luis Miguel García, Juliana Lalinde, Laura Quintero, Germán Angulo
-# Fecha: 12/11/2025
+# SERVER - Huella de Carbono (versión estable LATAM)
 ################################################################################-
 
 rm(list = ls())
@@ -21,8 +18,15 @@ library(magick)
 source("3_9b_huella_carbono.R")
 options(scipen = 999)
 
+# ------------------------------------------------------------------
+# Función LATAM: miles con punto, decimales con coma
+# ------------------------------------------------------------------
+formato_latam <- function(x, dec = 0) {
+  format(round(x, dec), big.mark=".", decimal.mark=",", nsmall=dec)
+}
+
 ################################################################################-
-# Servidor
+# Server
 ################################################################################-
 
 server <- function(input, output, session) {
@@ -52,10 +56,7 @@ server <- function(input, output, session) {
     # ===================== MENSAJE 1 =====================
     prod_top <- df %>%
       group_by(producto, categoria) %>%
-      summarise(
-        total_co2 = sum(c02_total, na.rm = TRUE),
-        .groups = "drop"
-      ) %>%
+      summarise(total_co2 = sum(c02_total, na.rm = TRUE), .groups = "drop") %>%
       arrange(desc(total_co2)) %>%
       slice(1)
     
@@ -63,12 +64,13 @@ server <- function(input, output, session) {
     cat_name   <- prod_top$categoria
     prod_co2   <- prod_top$total_co2
     
+    # total del grupo
     grupo_total <- df %>%
       filter(categoria == cat_name) %>%
       summarise(total = sum(c02_total, na.rm = TRUE)) %>%
       pull(total)
     
-    pct_within_group <- round(100 * prod_co2 / grupo_total, 1)
+    pct_within_group <- formato_latam(100 * prod_co2 / grupo_total, dec = 1)
     
     mensaje1 <- paste0(
       prod_name, " es el producto con mayor huella de carbono dentro del grupo ",
@@ -78,14 +80,13 @@ server <- function(input, output, session) {
     
     
     # ===================== MENSAJE 2 (TOP 3) =====================
-    
     ranking_top3 <- df %>%
       group_by(producto) %>%
       summarise(total_co2 = sum(c02_total, na.rm = TRUE), .groups = "drop") %>%
       arrange(desc(total_co2)) %>%
-      head(3) %>%
+      slice(1:3) %>%
       mutate(
-        co2_fmt = paste0(format(round(total_co2, 3), big.mark = ".", decimal.mark = ","), " tCO₂")
+        co2_fmt = paste0(formato_latam(total_co2, 0), " tCO₂")
       )
     
     mensaje2 <- paste0(
@@ -93,8 +94,8 @@ server <- function(input, output, session) {
       paste0(ranking_top3$producto, ": ", ranking_top3$co2_fmt, collapse = "\n")
     )
     
-    # ===================== Resumen por categoría =====================
     
+    # ===================== Resumen categoría =====================
     resumen <- df %>%
       group_by(categoria) %>%
       summarise(
@@ -103,8 +104,9 @@ server <- function(input, output, session) {
         .groups = "drop"
       ) %>%
       arrange(desc(total_co2)) %>%
-      mutate(porcentaje = 100 * total_co2 / sum(total_co2, na.rm = TRUE))
-    
+      mutate(
+        porcentaje = 100 * total_co2 / sum(total_co2, na.rm = TRUE)
+      )
     
     list(
       datos          = df,
@@ -126,7 +128,7 @@ server <- function(input, output, session) {
   })
   
   # ------------------------------------------------------------------
-  # 4. Panel derecho: top 3
+  # 4. Panel derecho: Top emisores (LATAM)
   # ------------------------------------------------------------------
   output$top5_emisores <- renderUI({
     res <- resultado()
@@ -136,14 +138,11 @@ server <- function(input, output, session) {
     
     ranking_prod <- df %>%
       group_by(producto) %>%
-      summarise(
-        total_co2 = sum(c02_total, na.rm = TRUE),
-        .groups = "drop"
-      ) %>%
+      summarise(total_co2 = sum(c02_total, na.rm = TRUE), .groups = "drop") %>%
       arrange(desc(total_co2)) %>%
-      head(3) %>%
+      slice(1:3) %>%
       mutate(
-        co2_fmt = paste0(format(round(total_co2, 3), big.mark = ".", decimal.mark = ","), " tCO₂")
+        co2_fmt = paste0(formato_latam(total_co2, 0), " tCO₂")
       )
     
     HTML(paste0(
@@ -157,8 +156,9 @@ server <- function(input, output, session) {
     ))
   })
   
+  
   # ------------------------------------------------------------------
-  # 5. Panel rojo superior: mensaje1
+  # 5. Panel rojo superior → mensaje1
   # ------------------------------------------------------------------
   output$mensaje1 <- renderUI({
     res <- resultado()
@@ -166,8 +166,9 @@ server <- function(input, output, session) {
     HTML(paste0("<p>", res$mensaje1, "</p>"))
   })
   
+  
   # ------------------------------------------------------------------
-  # 6. Descargas CSV y PNG
+  # 6. Descarga CSV y PNG
   # ------------------------------------------------------------------
   output$descargarDatos <- downloadHandler(
     filename = function() glue("emisiones_{input$anio}_{input$mes}.csv"),
@@ -188,8 +189,9 @@ server <- function(input, output, session) {
     }
   )
   
+  
   # ------------------------------------------------------------------
-  # 7. Informe PDF
+  # 7. Informe PDF (mantiene formato correcto)
   # ------------------------------------------------------------------
   output$report <- downloadHandler(
     filename = function() glue("informe_huella_carbono_{input$anio}_{input$mes}.pdf"),
@@ -207,8 +209,8 @@ server <- function(input, output, session) {
       mensaje1_txt <- gsub("%", "\\\\%", res$mensaje1)
       
       mensaje2_txt <- res$mensaje2
-      mensaje2_txt <- gsub("%", "\\\\%", mensaje2_txt)          # escapar %
-      mensaje2_txt <- gsub("\n", " \\\\newline ", mensaje2_txt) # saltos de línea LaTeX
+      mensaje2_txt <- gsub("%", "\\\\%", mensaje2_txt)
+      mensaje2_txt <- gsub("\n", " \\\\newline ", mensaje2_txt)
       
       rmarkdown::render(
         input = "informe.Rmd",
@@ -239,4 +241,3 @@ server <- function(input, output, session) {
     updateSelectInput(session, "mes", selected = "12")
   })
 }
-

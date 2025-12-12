@@ -21,6 +21,12 @@ data <- data %>%
     mes  = month(mes_y_ano)
   )
 
+formato_num_es <- function(x, digits = 2) {
+  x <- as.numeric(x)
+  txt <- sprintf(paste0("%.", digits, "f"), x)
+  gsub("\\.", ",", txt)
+}
+
 ################################################################################
 # DEFINICIÓN DEL SERVER
 ################################################################################
@@ -68,9 +74,18 @@ server <- function(input, output, session) {
       slice_head(n = 5)
     
     HTML(paste0(
-      "<b> Correlaciones más altas</b><br>",
-      paste0("<br>", cor_df$Var1, " – ", cor_df$Var2, 
-             ": <b>", sprintf('%.2f', cor_df$Freq), "</b>", collapse = "")
+      "<b> Correlaciones más bajas</b><br>",
+      paste0(
+        "<br>", cor_df$Var1, " – ", cor_df$Var2,
+        ": <b>",
+        format(
+          round(as.numeric(cor_df$Freq), 2),
+          decimal.mark = ",",
+          big.mark = "."
+        ),
+        "</b>",
+        collapse = ""
+      )
     ))
   })
   
@@ -93,8 +108,13 @@ server <- function(input, output, session) {
     
     HTML(paste0(
       "<b> Correlaciones más bajas</b><br>",
-      paste0("<br>", cor_df$Var1, " – ", cor_df$Var2,
-             ": <b>", sprintf('%.2f', cor_df$Freq), "</b>", collapse = "")
+      paste0(
+        "<br>", cor_df$Var1, " – ", cor_df$Var2,
+        ": <b>",
+        formato_num_es(cor_df$Freq, 2),
+        "</b>",
+        collapse = ""
+      )
     ))
   })
   

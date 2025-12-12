@@ -130,7 +130,7 @@ output$subtitulo <- renderText({
   resultado <- grafica_indice(input$tipo, anio, input$producto)
   
   tipo <- input$tipo
-  max_vulnerabilidad <- resultado$max_vulnerabilidad
+  max_vulnerabilidad <- format(resultado$max_vulnerabilidad,big.mark=".",decimal.mark=",")
   fecha_max_vulnerabilidad <- as.character(resultado$fecha_max_vulnerabilidad)
   producto_max_vulnerabilidad <- resultado$producto_max_vulnerabilidad
   

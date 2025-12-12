@@ -135,9 +135,13 @@ server <- function(input, output, session) {
       return(mensaje)
     }
     
-    prom <- round(mean(bog_rank), 1)
+    prom <- mean(bog_rank)
+    rango_inf <- floor(prom)
+    rango_sup <- ceiling(prom)
+    
     mensaje <- glue::glue(
-      "En promedio, Bogotá ocupó el escalafón {prom} entre todas las ciudades durante {input$anio}."
+      "El escalafón que ocupó Bogotá en promedio estuvo entre el {rango_inf} y {rango_sup} durante {input$anio}
+      con respecto a las demás ciudades."
     )
     
     mensaje2_val(mensaje)

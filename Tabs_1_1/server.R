@@ -121,7 +121,7 @@ output$mensaje1 <- renderText({
   complemento= switch(input$variable,
                                   "1" = "A nivel global",
                                   "2" = "A nivel local",
-                                  "3" ="Por fuera de cundinamarca",
+                                  "3" ="Por fuera de Cundinamarca",
                                   NULL)
                      
   if (nrow(resultado_data$datos) == 0) {

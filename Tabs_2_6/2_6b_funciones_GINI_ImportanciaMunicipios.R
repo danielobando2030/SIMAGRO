@@ -8,7 +8,8 @@
 ################################################################################
 # Paquetes 
 library(readr);library(lubridate);library(dplyr);library(ggplot2);library(zoo);library(readxl)
-library(glue);library(tidyverse);library(haven); library(DT);library(extrafont);library(plotly);library(arrow)
+library(glue);library(tidyverse);library(haven); library(DT);library(extrafont);library(plotly);library(arrow);
+library(scales)
 options(scipen = 999)
 ################################################################################
 rm(list = ls())
@@ -75,7 +76,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
   }
   if (tipo == 2) {
     df <- rename(df, fecha = year)
-    df$tooltip_text <- paste("Año: ", df$fecha , "<br> Producto:",df$producto, "<br> Gini:" , round(df$Gini,1))
+    df$tooltip_text <- paste("Año: ", df$fecha , "<br> Producto:",df$producto, "<br> Gini:" , format(round(df$Gini,1),decimal.mark=",",big.mark="."))
     df <- df[df$producto %in% productos_seleccionados, ]
     p_plano <- ggplot(df, aes(x = fecha, y = Gini, color = producto)) +
       geom_line() +
@@ -86,12 +87,18 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
       theme(text = element_text(size = 16),
             axis.text.x = element_text(size = 10, angle = 90, hjust = 1),
             axis.text.y = element_text(size = 8)) +
-      scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha), by = 1))
+      scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha), by = 1))+
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",   # separador de miles
+          decimal.mark = ","  # separador decimal
+        )
+      )
 }else if (tipo == 4){
    df$mes_nombre <- nombres_meses[df$month]
     df <- rename(df, fecha = mes_y_ano)
     df <- df[df$producto %in% productos_seleccionados, ]
-    df$tooltip_text <- paste("Año: ", df$year ,"<br> Mes:",df$mes_nombre, "<br> Producto:",df$producto, "<br> Gini:" , round(df$Gini,1))
+    df$tooltip_text <- paste("Año: ", df$year ,"<br> Mes:",df$mes_nombre, "<br> Producto:",df$producto, "<br> Gini:" , format(round(df$Gini,1),decimal.mark=",",big.mark="."))
     p_plano <- ggplot(df, aes(x = fecha, y = Gini, color = producto)) +
       geom_line() +
       geom_point(aes(text = tooltip_text),size = 1e-8) +
@@ -100,7 +107,13 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
       scale_color_manual(values = col_palette) + 
       theme(text = element_text(size = 16),
             axis.text.x = element_text(size = 8, angle = 90, hjust = 1)) +
-      scale_x_date(date_labels = "%Y-%m", date_breaks = "12 months")
+      scale_x_date(date_labels = "%Y-%m", date_breaks = "12 months")+
+      scale_y_continuous(
+        labels = label_number(
+          big.mark = ".",   # separador de miles
+          decimal.mark = ","  # separador decimal
+        )
+      )
     
     if ( anio_seleccionado != "") {
       p_plano<-p_plano+scale_x_date(date_breaks = "1 months", date_labels = "%b")#+  # Configurar el eje X
@@ -111,7 +124,7 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
     
   } else if (tipo == 1)  {
        df <- rename(df, fecha = year) 
-       df$tooltip_text <- paste("Año: ", df$fecha , "<br> Gini:" , round(df$Gini,1))
+       df$tooltip_text <- paste("Año: ", df$fecha , "<br> Gini:" , format(round(df$Gini,1),decimal.mark=",",big.mark="."))
        p_plano <- ggplot(df, aes(x = fecha, y = Gini)) +
          geom_line(color = "#983136") +
          geom_point(aes(text = tooltip_text),size = 1e-8) +
@@ -120,12 +133,18 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
          theme(text = element_text( size = 16),
                axis.text.x = element_text(size = 10, angle = 90, hjust = 1)) +
          scale_x_continuous(breaks = unique(df$fecha))+
-         scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha), by = 1))
+         scale_x_continuous(breaks = seq(min(df$fecha), max(df$fecha), by = 1))+
+         scale_y_continuous(
+           labels = label_number(
+             big.mark = ".",   # separador de miles
+             decimal.mark = ","  # separador decimal
+           )
+         )
        
     }else if (tipo == 3){
       df$mes_nombre <- nombres_meses[df$month]
       df <- rename(df, fecha = mes_y_ano)
-      df$tooltip_text <- paste("Año:", df$year ,"<br> Mes:",df$mes_nombre, "<br> Gini:" , round(df$Gini,1))
+      df$tooltip_text <- paste("Año:", df$year ,"<br> Mes:",df$mes_nombre, "<br> Gini:" , format(round(df$Gini,1),decimal.mark=",",big.mark="."))
       p_plano <- ggplot(df, aes(x = fecha, y = Gini)) +
         geom_line(color = "#983136") +
         geom_point(aes(text = tooltip_text),size = 1e-8) +
@@ -134,7 +153,13 @@ grafica_indice_mun <- function(tipo, anio_seleccionado = "", productos_seleccion
         scale_color_manual(values = col_palette) +
         theme(text = element_text(size = 12),
               axis.text.x = element_text(size = 10, angle = 90, hjust = 1)) +
-        scale_x_date(date_breaks = "4 month", date_labels = "%Y-%m")
+        scale_x_date(date_breaks = "4 month", date_labels = "%Y-%m")+
+        scale_y_continuous(
+          labels = label_number(
+            big.mark = ".",   # separador de miles
+            decimal.mark = ","  # separador decimal
+          )
+        )
       
       if ( anio_seleccionado != "") {
         p_plano<-p_plano+scale_x_date(date_breaks = "1 months", date_labels = "%b")#+  # Configurar el eje X

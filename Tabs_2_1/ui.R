@@ -59,7 +59,7 @@ ui <- fluidPage(
     "))
   ),
     tags$h1("Nivel de concentración de municipios que proveen alimentos a Cundinamarca", class = "main-header"),
-    tags$h1("Analiza cuán concentrado está el suministro externo de alimentos hacia Cundinamarca según los municipios de origen", class = "main-header_2"),  
+    tags$h1("Analiza cuán concentrado está el suministro externo de alimentos hacia Cundinamarca según los municipios de procedencia", class = "main-header_2"),  
   div(
     textOutput("subtitulo"),
     class = "sub-header2",

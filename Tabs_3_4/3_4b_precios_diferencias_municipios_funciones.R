@@ -115,14 +115,14 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
       "Ciudad: <b>Bogotá</b>",
       "<br>Diferencia con Bogotá: $0",
       "<br>Desviación estándar (promedio nacional): ",
-      formatC(mean_dev_others, big.mark = ",", decimal.mark = ".", format = "f", digits = 0)
+      formatC(mean_dev_others, big.mark = ".", decimal.mark = ",", format = "f", digits = 0)
     ),
     paste0(
       "Ciudad: <b>", df$ciudad, "</b>",
       "<br>Diferencia con Bogotá: $",
-      formatC(df$comp, big.mark = ",", decimal.mark = ".", format = "f", digits = 0),
+      formatC(df$comp, big.mark = ".", decimal.mark = ",", format = "f", digits = 0),
       "<br>Desviación estándar: ",
-      formatC(df$dev, big.mark = ",", decimal.mark = ".", format = "f", digits = 0)
+      formatC(df$dev, big.mark = ".", decimal.mark = ",", format = "f", digits = 0)
     )
   )
   
@@ -209,8 +209,11 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
   )
   
   # ---- Resumen extremos ----
-  precio_max <- round(max(df$comp, na.rm = TRUE))
-  precio_min <- round(min(df$comp, na.rm = TRUE))
+  precio_max <- formatC(round(max(df$comp, na.rm = TRUE)), 
+                        big.mark = ".", decimal.mark = ",", format = "f", digits = 0)
+  
+  precio_min <- formatC(round(min(df$comp, na.rm = TRUE)), 
+                        big.mark = ".", decimal.mark = ",", format = "f", digits = 0)
   ciudad_max <- df$ciudad[which.max(df$comp)]
   ciudad_min <- df$ciudad[which.min(df$comp)]
   

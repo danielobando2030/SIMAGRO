@@ -83,7 +83,7 @@ server <- function(input, output, session) {
     anio <- ifelse(is.null(input$anio) || input$anio == "todo", NA, input$anio)
     data_resultado <- resultado()
     
-    max_IHH <- round(data_resultado$max_IHH,digits = 1)
+    max_IHH <- format(round(data_resultado$max_IHH,digits = 1),decimal.mark=",",big.mark=".")
     mes_max_IHH <- data_resultado$mes_max_IHH
     anio_max_IHH <- data_resultado$anio_max_IHH
     
