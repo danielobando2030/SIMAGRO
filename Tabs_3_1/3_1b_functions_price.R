@@ -86,96 +86,110 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
   }
   
   # -----------------------------
-  # 5. Crear variables formateadas LATAM
+  # 5. Variables formateadas LATAM
   # -----------------------------
   df_graf <- df_graf %>%
     mutate(
-      valor_plot = .data[[variable]],          # valores reales para plotly
-      valor_texto = format(                    # texto exacto eje Y
-        round(.data[[variable]], 0),           # SIN decimales
-        big.mark = ".",                        # miles con punto
-        decimal.mark = ","                     # coma (aunque no se usa)
+      valor_plot = .data[[variable]],
+      valor_texto = format(
+        round(.data[[variable]], 0),
+        big.mark = ".",
+        decimal.mark = ","
       )
     )
   
   # -----------------------------
-  # Tooltip Plotly (LATAM)
+  # 6. Tooltip (fechas en español)
   # -----------------------------
-  formato_fecha <- if (temporalidad == "mensual") "%b-%Y" else "%d-%b-%Y"
+  formato_fecha <- if (temporalidad == "mensual") "%B %Y" else "%d %B %Y"
   
   df_graf <- df_graf %>%
     mutate(
       hover_valor = format(
         round(.data[[variable]], 2),
-        big.mark = ".",      # separador miles LATAM
-        decimal.mark = ","   # separador decimales LATAM
+        big.mark = ".",
+        decimal.mark = ","
       ),
       etiqueta = paste0(
-        "<b>Fecha:</b> ", format(mes_y_ano, formato_fecha),
+        "<b>Fecha:</b> ", str_to_title(format(mes_y_ano, formato_fecha)),
         "<br><b>Producto:</b> ", producto,
         "<br><b>", str_to_title(variable), ":</b> ", hover_valor
       )
     )
   
-  # -----------------------------
-  # 6. GRÁFICO PLANO (ggplot)
-  # -----------------------------
-  grafico_plano <- ggplot(df_graf, aes(x = mes_y_ano, y = valor_plot)) +
+  # ======================================================
+  # 7. GRÁFICO PLANO (ggplot – INFORME PDF)
+  # ======================================================
+  df_linea <- df_graf %>%
+    group_by(mes_y_ano) %>%
+    summarise(
+      valor = mean(.data[[variable]], na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  grafico_plano <- ggplot(df_linea, aes(x = mes_y_ano, y = valor)) +
     geom_line(color = col_grafico, linewidth = 1.4) +
     geom_point(color = col_grafico, size = 2.8) +
-    labs(x = "Fecha", y = str_to_title(variable)) +
+    labs(
+      x = "Fecha",
+      y = str_to_title(variable)
+    ) +
     theme_minimal(base_size = 14) +
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
     )
   
-  # -----------------------------
-  # 7. GRÁFICO INTERACTIVO (plotly)
-  # -----------------------------
+  # ======================================================
+  # 8. ETIQUETAS EJE X EN ESPAÑOL (CLAVE DASHBOARD)
+  # ======================================================
+  etiquetas_x <- str_to_title(format(df_linea$mes_y_ano, "%B %Y"))
+  
+  # ======================================================
+  # 9. GRÁFICO INTERACTIVO (plotly – DASHBOARD)
+  # ======================================================
   grafico_interactivo <- plot_ly(
-    data = df_graf,
+    data = df_linea,
     x = ~mes_y_ano,
-    y = ~valor_plot,
+    y = ~valor,
     type = "scatter",
     mode = "lines+markers",
-    customdata = df_graf$etiqueta,     # <--- TEXTO CONTROLADO POR TI
-    hovertemplate = "%{customdata}<extra></extra>",  # <--- NO USA FORMATOS DE PLOTLY
+    customdata = df_linea$mes_y_ano,
+    hovertemplate = paste0(
+      "<b>Fecha:</b> %{x|%B %Y}",
+      "<br><b>", str_to_title(variable), ":</b> ",
+      "%{y:,.2f}<extra></extra>"
+    ),
     line = list(color = col_grafico, width = 2.5),
     marker = list(color = col_grafico, size = 6)
   ) %>%
     layout(
-      xaxis = list(title = "Fecha"),
+      xaxis = list(
+        title = "Fecha",
+        tickvals = df_linea$mes_y_ano,
+        ticktext = etiquetas_x
+      ),
       yaxis = list(
         title = str_to_title(variable),
-        tickvals = df_graf$valor_plot,
-        ticktext = df_graf$valor_texto
+        tickvals = df_linea$valor,
+        ticktext = format(
+          round(df_linea$valor, 0),
+          big.mark = ".",
+          decimal.mark = ","
+        )
       ),
       hoverlabel = list(bgcolor = "white", font = list(color = "black")),
       hovermode = "x unified"
     )
   
-  
   # -----------------------------
-  # 8. Cálculo de mínimo
-  # -----------------------------
-  idx_min <- which.min(df_graf[[variable]])
-  min_valor <- round(df_graf[[variable]][idx_min], 2)
-  fecha_min_valor <- df_graf$mes_y_ano[idx_min]
-  producto_min_valor <- df_graf$producto[idx_min]
-  
-  # -----------------------------
-  # 9. Retornar lista FAO
+  # 10. Retornar lista FAO
   # -----------------------------
   return(list(
-    grafico = grafico_interactivo,
-    grafico_plano = grafico_plano,
-    datos = df_graf,
-    min_valor = min_valor,
-    fecha_min_valor = fecha_min_valor,
-    producto_min_valor = producto_min_valor
+    grafico        = grafico_interactivo,
+    grafico_plano  = grafico_plano,
+    datos          = df_graf
   ))
 }
-
 
 
 

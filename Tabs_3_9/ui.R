@@ -29,7 +29,11 @@ ui <- fluidPage(
         color:#4E4D4D;
       }
 
-      /* TITULOS en color solicitado */
+      /* Estilo para separar ícono de texto en cualquier botón */
+      .btn i, .btn-faoc i {
+        margin-right: 8px !important;
+      }
+
       .main-header {
         font-size: 40px;
         color: #743639;
@@ -46,7 +50,6 @@ ui <- fluidPage(
         color: #4E4D4D;
       }
 
-      /* Botones FAO */
       .btn-faoc {
         background-color: #f0f0f0 !important;
         border-color: #cccccc !important;
@@ -63,7 +66,6 @@ ui <- fluidPage(
         background-color: #e0e0e0 !important;
       }
 
-      /* Panel superior (ROJO OSCURO) */
       .panel-rojo-oscuro {
         background-color:#8A171C !important;
         color:white !important;
@@ -73,7 +75,6 @@ ui <- fluidPage(
         margin-bottom:15px;
       }
 
-      /* Panel inferior (ROJO CLARO) */
       .panel-rojo-claro {
         background-color:#BC222A !important;
         color:white !important;
@@ -91,7 +92,7 @@ ui <- fluidPage(
   ),
   
   ###########################################################################
-  # TITULOS (igual disposición que abastecimiento)
+  # TITULOS
   ###########################################################################
   tags$h1("Huella de carbono por grupo y producto", class = "main-header"),
   tags$h1("Análisis de emisiones de CO₂ según grupos alimentarios y productos SIPSA.",
@@ -104,7 +105,7 @@ ui <- fluidPage(
   ),
   
   ###########################################################################
-  # FILTROS (idénticos al dashboard de abastecimiento)
+  # FILTROS
   ###########################################################################
   div(
     fluidRow(
@@ -121,17 +122,14 @@ ui <- fluidPage(
                              "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")),
                          selected = "12")
       ),
-      column(2, div()),  
-      column(2, div()),
-      column(3, div())
+      column(7, div())
     )
   ),
   
   ###########################################################################
-  # GRAFICO + PANEL DERECHO (dos cuadros rojos)
+  # GRAFICO + PANEL DERECHO
   ###########################################################################
   fluidRow(
-    
     # ---------------- GRAFICO + BOTONES ----------------
     column(
       9,
@@ -139,20 +137,19 @@ ui <- fluidPage(
         plotlyOutput("grafico", height = "500px"),
         br(),
         
-        downloadButton("descargarGraf", "Gráfica", class = "btn-faoc"),
-        downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
+        # Usamos la misma estructura de iconos del proyecto de referencia
+        actionButton("descargarGraf", "Gráfica", icon = icon("download"), class = "btn-faoc"),
+        downloadButton("descargarDatos", "Datos", class = "btn-faoc"), # El icono se puede inyectar vía CSS o dejarlo limpio
         
-        tags$a(
-          href = "https://github.com/FAO-Cundinamarca/VP2025_Tabs_3_9",
-          target = "_blank",
-          class = "btn-faoc btn",
-          style = "display:inline-flex; align-items:center; height:36px; padding:6px 14px; text-decoration:none;",
-          icon("github"),
-          tags$span("GitHub", style="margin-left:6px;")
-        ),
+        shiny::a("GitHub", 
+                 href = "https://github.com/FAO-Cundinamarca/VP2025_Tabs_3_9", 
+                 target = "_blank",
+                 class = "btn btn-default btn-faoc", 
+                 icon("github"),
+                 style = "text-decoration:none;"),
         
-        actionButton("reset", "Restablecer", icon=icon("refresh"), class="btn-faoc"),
-        downloadButton("report", "Generar informe PDF", class="btn-faoc")
+        actionButton("reset", "Restablecer", icon = icon("refresh"), class = "btn-faoc"),
+        downloadButton("report", "Generar informe", class = "btn-faoc")
       )
     ),
     
@@ -160,13 +157,15 @@ ui <- fluidPage(
     column(
       3,
       div(class = "panel-rojo-oscuro",
-          htmlOutput("mensaje1")     # ← ahora texto explicativo
+          htmlOutput("mensaje1")
       ),
       div(class = "panel-rojo-claro",
-          uiOutput("top5_emisores")  # ← ahora top productos individuales
+          uiOutput("top5_emisores")
       )
     )
   ),
+    
+
   
   ###########################################################################
   # NOTA METODOLOGICA
@@ -175,13 +174,14 @@ ui <- fluidPage(
     column(
       12,
       HTML("
-        <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-        Emisiones estimadas para distancias y factores según: <br>
-        Panel Intergubernamental sobre el Cambio Climático (IPCC) <br>
-        Departamento de Medio Ambiente, Alimentación y Asuntos Rurales (DEFRA) <br>
-        Organización de las Naciones Unidas para la Alimentación y la Agricultura (FAO)
-      "),
-      class = "footer-text"
+      <b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+      <br> Emisiones estimadas para distancias y factores según: <br>
+      Panel Intergubernamental sobre el Cambio Climático (IPCC) <br>
+      Departamento de Medio Ambiente, Alimentación y Asuntos Rurales (DEFRA) <br>
+      Organización de las Naciones Unidas para la Alimentación y la Agricultura (FAO)
+    "),
+      class = "footer-text",
+      style = "margin-top: 25px;"
     )
   ),
   

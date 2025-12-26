@@ -15,8 +15,16 @@ library(rmarkdown)
 library(htmlwidgets)
 library(webshot2)
 library(callr)
+library(maps)   # ✅ CORRECTO (no 'map')
 
-# Función para escapar caracteres peligrosos en LaTeX
+# -----------------------------------------------------------
+# MAPA BASE COLOMBIA (UNA SOLA VEZ)
+# -----------------------------------------------------------
+colombia_map <- map_data("world", region = "Colombia")
+
+# -----------------------------------------------------------
+# Funciones auxiliares LaTeX
+# -----------------------------------------------------------
 latex_escape <- function(txt) {
   if (is.null(txt) || is.na(txt)) return("")
   txt <- gsub("%", "\\\\%", txt)
@@ -25,42 +33,43 @@ latex_escape <- function(txt) {
   txt <- gsub("_", "\\\\_", txt)
   txt <- gsub("\\{", "\\\\{", txt)
   txt <- gsub("\\}", "\\\\}", txt)
-  return(txt)
+  txt
+}
+
+latex_safe <- function(x) {
+  if (is.null(x) || is.na(x)) return("")
+  # NO escapar la barra invertida aquí para no romper \textbf
+  x <- gsub("%", "\\\\%", x)
+  x <- gsub("&", "\\\\&", x)
+  x <- gsub("#", "\\\\#", x)
+  x <- gsub("_", "\\\\_", x)
+  x <- gsub("\\$", "\\\\$", x)
+  x
 }
 
 html_to_latex <- function(txt) {
   if (is.null(txt) || is.na(txt)) return("")
-  
-  # 1. Escapar caracteres problemáticos para LaTeX
   txt <- gsub("%", "\\\\%", txt)
   txt <- gsub("&", "\\\\&", txt)
   txt <- gsub("#", "\\\\#", txt)
   txt <- gsub("_", "\\\\_", txt)
-  
-  # 2. Convertir <b>...</b> a \textbf{...}
   txt <- gsub("<b>", "\\\\textbf{", txt)
   txt <- gsub("</b>", "}", txt)
-  
-  return(txt)
+  txt
 }
 
-# -----------------------------------------------------------
-# Formato porcentaje español (coma decimal, sin ceros inútiles)
-# -----------------------------------------------------------
 formato_pct_es <- function(x, digits = 1) {
   x <- x * 100
   if (abs(x - round(x)) < 1e-8) {
     paste0(formatC(round(x), format = "f", digits = 0), "%")
   } else {
-    paste0(
-      formatC(x, format = "f", digits = digits, decimal.mark = ","),
-      "%"
-    )
+    paste0(formatC(x, format = "f", digits = digits, decimal.mark = ","), "%")
   }
 }
 
-# Cargar función y datos
-
+################################################################################-
+# SERVER
+################################################################################-
 server <- function(input, output, session) {
   
   ###########################################################################
@@ -79,31 +88,28 @@ server <- function(input, output, session) {
     rutas
   })
   
-
-  
   ###########################################################################
-  # 1. INICIALIZAR SELECTINPUTS  (CAMBIO MINIMO)
+  # 1. SELECTINPUTS
   ###########################################################################
   observe({
-    
-    # Se ejecuta SOLO AL INICIAR, porque no depende de inputs
     updateSelectInput(session, "anio",
                       choices  = sort(unique(data_cierres_final$anio)),
-                      selected = ifelse(2024 %in% data_cierres_final$anio, 2024,
-                                        max(data_cierres_final$anio)))
+                      selected = ifelse(2024 %in% data_cierres_final$anio, 2024, max(data_cierres_final$anio))
+    )
     
     updateSelectInput(session, "mes",
                       choices = setNames(sprintf("%02d", 1:12),
                                          c("Enero","Febrero","Marzo","Abril","Mayo",
                                            "Junio","Julio","Agosto","Septiembre",
                                            "Octubre","Noviembre","Diciembre")),
-                      selected = "12")
+                      selected = "12"
+    )
     
     updateSelectInput(session, "producto",
-                      choices = sort(unique(data_cierres_final$producto)),
+                      choices  = sort(unique(data_cierres_final$producto)),
                       selected = ifelse("Aguacate Hass" %in% data_cierres_final$producto,
-                                        "Aguacate Hass",
-                                        data_cierres_final$producto[1]))
+                                        "Aguacate Hass", data_cierres_final$producto[1])
+    )
   })
   
   ###########################################################################
@@ -114,178 +120,91 @@ server <- function(input, output, session) {
     
     df <- data_cierres_final %>%
       filter(
-        anio == input$anio,
-        mes  == as.integer(input$mes),
+        anio     == input$anio,
+        mes      == as.integer(input$mes),
         producto == input$producto
       )
     
     sel <- rutas_seleccionadas()
     if (length(sel) > 0) df <- df %>% filter(region_geo %in% sel)
-    
     if (nrow(df) == 0) return(NULL)
     df
   })
   
-  ###########
+  #####################################################################
+  # MENSAJES PANEL DERECHO (DASHBOARD)  ✅ (RESTABLECIDOS)
+  #####################################################################
   
-  output$descargar <- downloadHandler(
-    filename = function() {
-      glue("grafico_rutas_{input$anio}_{input$mes}_{input$producto}.png")
-    },
-    content = function(file) {
-      
-      df <- datos_filtrados()
-      if (is.null(df)) {
-        showNotification("No hay datos para generar el mapa.", type = "error")
-        return(NULL)
-      }
-      
-      # 1. Crear mapa leaflet
-      mapa <- graficar_rutas_color_importancia(
-        df,
-        Año      = input$anio,
-        Mes      = as.integer(input$mes),
-        Producto = input$producto
-      )
-      
-      # 2. Exportar PNG usando tu función robusta (que ya tienes)
-      tmp_png <- grafico_plano(mapa)
-      
-      # 3. Copiar al archivo final
-      file.copy(tmp_png, file, overwrite = TRUE)
-    }
-  )
-  
-  ###########################################################################
-  # 3. MENSAJE 1 (TEXTO DERECHO)
-  ###########################################################################
-  
-  mensaje1_reactivo <- function(raw = FALSE) {
+  output$municipio_mas_importante <- renderUI({
     df <- datos_filtrados()
-    if (is.null(df)) return("Sin datos")
+    if (is.null(df)) return(HTML("—"))
     
-    resumen_mes <- df %>% 
-      group_by(region_geo) %>% 
-      summarise(
-        kg = sum(suma_kg, na.rm = TRUE),
-        .groups = "drop"
-      )
+    resumen <- df %>%
+      group_by(region_geo) %>%
+      summarise(kg = sum(suma_kg, na.rm = TRUE), .groups = "drop")
     
-    total_mes <- sum(resumen_mes$kg, na.rm = TRUE)
+    total <- sum(resumen$kg, na.rm = TRUE)
+    top   <- resumen %>% slice_max(kg, n = 1)
+    pct   <- formato_pct_es(top$kg / total)
     
-    top <- resumen_mes %>% slice_max(kg, n = 1)
-    pct_txt <- formato_pct_es(top$kg / total_mes)
-    
-    txt <- glue(
-      "La ruta externa al departamento más importante para el abastecimiento de Cundinamarca es ",
+    HTML(glue(
+      "La ruta externa más importante para el abastecimiento es ",
       "<b>{str_to_title(top$region_geo)}</b>, ",
-      "representando el <b>{pct_txt}</b> del total de volumen de ingreso a las principales centrales de abasto."
-    )
-    
-    if (raw) return(txt)
-    return(latex_escape(txt))
-  }
+      "representando el <b>{pct}</b> del total del volumen."
+    ))
+  })
   
-  ###########################################################################
-  # 4. MENSAJE 2 (TEXTO DERECHO)
-  ###########################################################################
-  mensaje2_reactivo <- function(raw = FALSE) {
+  # 👇 Tu UI usa htmlOutput("ranking_rutas"), por eso esto debe ser renderUI()
+  output$ranking_rutas <- renderUI({
     df <- datos_filtrados()
-    if (is.null(df)) return("Sin datos")
+    if (is.null(df)) return(HTML("—"))
     
     ranking <- df %>%
       group_by(region_geo) %>%
-      summarise(importancia_total = sum(importancia_ruta),
-                .groups = "drop") %>%
-      arrange(desc(importancia_total))
+      summarise(importancia = sum(importancia_ruta, na.rm = TRUE), .groups = "drop") %>%
+      arrange(desc(importancia))
     
-    rutas_txt <- paste(str_to_title(ranking$region_geo), collapse = ", ")
-    
-    txt <- glue(
-      "Las rutas de abastecimiento en Cundinamarca por orden de importancia en el periodo y para el ",
-      "producto seleccionado son: {rutas_txt}."
-    )
-    
-    if (raw) return(txt)          # para el PDF (texto plano, sin escapar)
-    return(latex_escape(txt))     # para el panel derecho (como antes)
-  }
-  
-  ###########################################################################
-  # 4. MENSAJE 3 (TEXTO DERECHO)
-  ###########################################################################
-  
-  mensaje3_reactivo <- function(raw = FALSE) {
-    # Data filtrada por año, mes y producto (todas las rutas)
-    df_mes <- data_cierres_final %>%
-      filter(
-        anio == input$anio,
-        mes == as.integer(input$mes),
-        producto == input$producto
-      )
-    
-    if (nrow(df_mes) == 0) return("Sin datos")
-    
-    # Total del mes
-    total_mes <- sum(df_mes$suma_kg, na.rm = TRUE)
-    
-    # Rutas seleccionadas por el usuario
-    sel <- rutas_seleccionadas()
-    
-    # ----- CASO 1: TODAS LAS RUTAS ESTÁN SELECCIONADAS → PÉRDIDA = 100% -----
-    todas_rutas <- c("Noroccidente","Nororiente","Norte","Oriente",
-                     "Suroriente","Sur","Suroccidente","Occidente")
-    
-    if (setequal(sel, todas_rutas)) {
-      
-      txt <- glue(
-        "Un hipotético cierre de las rutas seleccionadas podría reducir el ",
-        "abastecimiento de alimentos en un <b>100%</b>, ",
-        "al dejar de ingresar <b>{format(total_mes, big.mark='.', decimal.mark=',')}</b> ",
-        "toneladas a las principales centrales de abasto de Bogotá."
-      )
-      
-      if (raw) return(txt)
-      return(latex_escape(txt))
-    }
-    
-    # ----- CASO 2: ALGUNA RUTA FUE DESMARCADA → cálculo real -----
-    df_cerradas <- df_mes %>% filter(!region_geo %in% sel)
-    
-    ton_perdidas <- sum(df_cerradas$suma_kg, na.rm = TRUE)
-    pct <- round((ton_perdidas / total_mes) * 100, 1)
-    
-    txt <- glue(
-      "Un hipotético cierre de las rutas seleccionadas podría reducir el ",
-      "abastecimiento de alimentos en un <b>{pct}%</b>, ",
-      "al dejar de ingresar <b>{format(ton_perdidas, big.mark='.', decimal.mark=',')}</b> ",
-      "toneladas a las principales centrales de abasto de Bogotá."
-    )
-    
-    if (raw) return(txt)
-    return(latex_escape(txt))
-  }
-  
-  ###########################################################################
-  # 5. TEXTO PANEL DERECHO
-  ###########################################################################
-  output$municipio_mas_importante <- renderUI({
-    HTML(mensaje1_reactivo(raw = TRUE))
+    HTML(glue(
+      "Las rutas de abastecimiento por orden de importancia son: ",
+      "<b>{paste(str_to_title(ranking$region_geo), collapse = ', ')}</b>."
+    ))
   })
-  output$ranking_rutas <- renderText(mensaje2_reactivo())
   
   output$impacto_cierre <- renderUI({
-    HTML(mensaje3_reactivo(raw = TRUE))
+    df <- datos_filtrados()
+    if (is.null(df)) return(HTML("—"))
+    
+    total_mes <- sum(df$suma_kg, na.rm = TRUE)
+    sel <- rutas_seleccionadas()
+    
+    todas <- c("Noroccidente","Nororiente","Norte","Oriente",
+               "Suroriente","Sur","Suroccidente","Occidente")
+    
+    if (setequal(sel, todas)) {
+      HTML(glue(
+        "Un cierre total de las rutas implicaría una reducción del ",
+        "<b>100%</b> del abastecimiento mensual ",
+        "(<b>{format(total_mes, big.mark='.', decimal.mark=',')}</b> toneladas)."
+      ))
+    } else {
+      perdidas <- df %>% filter(!region_geo %in% sel)
+      ton <- sum(perdidas$suma_kg, na.rm = TRUE)
+      pct <- round(ton / total_mes * 100, 1)
+      
+      HTML(glue(
+        "Un cierre de las rutas no seleccionadas podría reducir el abastecimiento en ",
+        "<b>{pct}%</b> ",
+        "(<b>{format(ton, big.mark='.', decimal.mark=',')}</b> toneladas)."
+      ))
+    }
   })
   
   ###########################################################################
-  # 6. MAPA
+  # 6. MAPA INTERACTIVO
   ###########################################################################
   output$grafico <- leaflet::renderLeaflet({
     df <- datos_filtrados()
-    
-    shiny::validate(
-      shiny::need(!is.null(df), "No hay datos disponibles para los filtros seleccionados.")
-    )
+    shiny::validate(shiny::need(!is.null(df), "No hay datos disponibles."))
     
     graficar_rutas_color_importancia(
       df,
@@ -296,48 +215,22 @@ server <- function(input, output, session) {
   })
   
   ###########################################################################
-  # 7. RESET (con bloqueo de eventos JS para evitar loop)
+  # 8.5 MAPA ESTÁTICO GGplot PARA PDF
   ###########################################################################
-  observeEvent(input$reset, {
+  plot_estatico_pdf <- reactive({
+    df <- datos_filtrados()
+    if (is.null(df)) return(NULL)
     
-    # Bloquear eventos de checkboxes mientras se actualizan
-    session$sendCustomMessage("block_checkbox_events", TRUE)
-    
-    # Asegurar que se re-activen aunque falle algo
-    on.exit({
-      session$sendCustomMessage("block_checkbox_events", FALSE)
-    }, add = TRUE)
-    
-    # Actualizar selects
-    updateSelectInput(session, "anio",     selected = 2024)
-    updateSelectInput(session, "mes",      selected = "12")
-    updateSelectInput(session, "producto", selected = "Aguacate Hass")
-    
-    # Actualizar checkboxes
-    rutas <- c("r_Noroccidente","r_Nororiente","r_Norte",
-               "r_Oriente","r_Suroriente","r_Sur",
-               "r_Suroccidente","r_Occidente")
-    
-    for (r in rutas) {
-      updateCheckboxInput(session, r, TRUE)
-    }
+    graficar_rutas_color_importancia_estatico(
+      df,
+      Año = input$anio,
+      Mes = as.integer(input$mes),
+      Producto = input$producto
+    )
   })
   
   ###########################################################################
-  # 8. DESCARGAR CSV
-  ###########################################################################
-  output$descargarDatos <- downloadHandler(
-    filename = function() {
-      glue("rutas_abastecimiento_{input$anio}_{input$mes}_{input$producto}.csv")
-    },
-    content = function(file) {
-      df <- datos_filtrados()
-      if (!is.null(df)) write_csv(df, file)
-    }
-  )
-  
-  ###########################################################################
-  # 9. GENERACIÓN PDF (PNG + MENSAJES OK)
+  # 9. PDF  ✅ SIN mensaje*_pdf()  (se calculan aquí adentro)
   ###########################################################################
   output$descargarPDF <- downloadHandler(
     filename = function() {
@@ -346,63 +239,106 @@ server <- function(input, output, session) {
     content = function(file) {
       
       df <- datos_filtrados()
-      if (is.null(df)) {
-        showNotification("No hay datos para generar el informe.", type="error")
-        return(NULL)
+      if (is.null(df)) return(NULL)
+      
+      # ------- MENSAJES PARA PDF (LaTeX) - calculados localmente -------
+      # (no afectan el dashboard)
+      resumen <- df %>%
+        group_by(region_geo) %>%
+        summarise(kg = sum(suma_kg, na.rm = TRUE), .groups = "drop")
+      
+      total <- sum(resumen$kg, na.rm = TRUE)
+      top   <- resumen %>% slice_max(kg, n = 1)
+      pct1  <- formato_pct_es(top$kg / total)
+      pct1  <- gsub("%", "\\\\%", pct1)   # ← CLAVE
+      
+      mensaje1 <- paste0(
+        "La ruta externa más importante para el abastecimiento es ",
+        "\\textbf{", str_to_title(top$region_geo), "}, ",
+        "representando el \\textbf{", pct1, "} del total del volumen."
+      )
+      
+      ranking <- df %>%
+        group_by(region_geo) %>%
+        summarise(importancia = sum(importancia_ruta, na.rm = TRUE), .groups = "drop") %>%
+        arrange(desc(importancia))
+      
+      mensaje2 <- glue(
+        "Las rutas de abastecimiento por orden de importancia son: ",
+        paste(str_to_title(ranking$region_geo), collapse = ", "),
+        "."
+      )
+      
+      total_mes <- sum(df$suma_kg, na.rm = TRUE)
+      sel <- rutas_seleccionadas()
+      todas <- c("Noroccidente","Nororiente","Norte","Oriente",
+                 "Suroriente","Sur","Suroccidente","Occidente")
+      
+      if (setequal(sel, todas)) {
+        
+        # 👉 CIERRE TOTAL
+        mensaje3 <- paste0(
+          "Un cierre total de las rutas implicaría una reducción del ",
+          "\\textbf{100\\%} del abastecimiento mensual ",
+          "(\\textbf{", format(total_mes, big.mark='.', decimal.mark=','), "} toneladas)."
+        )
+        
+      } else {
+        
+        # 👉 CIERRE PARCIAL
+        perdidas <- df %>% filter(!region_geo %in% sel)
+        ton  <- sum(perdidas$suma_kg, na.rm = TRUE)
+        pct3 <- round(ton / total_mes * 100, 1)
+        
+        mensaje3 <- paste0(
+          "Un cierre de las rutas no seleccionadas podría reducir el abastecimiento en ",
+          "\\textbf{", pct3, "\\%} ",
+          "(\\textbf{", format(ton, big.mark='.', decimal.mark=','), "} toneladas)."
+        )
       }
       
-      tempReport <- file.path(getwd(), "informe.Rmd")
-      mes_num    <- as.integer(input$mes)
-      
-      # ----------- GENERAR PNG DEL MAPA ------------
-      mapa <- graficar_rutas_color_importancia(df, Año=input$anio, Mes=mes_num, Producto=input$producto)
-      
+      # ------- logos -------
       tmp_dir  <- tempdir()
-      tmp_html <- file.path(tmp_dir, "mapa_tmp.html")
-      tmp_png  <- file.path(tmp_dir, "mapa_tmp.png")
-      
-      htmlwidgets::saveWidget(mapa, tmp_html, selfcontained = TRUE)
-      webshot2::webshot(tmp_html, tmp_png, vwidth=1600, vheight=900, delay=1)
-      
-      # ----------- LOGOS ------------
       logo_sup <- file.path(tmp_dir, "logo_3.png")
       logo_inf <- file.path(tmp_dir, "logo_2.png")
       file.copy("www/logo_3.png", logo_sup, overwrite = TRUE)
       file.copy("www/logo_2.png", logo_inf, overwrite = TRUE)
       
-      # ----------- PARÁMETROS DEL INFORME ------------
+      # Al pasar a los params, NO uses latex_safe si el mensaje ya tiene LaTeX
+      # O usa la versión corregida de arriba
       params <- list(
-        anio        = input$anio,
-        mes         = input$mes,
-        producto    = input$producto,
-        datos       = df,
-        grafico_png = tmp_png,
-        logo_sup    = logo_sup,
-        logo_inf    = logo_inf,
-        
-        # Textos convertidos a LaTeX (sin <b>)
-        mensaje1    = html_to_latex(mensaje1_reactivo(raw = TRUE)),
-        mensaje2    = html_to_latex(mensaje2_reactivo(raw = TRUE)),
-        mensaje3    = html_to_latex(mensaje3_reactivo(raw = TRUE))
+        anio     = input$anio,
+        mes      = input$mes,
+        producto = latex_safe(input$producto),
+        datos    = df,
+        plot     = plot_estatico_pdf(),
+        logo_sup = logo_sup,
+        logo_inf = logo_inf,
+        mensaje1 = mensaje1, # Pásalo directo, ya está construido con \textbf
+        mensaje2 = mensaje2,
+        mensaje3 = mensaje3
       )
       
-      showNotification("Generando informe PDF...", duration=NULL, id="pdf_n")
       
       callr::r(
         func = function(input_file, output_file, params) {
-          rmarkdown::render(input = input_file,
-                            output_file = output_file,
-                            params = params,
-                            envir = new.env(parent = globalenv()))
+          rmarkdown::render(
+            input       = input_file,
+            output_file = output_file,
+            params      = params,
+            envir       = new.env(parent = globalenv())
+          )
         },
-        args = list(input_file=tempReport, output_file=file, params=params)
+        args = list(
+          input_file  = file.path(getwd(), "informe.Rmd"),
+          output_file = file,
+          params      = params
+        )
       )
-      
-      removeNotification("pdf_n")
     }
   )
-}
-
+  
+} # fin server
 ################################################################################-
 # FIN SERVER
 ################################################################################-

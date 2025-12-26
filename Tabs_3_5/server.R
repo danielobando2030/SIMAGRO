@@ -214,6 +214,7 @@ server <- function(input, output, session) {
           producto    = input$producto,
           anio        = input$anio,
           datos       = df,
+          plot        = grafico_plano,  
           grafico_png = tmp_png,
           mensaje1    = mensaje1_txt,
           mensaje2    = mensaje2_txt

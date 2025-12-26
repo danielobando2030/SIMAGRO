@@ -1,10 +1,9 @@
 ################################################################################-
 # Proyecto FAO - VP - 2025
-# Comparativo de Precios (Producto y Año)
-# Versión institucional con estructura de botones FAO
+# SERVER - Comparativo de Precios (Producto y Año)
 ################################################################################-
 # Autores: Luis Miguel García, Laura Quintero, Juliana Lalinde
-# Última modificación: 08/11/2025
+# Última modificación: 2025/11/xx
 ################################################################################-
 
 rm(list = ls())
@@ -20,22 +19,16 @@ library(rmarkdown)
 options(scipen = 999)
 options(encoding = "UTF-8")
 
-# Función principal
-source("3_4b_precios_diferencias_municipios_funciones.R")
+# ============================================================
+# Cargar funciones (SOLO DEFINICIONES)
+# ============================================================
+source("3_4b_precios_diferencias_municipios_funciones.R", encoding = "UTF-8")
 
 ################################################################################-
 # SERVER
 ################################################################################-
 
 server <- function(input, output, session) {
-  
-  # --- FAO configuración LaTeX para entorno Shiny ---
-  if (requireNamespace("tinytex", quietly = TRUE) && tinytex::is_tinytex()) {
-    tex_path <- tinytex::tinytex_root()
-    Sys.setenv(PATH = paste0(tex_path, "/bin/win32;", Sys.getenv("PATH")))
-    message("✅ TinyTeX detectado en: ", tex_path)
-    message("✅ xelatex disponible en: ", Sys.which("xelatex"))
-  }
   
   ###############################################################################
   # Reactivo principal
@@ -44,24 +37,25 @@ server <- function(input, output, session) {
     req(input$anio, input$producto)
     
     res <- diferencias_precios_interactivo(
-      opcion1 = 0,
-      opcion2 = as.numeric(input$anio),
-      opcion4 = input$producto
+      opcion1 = 0,                         # por producto
+      opcion2 = as.numeric(input$anio),    # año
+      opcion4 = input$producto             # producto
     )
     
     if (is.null(res$datos) || nrow(res$datos) == 0) {
       return(NULL)
     }
+    
     res
   })
   
   ###############################################################################
-  # Gráfico principal
+  # Gráfico interactivo (PLOTLY)
   ###############################################################################
   output$grafico <- renderPlotly({
     res <- resultado()
     
-    if (is.null(res) || is.null(res$grafico)) {
+    if (is.null(res)) {
       return(
         plot_ly() %>%
           layout(
@@ -82,44 +76,42 @@ server <- function(input, output, session) {
   })
   
   ###############################################################################
-  # Subtítulo y mensaje lateral
+  # Subtítulo
   ###############################################################################
-  values <- reactiveValues(subtitulo = NULL, mensaje1 = NULL)
-  
   output$subtitulo <- renderText({
     res <- resultado()
     
     if (is.null(res)) {
-      values$subtitulo <- "Visualizando diferencias promedio de precios por producto y año seleccionados."
-    } else {
-      values$subtitulo <- glue(
-        "Producto: {input$producto} | Año: {input$anio}. ",
-        "El precio más bajo se observó en {res$ciudad_min} (",
-        formatC(res$precio_min, big.mark = ".", decimal.mark = ",", digits = 0, format = "f"),
-        " pesos menos que Bogotá), y el más alto en {res$ciudad_max} (",
-        formatC(res$precio_max, big.mark = ".", decimal.mark = ",", digits = 0, format = "f"),
-        " pesos más que Bogotá)."
-      )
+      return("Visualizando diferencias promedio de precios por producto y año.")
     }
-    values$subtitulo
+    
+    glue(
+      "Producto: {input$producto} | Año: {input$anio}. ",
+      "El precio más bajo se observó en {res$ciudad_min} (",
+      res$precio_min,
+      " pesos menos que Bogotá) y el más alto en {res$ciudad_max} (",
+      res$precio_max,
+      " pesos más que Bogotá)."
+    )
   })
   
+  ###############################################################################
+  # Mensaje lateral
+  ###############################################################################
   output$mensaje1 <- renderText({
     res <- resultado()
     
     if (is.null(res)) {
-      values$mensaje1 <- "No hay información disponible."
-    } else {
-      avg_sd <- mean(res$datos$dev, na.rm = TRUE)
-      
-      values$mensaje1 <- glue(
-        "La desviación estándar promedio fue de ",
-        "{formatC(avg_sd, format='f', digits=0, big.mark='.', decimal.mark=',')}, ",
-        "indicando el grado de variabilidad de precios entre ciudades."
-      )
+      return("No hay información disponible.")
     }
     
-    values$mensaje1
+    avg_sd <- mean(res$datos$dev, na.rm = TRUE)
+    
+    glue(
+      "La desviación estándar promedio fue de ",
+      formatC(avg_sd, format = "f", digits = 0, big.mark = ".", decimal.mark = ","),
+      ", indicando el grado de variabilidad de precios entre ciudades."
+    )
   })
   
   ###############################################################################
@@ -137,7 +129,7 @@ server <- function(input, output, session) {
   )
   
   ###############################################################################
-  # Descargar gráfica PNG
+  # Descargar gráfica PNG (INTERACTIVA)
   ###############################################################################
   output$descargar <- downloadHandler(
     filename = function() {
@@ -152,7 +144,7 @@ server <- function(input, output, session) {
       
       htmlwidgets::saveWidget(
         widget = plotly::as_widget(res$grafico),
-        file = tmp_html,
+        file   = tmp_html,
         selfcontained = TRUE
       )
       
@@ -169,8 +161,40 @@ server <- function(input, output, session) {
     }
   )
   
+  # ============================================================
+  # Texto para informe PDF
+  # ============================================================
+  
+  resumen_reactivo <- reactive({
+    res <- resultado()
+    if (is.null(res)) return("")
+    
+    glue(
+      "Producto: {input$producto} | Año: {input$anio}. ",
+      "El precio más bajo se observó en {res$ciudad_min} (",
+      res$precio_min,
+      " pesos menos que Bogotá) y el más alto en {res$ciudad_max} (",
+      res$precio_max,
+      " pesos más que Bogotá)."
+    )
+  })
+  
+  mensaje1_reactivo <- reactive({
+    res <- resultado()
+    if (is.null(res)) return("")
+    
+    avg_sd <- mean(res$datos$dev, na.rm = TRUE)
+    
+    glue(
+      "La desviación estándar promedio fue de ",
+      formatC(avg_sd, format = "f", digits = 0,
+              big.mark = ".", decimal.mark = ","),
+      ", indicando el grado de variabilidad de precios entre ciudades."
+    )
+  })
+  
   ###############################################################################
-  # Generar informe PDF institucional FAO
+  # Generar informe PDF FAO (GRÁFICO ESTÁTICO)
   ###############################################################################
   output$report <- downloadHandler(
     filename = function() {
@@ -180,22 +204,8 @@ server <- function(input, output, session) {
       res <- resultado()
       req(res)
       
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- tempfile(fileext = ".png")
-      
-      htmlwidgets::saveWidget(
-        widget = plotly::as_widget(res$grafico),
-        file = tmp_html,
-        selfcontained = TRUE
-      )
-      
-      webshot2::webshot(
-        tmp_html,
-        file   = tmp_png,
-        vwidth = 1600,
-        vheight = 900,
-        delay = 1
-      )
+      # --- Gráfico estático ggplot ---
+      grafico_plano <- diferencias_precios_estatico(res$datos)
       
       temp_pdf <- tempfile(fileext = ".pdf")
       
@@ -204,23 +214,21 @@ server <- function(input, output, session) {
         output_file   = temp_pdf,
         output_format = "pdf_document",
         params = list(
-          producto    = input$producto,
-          anio        = input$anio,
-          datos       = res$datos,
-          grafico_png = tmp_png,
-          resumen     = values$subtitulo,
-          mensaje1    = values$mensaje1
+          producto = input$producto,
+          anio     = input$anio,
+          datos    = res$datos,
+          plot     = grafico_plano,
+          resumen  = resumen_reactivo(),
+          mensaje1 = mensaje1_reactivo()
         ),
-        envir         = new.env(parent = globalenv()),
-        knit_root_dir = getwd(),
-        encoding      = "UTF-8"
+        envir    = new.env(parent = globalenv()),
+        encoding = "UTF-8"
       )
       
       file.copy(temp_pdf, file, overwrite = TRUE)
     },
     contentType = "application/pdf"
   )
-  
   ###############################################################################
   # Botón Reset
   ###############################################################################
@@ -228,4 +236,5 @@ server <- function(input, output, session) {
     updateSelectInput(session, "anio", selected = "2024")
     updateSelectInput(session, "producto", selected = "Aguacate")
   })
+  
 }

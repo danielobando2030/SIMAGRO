@@ -2,6 +2,7 @@
 title: ' '
 params:
   anio: NA
+  plot: NA
   mes: NA
   producto: NA
   datos: NA
@@ -112,7 +113,7 @@ cat("\\endgroup\n")
 \endgroup
 
 ```{r grafico_principal, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
-knitr::include_graphics(params$grafico_png)
+print(params$plot)
 ```
 
 

@@ -1,6 +1,6 @@
 ################################################################################
 # Proyecto FAO - VP - 2025
-# SERVER - Bandas de precios normalizados con botones FAO
+# SERVER - Bandas de precios normalizados con informe FAO (plot estático)
 ################################################################################
 
 library(shiny)
@@ -9,89 +9,126 @@ library(dplyr)
 library(zoo)
 library(lubridate)
 library(rmarkdown)
-library(webshot2)
-library(htmlwidgets)
 library(glue)
 
-source("3_6b_precios_rangos_desviaciones.R")  # función visualizar_bandas_plotly
+options(scipen = 999)
+options(encoding = "UTF-8")
+
+# ============================================================
+# Cargar funciones (SOLO DEFINICIONES)
+# ============================================================
+source("3_6b_precios_rangos_desviaciones.R", encoding = "UTF-8")
+
+################################################################################
+# SERVER
+################################################################################
 
 server <- function(input, output, session) {
   
-  ##############################################################################
-  # --- Valores por defecto ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Valores por defecto
+  # -----------------------------------------------------------
   updateSelectInput(session, "producto", selected = "Aguacate")
   updateSelectInput(session, "anio", selected = "2024")
   
-  ##############################################################################
-  # --- Reactivo: Filtrado de datos ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Datos filtrados
+  # -----------------------------------------------------------
   data_filtrada <- reactive({
     req(input$producto, input$anio)
     
     df <- data %>% filter(producto == input$producto)
+    
     if (input$anio != "todos") {
       df <- df %>% filter(year(fecha) == as.numeric(input$anio))
     }
+    
     df
   })
   
-  ##############################################################################
-  # --- Render del gráfico principal ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Gráfico interactivo (PLOTLY)
+  # -----------------------------------------------------------
   output$grafico <- renderPlotly({
     df <- data_filtrada()
+    
     if (nrow(df) == 0) {
-      showNotification("⚠️ No hay datos disponibles para ese producto y año.", type = "warning")
+      showNotification(
+        "⚠️ No hay datos disponibles para ese producto y año.",
+        type = "warning"
+      )
       return(NULL)
     }
+    
     anio_sel <- if (input$anio == "todos") NULL else as.numeric(input$anio)
-    visualizar_bandas_plotly(df, producto_sel = input$producto, anio_sel = anio_sel)
+    
+    visualizar_bandas_plotly(
+      df,
+      producto_sel = input$producto,
+      anio_sel     = anio_sel
+    )
   })
   
-  ##############################################################################
-  # --- 📉 Descargar gráfica como PNG ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Descargar gráfico interactivo PNG
+  # -----------------------------------------------------------
   output$descargarGrafico <- downloadHandler(
     filename = function() {
       paste0("bandas_precio_", gsub(" ", "_", input$producto), "_", input$anio, ".png")
     },
     content = function(file) {
       df <- data_filtrada()
-      if (nrow(df) == 0) stop("No hay datos para exportar.")
+      req(nrow(df) > 0)
       
-      graf <- visualizar_bandas_plotly(df, producto_sel = input$producto, anio_sel = input$anio)
+      anio_sel <- if (input$anio == "todos") NULL else as.numeric(input$anio)
+      graf <- visualizar_bandas_plotly(df, input$producto, anio_sel)
       
       tmp_html <- tempfile(fileext = ".html")
       tmp_png  <- tempfile(fileext = ".png")
       
-      htmlwidgets::saveWidget(as_widget(graf), tmp_html, selfcontained = TRUE)
-      webshot2::webshot(tmp_html, file = tmp_png, vwidth = 1600, vheight = 900, delay = 1)
+      htmlwidgets::saveWidget(
+        htmlwidgets::as_widget(graf),
+        tmp_html,
+        selfcontained = TRUE
+      )
+      
+      webshot2::webshot(
+        tmp_html,
+        file   = tmp_png,
+        vwidth = 1600,
+        vheight = 900,
+        delay = 1
+      )
       
       file.copy(tmp_png, file, overwrite = TRUE)
     }
   )
   
-  ##############################################################################
-  # --- 💾 Descargar datos CSV ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Descargar datos CSV
+  # -----------------------------------------------------------
   output$descargarDatos <- downloadHandler(
     filename = function() {
       paste0("bandas_datos_", gsub(" ", "_", input$producto), "_", input$anio, ".csv")
     },
     content = function(file) {
       df <- data_filtrada()
+      
       if (nrow(df) == 0) {
-        write.csv(data.frame(Mensaje = "No hay datos disponibles"), file, row.names = FALSE)
+        write.csv(
+          data.frame(Mensaje = "No hay datos disponibles"),
+          file,
+          row.names = FALSE
+        )
       } else {
         write.csv(df, file, row.names = FALSE)
       }
     }
   )
   
-  ##############################################################################
-  # --- Panel lateral: días con precios atípicos ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Panel lateral: días atípicos
+  # -----------------------------------------------------------
   output$diasAtipicos <- renderUI({
     df <- data_filtrada()
     if (nrow(df) == 0) return(HTML("<p>No hay información disponible.</p>"))
@@ -101,10 +138,8 @@ server <- function(input, output, session) {
       arrange(fecha) %>%
       group_by(anio) %>%
       mutate(
-        media_20 = rollapply(precio, width = 20, FUN = mean,
-                             align = "right", fill = NA, na.rm = TRUE),
-        sd_20    = rollapply(precio, width = 20, FUN = sd,
-                             align = "right", fill = NA, na.rm = TRUE),
+        media_20 = rollapply(precio, 20, mean, align = "right", fill = NA, na.rm = TRUE),
+        sd_20    = rollapply(precio, 20, sd,   align = "right", fill = NA, na.rm = TRUE),
         precio_norm = precio - media_20,
         banda_sup =  2 * sd_20,
         banda_inf = -2 * sd_20,
@@ -125,21 +160,24 @@ server <- function(input, output, session) {
           fecha_label = format(fecha, "%d de %B"),
           valor = paste0("$", format(round(precio, 0), big.mark = ".", decimal.mark = ","))
         )
-      lista <- paste0("<li>", df_proc$fecha_label, ": ", df_proc$valor, "</li>", collapse = "")
-      n_atipicos <- nrow(df_proc)
+      
+      lista <- paste0(
+        "<li>", df_proc$fecha_label, ": ", df_proc$valor, "</li>",
+        collapse = ""
+      )
       
       HTML(glue("
         <div class='panel-atipicos'>
-          <p><b>Se detectaron {n_atipicos} días atípicos:</b></p>
+          <p><b>Se detectaron {nrow(df_proc)} días atípicos:</b></p>
           <ul>{lista}</ul>
         </div>
       "))
     }
   })
   
-  ##############################################################################
-  # --- 📑 Generar informe PDF ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Generar informe PDF (GRÁFICO ESTÁTICO)
+  # -----------------------------------------------------------
   output$descargarPDF <- downloadHandler(
     filename = function() {
       paste0("informe_bandas_precio_", input$producto, "_", input$anio, ".pdf")
@@ -147,29 +185,29 @@ server <- function(input, output, session) {
     content = function(file) {
       
       df <- data_filtrada()
-      if (nrow(df) == 0) stop("No hay datos para generar el informe.")
+      req(nrow(df) > 0)
       
       anio_sel <- if (input$anio == "todos") NULL else as.numeric(input$anio)
-      grafico <- visualizar_bandas_plotly(df, producto_sel = input$producto, anio_sel = anio_sel)
       
-      # ================= PNG del gráfico =====================
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- file.path(tempdir(), "grafico_bandas.png")
+      # =====================================================
+      # GRÁFICO ESTÁTICO
+      # =====================================================
+      grafico_plano <- visualizar_bandas_estatico(
+        df,
+        producto_sel = input$producto,
+        anio_sel     = anio_sel
+      )
       
-      htmlwidgets::saveWidget(as_widget(grafico), tmp_html, selfcontained = TRUE)
-      webshot2::webshot(tmp_html, file = tmp_png,
-                        vwidth = 1600, vheight = 900, delay = 1)
-      
-      # ================= Data procesada ======================
+      # =====================================================
+      # DATA PROCESADA (MISMA LÓGICA QUE PANEL)
+      # =====================================================
       df_proc <- df %>%
         mutate(anio = year(fecha)) %>%
         arrange(fecha) %>%
         group_by(anio) %>%
         mutate(
-          media_20 = rollapply(precio, width = 20, FUN = mean,
-                               align = "right", fill = NA, na.rm = TRUE),
-          sd_20    = rollapply(precio, width = 20, FUN = sd,
-                               align = "right", fill = NA, na.rm = TRUE),
+          media_20 = rollapply(precio, 20, mean, align = "right", fill = NA, na.rm = TRUE),
+          sd_20    = rollapply(precio, 20, sd,   align = "right", fill = NA, na.rm = TRUE),
           precio_norm = precio - media_20,
           banda_sup =  2 * sd_20,
           banda_inf = -2 * sd_20,
@@ -178,31 +216,40 @@ server <- function(input, output, session) {
             precio_norm > banda_sup | precio_norm < banda_inf ~ "Atípico",
             TRUE ~ "Normal"
           )
-        ) %>% ungroup()
+        ) %>%
+        ungroup()
       
-      if (!is.null(anio_sel)) df_proc <- df_proc %>% filter(anio == anio_sel)
+      if (!is.null(anio_sel)) {
+        df_proc <- df_proc %>% filter(anio == anio_sel)
+      }
       
-      # ================= Crear mensaje resumen ======================
+      # =====================================================
+      # MENSAJE RESUMEN
+      # =====================================================
       df_atip <- df_proc %>% filter(estado == "Atípico")
       n_atipicos <- nrow(df_atip)
       
       mensaje1 <- if (n_atipicos == 0) {
-        "No se registraron días con precios atípicos para este año."
+        glue("No se registraron días con precios atípicos durante {input$anio}.")
       } else {
-        glue("Se detectaron {n_atipicos} días con precios atípicos durante el año {input$anio}.")
+        glue("Se detectaron {n_atipicos} días con precios atípicos durante {input$anio}.")
       }
       
-      # ================= Crear LISTA estilo FAO ======================
+      # =====================================================
+      # LISTA FAO
+      # =====================================================
       if (n_atipicos == 0) {
         
-        lista_atipicos <- "No hubo días atípicos."
+        lista_atipicos <- "No se identificaron días atípicos."
         
       } else {
         
         df_atip2 <- df_atip %>%
           mutate(
             dia = format(fecha, "%d de %B"),
-            precio_fmt = paste0("\\$", format(round(precio,0), big.mark=".", decimal.mark=","))
+            precio_fmt = paste0(
+              "\\$", format(round(precio, 0), big.mark=".", decimal.mark=",")
+            )
           )
         
         lista_atipicos <- paste0(
@@ -212,41 +259,32 @@ server <- function(input, output, session) {
         )
       }
       
-      # ================= Copiar informe ======================
+      # =====================================================
+      # COPIAR INSUMOS
+      # =====================================================
       tempReport <- file.path(tempdir(), "informe.Rmd")
       file.copy("informe.Rmd", tempReport, overwrite = TRUE)
       
-      # ================= Copiar fuentes al tempdir ==================
-      file.copy("Prompt-Regular.ttf",
-                file.path(tempdir(), "Prompt-Regular.ttf"),
-                overwrite = TRUE)
+      file.copy("Prompt-Regular.ttf", file.path(tempdir(), "Prompt-Regular.ttf"), overwrite = TRUE)
+      file.copy("Prompt-Black.ttf",   file.path(tempdir(), "Prompt-Black.ttf"),   overwrite = TRUE)
       
-      file.copy("Prompt-Black.ttf",
-                file.path(tempdir(), "Prompt-Black.ttf"),
-                overwrite = TRUE)
-      
-      # ================= Copiar logos al tempdir ==================
       dir.create(file.path(tempdir(), "www"), showWarnings = FALSE)
+      file.copy("www/logo_3.png", file.path(tempdir(), "www/logo_3.png"), overwrite = TRUE)
+      file.copy("www/logo_4.png", file.path(tempdir(), "www/logo_4.png"), overwrite = TRUE)
       
-      file.copy("www/logo_3.png",
-                file.path(tempdir(), "www/logo_3.png"),
-                overwrite = TRUE)
-      
-      file.copy("www/logo_4.png",
-                file.path(tempdir(), "www/logo_4.png"),
-                overwrite = TRUE)
-      
-      # ================= Render ================================
+      # =====================================================
+      # RENDER FINAL
+      # =====================================================
       rmarkdown::render(
         input = tempReport,
         output_format = "pdf_document",
         output_file = file,
         params = list(
-          datos = df_proc,
-          grafico_png = tmp_png,
-          producto = input$producto,
-          anio = input$anio,
-          mensaje1 = mensaje1,
+          producto       = input$producto,
+          anio           = input$anio,
+          plot           = grafico_plano,
+          datos          = df_proc,
+          mensaje1       = mensaje1,
           lista_atipicos = lista_atipicos
         ),
         envir = new.env(parent = globalenv())
@@ -255,12 +293,11 @@ server <- function(input, output, session) {
     contentType = "application/pdf"
   )
   
-  ##############################################################################
-  # --- 🔁 Resetear filtros ---
-  ##############################################################################
+  # -----------------------------------------------------------
+  # Reset
+  # -----------------------------------------------------------
   observeEvent(input$reset, {
     updateSelectInput(session, "producto", selected = "Aguacate")
     updateSelectInput(session, "anio", selected = "2024")
   })
 }
-

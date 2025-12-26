@@ -7,7 +7,7 @@
 pacman::p_load(
   readr, readxl, dplyr, tidyr, janitor, lubridate,
   stringr, geosphere, arrow, osrm, sf, ggplot2,
-  jsonlite, purrr, leaflet, scales
+  jsonlite, purrr, leaflet, scales, maps
 )
 
 options(scipen = 999)
@@ -237,6 +237,159 @@ grafico_plano <- function(mapa_leaflet) {
   return(tmp_png)
 }
 
-################################################################################-
-# FIN ARCHIVO
-################################################################################-
+########## ESTÁTICO #####
+
+library(maps)
+
+# Contorno Colombia
+colombia_map <- map_data("world", region = "Colombia")
+
+
+graficar_rutas_color_importancia_estatico <- function(df,
+                                                      Año = NULL,
+                                                      Mes = NULL,
+                                                      Producto = NULL) {
+  
+  # ------------------------------------------------------------
+  # 1. Filtros
+  # ------------------------------------------------------------
+  if (!is.null(Año)) df <- df %>% filter(anio == Año)
+  if (!is.null(Mes)) df <- df %>% filter(mes == Mes)
+  if (!is.null(Producto)) df <- df %>% filter(producto == Producto)
+  
+  df <- df %>%
+    distinct(codigo_mpio_destino, codigo_mpio_origen, .keep_all = TRUE) %>%
+    filter(!is.na(routes_coords_str), routes_coords_str != "")
+  
+  if (nrow(df) == 0) return(NULL)
+  
+  # ------------------------------------------------------------
+  # 2. Expandir rutas a puntos
+  # ------------------------------------------------------------
+  rutas_df <- df %>%
+    mutate(id_ruta = row_number()) %>%
+    select(
+      id_ruta,
+      routes_coords_str,
+      region_geo,
+      prop_region_producto
+    ) %>%
+    mutate(routes_coords_str = strsplit(routes_coords_str, ";")) %>%
+    unnest(routes_coords_str) %>%
+    separate(
+      routes_coords_str,
+      into = c("lon", "lat"),
+      sep = ",",
+      convert = TRUE
+    ) %>%
+    filter(!is.na(lon), !is.na(lat))
+  
+  if (nrow(rutas_df) == 0) return(NULL)
+  
+  # ------------------------------------------------------------
+  # 3. Grosor
+  # ------------------------------------------------------------
+  rutas_df <- rutas_df %>%
+    mutate(
+      grosor = scales::rescale(
+        prop_region_producto,
+        to = c(0.6, 1.8)
+      )
+    )
+  
+  # ------------------------------------------------------------
+  # 4. Colores por región
+  # ------------------------------------------------------------
+  colores_region <- c(
+    "Noroccidente" = "#e31a1c",
+    "Nororiente"   = "#ff7f00",
+    "Norte"        = "#6a3d9a",
+    "Oriente"      = "#1f78b4",
+    "Suroriente"   = "#D4AF37",
+    "Sur"          = "#b15928",
+    "Suroccidente" = "#a6cee3",
+    "Occidente"    = "#33a02c"
+  )
+  
+  # ------------------------------------------------------------
+  # 5. Título
+  # ------------------------------------------------------------
+  titulo <- paste(
+    c(
+      paste0("Producto: ", Producto),
+      paste0("Año: ", Año),
+      paste0("Mes: ", Mes)
+    ),
+    collapse = " | "
+  )
+  
+  # ------------------------------------------------------------
+  # 6. MAPA ESTÁTICO FINAL (SIN DEPARTAMENTOS)
+  # ------------------------------------------------------------
+  ggplot() +
+    
+    ## 🌍 CONTORNO DEL PAÍS
+    geom_polygon(
+      data = colombia_map,
+      aes(x = long, y = lat, group = group),
+      fill  = "gray95",
+      color = "gray70",
+      linewidth = 0.3
+    ) +
+    
+    ## 🚚 RUTAS
+    geom_path(
+      data = rutas_df,
+      aes(
+        x = lon,
+        y = lat,
+        group = id_ruta,
+        color = region_geo,
+        size  = grosor
+      ),
+      alpha = 0.85,
+      lineend = "round"
+    ) +
+    
+    scale_color_manual(
+      values = colores_region,
+      name = "Regiones geográficas"
+    ) +
+    
+    scale_size_identity() +
+    coord_equal() +
+    
+    labs(title = titulo) +
+    
+    theme_void() +
+    theme(
+      plot.title = element_text(
+        size = 12,
+        face = "bold",
+        hjust = 0.5
+      ),
+      legend.title = element_text(size = 9),
+      legend.text  = element_text(size = 8),
+      legend.position = "right"
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

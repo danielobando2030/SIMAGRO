@@ -4,18 +4,14 @@ params:
   producto: NA
   anio: NA
   datos: NA
-  grafico: NA
+  plot: NA          # <- ESTA LÍNEA ES LA CLAVE
   temporalidad: NA
   variable: NA
   promedio: NA
   fecha_max: NA
   fecha_min: NA
-  prod_mas_volatil: NA
-  promedio_cambio: NA
-  mes_max: NA
-  valor_max: NA
 
-  mensaje_volatil: NA
+  mensaje_volatil: NA 
   mensaje_promedio: NA
   mensaje_mesanual: NA
 
@@ -151,7 +147,7 @@ cat("\\endgroup\n")
 \endgroup
 
 ```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics(params$grafico)
+suppressWarnings(print(params$plot))
 ```
 
 \vspace{0.3cm}
@@ -177,6 +173,8 @@ knitr::include_graphics(params$grafico)
 
 \vspace{0.25cm}
 
+\newpage
+
 \begingroup
 \fontsize{10}{12}\selectfont
 \textcolor{grayA}{`r escape_textcolor(params$mensaje_mesanual)`}
@@ -189,7 +187,7 @@ knitr::include_graphics(params$grafico)
 \textcolor{grayA}{Este gráfico muestra la evolución de los precios mayoristas como referencia para Bogotá y Cundinamarca.}
 \endgroup
 
-\newpage
+
 
 \vspace*{6cm}
 

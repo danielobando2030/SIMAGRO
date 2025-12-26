@@ -71,7 +71,7 @@ mapa_dif <- function(Anio = NULL, Mes = NULL, Producto = NULL) {
   
   # --- Filtros ---
   if (!is.null(Anio)) df <- df %>% filter(year == Anio)
-  if (!is.null(Mes)) df <- df %>% filter(mes == Mes)
+  if (!is.null(Mes))  df <- df %>% filter(mes == Mes)
   if (!is.null(Producto)) df <- df %>% filter(producto == Producto)
   
   # --- Variables relevantes ---
@@ -99,17 +99,17 @@ mapa_dif <- function(Anio = NULL, Mes = NULL, Producto = NULL) {
     as.character(mapa$cod_depto)
   )
   
-  # Formatear nombres: primera letra mayúscula, resto minúscula
   mapa$departamento_nombre <- str_to_title(str_to_lower(mapa$departamento_nombre))
   
-  # --- Tooltip (para clic) ---
+  # --- Tooltip ---
   mapa$tooltip_text <- ifelse(
     is.na(mapa$comp),
     paste0("<strong>", mapa$departamento_nombre, "</strong><br>Sin datos disponibles"),
-    paste0("<strong>", mapa$departamento_nombre, "</strong><br>Diferencia de precio: $", round(mapa$comp))
+    paste0("<strong>", mapa$departamento_nombre,
+           "</strong><br>Diferencia de precio: $", round(mapa$comp))
   )
   
-  # --- Escala de color púrpura (segura) ---
+  # --- Escala de color (robusta) ---
   if (all(is.na(mapa$comp))) {
     max_abs <- 1
   } else {
@@ -118,34 +118,68 @@ mapa_dif <- function(Anio = NULL, Mes = NULL, Producto = NULL) {
   }
   
   my_palette <- colorNumeric(
-    palette = colorRampPalette(c("#DBC21F", "#B6A534", "#6D673E", "#494634"))(100),
+    palette = colorRampPalette(
+      c("#DBC21F", "#B6A534", "#6D673E", "#494634")
+    )(100),
     domain = c(-max_abs, max_abs),
     na.color = "#D9D9D9"
   )
   
-  # --- Mapa interactivo ---
+  # ==========================================================
+  # MAPA INTERACTIVO (LEAFLET – DASHBOARD)
+  # ==========================================================
   p <- leaflet(mapa) %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
     addPolygons(
-      fillColor = ~my_palette(comp),
+      fillColor   = ~my_palette(comp),
       fillOpacity = 0.8,
-      color = "#D5D5D5",
-      weight = 1,
-      popup = ~tooltip_text,
-      label = ~htmlEscape(departamento_nombre),  # Hover label
+      color       = "#D5D5D5",
+      weight      = 1,
+      popup       = ~tooltip_text,
+      label       = ~htmlEscape(departamento_nombre),
       labelOptions = labelOptions(
         style = list("font-weight" = "bold", "font-size" = "12px"),
         textsize = "15px",
         direction = "auto",
         sticky = TRUE
       ),
-      highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)
+      highlightOptions = highlightOptions(
+        color = "white", weight = 2, bringToFront = TRUE
+      )
     ) %>%
     addLegend(
-      pal = my_palette,
+      pal     = my_palette,
       values = ~comp,
       opacity = 0.7,
-      title = "Diferencia del precio"
+      title   = "Diferencia del precio"
+    )
+  
+  # ==========================================================
+  # MAPA PLANO (GGPLOT – INFORME PDF)
+  # ==========================================================
+  grafico_plano <- ggplot(mapa) +
+    geom_sf(
+      aes(fill = comp),
+      color = "#8A8A8A",   # gris medio, suave
+      size  = 0.35         # delimitación sutil
+    ) +
+    scale_fill_gradient2(
+      low      = "#DBC21F",
+      mid      = "#B6A534",
+      high     = "#494634",
+      midpoint = 0,
+      na.value = "#D9D9D9",
+      name     = "Diferencia\nde precio"
+    ) +
+    theme_minimal(base_size = 13) +
+    theme(
+      panel.grid      = element_blank(),
+      axis.text       = element_blank(),
+      axis.title      = element_blank(),
+      axis.ticks      = element_blank(),
+      legend.position = "right",
+      legend.title    = element_text(size = 10),
+      legend.text     = element_text(size = 9)
     )
   
   # --- Resumen ---
@@ -155,12 +189,13 @@ mapa_dif <- function(Anio = NULL, Mes = NULL, Producto = NULL) {
   ciudad_min <- df$departamento[which.min(df$comp)]
   
   return(list(
-    grafico = p,
-    datos = df,
-    precio_max = precio_max,
-    precio_min = precio_min,
-    ciudad_max = ciudad_max,
-    ciudad_min = ciudad_min
+    grafico        = p,              # Leaflet (si lo sigues usando)
+    grafico_plano  = grafico_plano,  # ← NUEVO
+    datos          = df,
+    precio_max     = precio_max,
+    precio_min     = precio_min,
+    ciudad_max     = ciudad_max,
+    ciudad_min     = ciudad_min
   ))
 }
 
@@ -168,4 +203,10 @@ mapa_dif <- function(Anio = NULL, Mes = NULL, Producto = NULL) {
 ##### Test
 ###############################
 
-mapa_dif(Anio = 2014, Mes = 1, Producto = "Aguacate")
+#res <- mapa_dif(Anio = 2014, Mes = 1, Producto = "Aguacate")
+
+# Dashboard
+#res$grafico
+
+# Informe PDF
+#print(res$grafico_plano)

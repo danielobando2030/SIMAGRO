@@ -112,3 +112,90 @@ visualizar_ranking <- function(data, producto, anio) {
 }
 
 #visualizar_ranking(data, producto = "Habichuela", anio = "2015")
+
+
+visualizar_ranking_estatico <- function(data, producto, anio) {
+  
+  data_f <- data %>%
+    mutate(mes_y_ano = as.yearmon(mes_y_ano, "%Y-%m")) %>%
+    filter(producto == !!producto,
+           format(mes_y_ano, "%Y") == anio,
+           !is.na(precio_prom))
+  
+  if (nrow(data_f) == 0) {
+    return(ggplot() + theme_void())
+  }
+  
+  # ranking
+  data_f <- data_f %>%
+    group_by(mes_y_ano) %>%
+    mutate(ranking = rank(-precio_prom, ties.method = "min")) %>%
+    ungroup()
+  
+  meses_es <- c("Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+  
+  data_f <- data_f %>%
+    mutate(
+      mes = month(mes_y_ano),
+      mes_label = factor(meses_es[mes], levels = meses_es)
+    )
+  
+  ggplot(data_f, aes(x = mes_label, y = precio_prom)) +
+    
+    # Otras ciudades
+    geom_point(
+      data = filter(data_f, ciudad != "Bogotá"),
+      color = "#B0B0B0",
+      size = 2,
+      alpha = 0.7
+    ) +
+    
+    # Bogotá
+    geom_point(
+      data = filter(data_f, ciudad == "Bogotá"),
+      color = "#DBC21F",
+      size = 3
+    ) +
+    
+    geom_text(
+      data = filter(data_f, ciudad == "Bogotá"),
+      aes(label = ciudad),
+      hjust = -0.2,
+      color = "#DBC21F",
+      size = 3
+    ) +
+    
+    scale_y_continuous(
+      labels = function(x)
+        paste0("$", formatC(x, big.mark = ".", decimal.mark = ",", format = "f", digits = 0))
+    ) +
+    
+    labs(
+      x = "Mes",
+      y = "Precio promedio por Kg"
+    ) +
+    
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      panel.grid.minor = element_blank()
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

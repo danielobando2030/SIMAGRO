@@ -118,9 +118,71 @@ calc_cambio_mensual <- function(data, producto, anio) {
   return(fig)
 }
 
-#calc_cambio_mensual(data, producto = "Aguacate", anio = 2014)
+###############################
+##### ESTÁTICO              ###
+###############################
 
-
+calc_cambio_mensual_estatico <- function(data, producto, anio) {
+  
+  Sys.setlocale("LC_TIME", "Spanish_Colombia.UTF-8")
+  if (Sys.getlocale("LC_TIME") == "C") Sys.setlocale("LC_TIME", "Spanish")
+  
+  df <- data %>%
+    mutate(
+      mes_y_ano = as.Date(paste0(mes_y_ano, "-01")),
+      anio = year(mes_y_ano)
+    ) %>%
+    filter(
+      tolower(producto) == tolower(!!producto),
+      anio == !!anio
+    ) %>%
+    arrange(mes_y_ano) %>%
+    mutate(
+      cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100
+    ) %>%
+    filter(!is.na(cambio_pct_mensual))
+  
+  if (nrow(df) == 0) {
+    return(ggplot() + theme_void())
+  }
+  
+  # breaks “bonitos” eje Y
+  breaks_y <- pretty(df$cambio_pct_mensual)
+  
+  ggplot(df, aes(x = mes_y_ano, y = cambio_pct_mensual)) +
+    
+    geom_line(
+      color = "#DBC21F",
+      linewidth = 1
+    ) +
+    
+    geom_point(
+      color = "#DBC21F",
+      size = 3
+    ) +
+    
+    scale_x_date(
+      name = "Mes",
+      date_breaks = "1 month",
+      date_labels = "%b",
+      expand = expansion(mult = c(0.02, 0.02))
+    ) +
+    
+    scale_y_continuous(
+      name = "Cambio % mensual",
+      breaks = breaks_y,
+      labels = function(x)
+        formatC(x, big.mark = ".", decimal.mark = ",", digits = 2, format = "f"),
+      limits = c(min(breaks_y) - 5, max(breaks_y) + 5)
+    ) +
+    
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      panel.grid.minor = element_blank(),
+      plot.title = element_blank()
+    )
+}
 
 
 

@@ -2,6 +2,7 @@
 title: ' '
 params:
   producto: NA
+  plot: NA
   anio: NA
   datos: NA
   grafico_png: NA
@@ -86,7 +87,7 @@ cat("\\normalsize\n")
 \endgroup
 
 ```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics(params$grafico_png)
+print(params$plot)
 ```
 
 \vspace{0.2cm}
@@ -109,7 +110,7 @@ knitr::include_graphics(params$grafico_png)
 \textcolor{grayA}{`r enc2utf8(params$mensaje1)`}
 \endgroup
 
-\vspace{0.25cm}
+\newpage
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{grayA}{Este gráfico muestra la diferencia promedio de precios entre ciudades comparadas con Bogotá. El tamaño del círculo representa la variabilidad interna del precio (desviación estándar). Valores positivos indican precios mayores que Bogotá; valores negativos, menores.}

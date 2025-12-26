@@ -2,6 +2,7 @@
 title: ' '
 params:
   producto: NA
+  plot: NA
   anio: NA
   mes: NA
   mensaje1: NA
@@ -95,7 +96,7 @@ cat("\\endgroup\n")
 \endgroup
 
 ```{r, out.width="90%",warning=FALSE,message=FALSE}
-knitr::include_graphics(params$mapa_png)
+print(params$plot)
 ```
 
 \vspace{0.2cm}

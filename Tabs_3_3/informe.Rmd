@@ -103,7 +103,7 @@ mes a mes en Bogotá y Cundinamarca}
 \endgroup
 
 ```{r grafico, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
-knitr::include_graphics(params$plot)
+print(params$plot)
 ```
 
 \vspace{0.2cm}

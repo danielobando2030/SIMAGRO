@@ -207,14 +207,18 @@ server <- function(input, output, session) {
       # ---- Crear mensajes para el PDF ----
       mensaje_altas <- paste(
         apply(top5_pos, 1, function(x) {
-          glue("{x[['Var1']]} – {x[['Var2']]}: {sprintf('%.2f', as.numeric(x[['Freq']]))}")
+          glue(
+            "{x[['Var1']]} – {x[['Var2']]}: {formato_num_es(x[['Freq']], 2)}"
+          )
         }),
         collapse = "\n"
       )
       
       mensaje_bajas <- paste(
         apply(top5_neg, 1, function(x) {
-          glue("{x[['Var1']]} – {x[['Var2']]}: {sprintf('%.2f', as.numeric(x[['Freq']]))}")
+          glue(
+            "{x[['Var1']]} – {x[['Var2']]}: {formato_num_es(x[['Freq']], 2)}"
+          )
         }),
         collapse = "\n"
       )
@@ -241,6 +245,7 @@ server <- function(input, output, session) {
         params = list(
           datos          = m,
           grafico        = tmp_png,
+          plot = correlacion_precios_estatico(data, input$anio),
           anio           = if (!is.null(input$anio)) input$anio else max(data$anio),
           mensaje_altas  = mensaje_altas,
           mensaje_bajas  = mensaje_bajas

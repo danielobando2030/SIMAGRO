@@ -203,47 +203,32 @@ server <- function(input, output, session) {
       req(res)
       
       mensaje1_texto <- glue(
-        "El lugar más costoso para comprar {if (input$producto != 'todo') input$producto else 'alimentos'} ",
-        "fue {res$ciudad_max}, con una diferencia de ${format(res$precio_max, big.mark='.', decimal.mark=',')} respecto a Bogotá."
+        "El lugar más costoso para comprar ",
+        if (input$producto != "todo") input$producto else "alimentos",
+        " fue {res$ciudad_max}, con una diferencia de ",
+        "${format(res$precio_max, big.mark='.', decimal.mark=',')} respecto a Bogotá."
       )
+      
       mensaje2_texto <- glue(
         "{res$ciudad_min} ofreció el precio más bajo ",
-        "{if (input$producto != 'todo') paste0('para ', input$producto) else 'para alimentos'}, ",
-        "con una diferencia de ${format(res$precio_min, big.mark='.', decimal.mark=',')} menos que Bogotá."
+        if (input$producto != "todo") paste0("para ", input$producto) else "para alimentos",
+        ", con una diferencia de ",
+        "${format(res$precio_min, big.mark='.', decimal.mark=',')} menos que Bogotá."
       )
       
-      # Convertir Leaflet a PNG
-      temphtml <- tempfile(fileext = ".html")
-      temppng  <- tempfile(fileext = ".png")
-      saveWidget(res$grafico, temphtml, selfcontained = TRUE)
-      webshot2::webshot(temphtml, temppng, delay = 2, vwidth = 1600, vheight = 1000)
-      
-      # PDF temporal
-      tmp_pdf <- tempfile(fileext = ".pdf")
-      
-      # Render PDF (siempre xelatex)
-      e <- new.env(parent = globalenv())
       rmarkdown::render(
-        input = file.path(getwd(), "informe.Rmd"),
-        output_file = tmp_pdf,
+        input = "informe.Rmd",
+        output_file = file,
         params = list(
-          producto    = input$producto,
-          anio        = if (identical(input$anio, "todo")) NA else input$anio,
-          mes         = if (identical(input$mes,  "todo")) NA else input$mes,
-          mensaje1    = mensaje1_texto,
-          mensaje2    = mensaje2_texto,
-          mapa_png    = temppng,
-          tabla_datos = res$datos,
-          logo_sup    = file.path(getwd(), "www", "logo_3.png"),
-          logo_inf    = file.path(getwd(), "www", "logo_2.png")
+          producto = input$producto,
+          anio     = if (identical(input$anio, "todo")) NA else input$anio,
+          mes      = if (identical(input$mes,  "todo")) NA else input$mes,
+          plot     = res$grafico_plano,   # 🔴 CLAVE
+          mensaje1 = mensaje1_texto,
+          mensaje2 = mensaje2_texto
         ),
-        envir = e,
-        knit_root_dir = getwd(),
-        output_format = rmarkdown::pdf_document(latex_engine = "xelatex")
+        envir = new.env(parent = globalenv())
       )
-      
-      # Copiar PDF final
-      file.copy(tmp_pdf, file, overwrite = TRUE)
     },
     contentType = "application/pdf"
   )

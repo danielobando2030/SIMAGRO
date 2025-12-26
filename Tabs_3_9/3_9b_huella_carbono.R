@@ -135,6 +135,77 @@ graficar_treemap_producto <- function(data, anio = NULL, mes = NULL) {
 }
 
 
+##############################################
+#### FUNCIÓN TREEMAP CO₂ — ESTÁTICO (GGPlot) ###
+##############################################
+
+graficar_treemap_producto_estatico <- function(data, anio = NULL, mes = NULL) {
+  
+  # --- 1. Filtrar y Procesar datos ---
+  df_filtrado <- data %>%
+    {if (!is.null(anio)) filter(., anio == !!anio) else .} %>%
+    {if (!is.null(mes))  filter(., mes  == !!mes)  else .}
+  
+  if (nrow(df_filtrado) == 0) return(ggplot() + theme_void())
+  
+  df_prod <- df_filtrado %>%
+    mutate(c02_total = as.numeric(c02_total), peso_c02_grupo = as.numeric(peso_c02_grupo)) %>%
+    filter(is.finite(c02_total), c02_total > 0) %>%
+    group_by(categoria, producto) %>%
+    summarise(
+      c02_total = sum(c02_total, na.rm = TRUE),
+      peso_c02_grupo = mean(peso_c02_grupo, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      valor_fmt = format(round(c02_total, 0), big.mark=".", decimal.mark=","),
+      pct_fmt   = paste0(format(round(peso_c02_grupo, 1), big.mark=".", decimal.mark=","), "%"),
+      label     = paste0(producto, "\n", valor_fmt, "\n", pct_fmt)
+    )
+  
+  # --- 2. Gráfico Estático con Jerarquía Gris Claro ---
+  ggplot(df_prod, aes(area = c02_total, subgroup = categoria)) +
+    
+    # Capa 1: Fondo del Contenedor (Gris muy tenue para el encasillado)
+    treemapify::geom_treemap_subgroup_border(fill = "#EDEDED", color = "white", linewidth = 3) +
+    
+    # Capa 2: Alimentos (Rojos)
+    treemapify::geom_treemap(
+      aes(fill = c02_total), 
+      color = "white", 
+      linewidth = 0.7
+    ) +
+    
+    # Capa 3: Nombre del Grupo (CENTRO, GRIS CLARO, ENCIMA)
+    treemapify::geom_treemap_subgroup_text(
+      place = "centre", 
+      colour = "#A0A0A0", # Gris más claro y suave
+      alpha = 0.7,        # Transparencia ajustada para suavidad
+      grow = FALSE,       
+      size = 11,          
+      fontface = "bold",
+      min.size = 0
+    ) +
+    
+    # Capa 4: Etiquetas de Alimentos (Blanco)
+    treemapify::geom_treemap_text(
+      aes(label = label),
+      colour = "white", 
+      place = "centre", 
+      size = 8,
+      grow = FALSE, 
+      reflow = TRUE
+    ) +
+    
+    # Escala de rojos consistente
+    scale_fill_gradientn(
+      colours = c("#BC222A", "#983136", "#743639", "#592F30", "#3F2427", "#2B181A"),
+      guide = "none"
+    ) +
+    
+    theme_void() +
+    theme(plot.margin = margin(10, 10, 10, 10))
+}
 #################################
 # PRUEBA
 #################################

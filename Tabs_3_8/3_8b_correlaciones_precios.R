@@ -190,5 +190,79 @@ correlacion_precios <- function(data, anio){
   ))
 }
 
+#### ESTÁTICO 
+
+correlacion_precios_estatico <- function(data, anio) {
+  
+  df <- data %>%
+    filter(anio == !!anio) %>%
+    select(producto, mes_y_ano, precio_prom) %>%
+    distinct()
+  
+  df_wide <- df %>%
+    pivot_wider(names_from = producto, values_from = precio_prom)
+  
+  df_mat <- df_wide %>% select(-mes_y_ano)
+  
+  cor_mat <- cor(df_mat, use = "pairwise.complete.obs")
+  
+  productos <- stringr::str_to_title(colnames(cor_mat))
+  colnames(cor_mat) <- productos
+  rownames(cor_mat) <- productos
+  
+  df_long <- as.data.frame(as.table(cor_mat)) %>%
+    rename(
+      Producto_X = Var1,
+      Producto_Y = Var2,
+      Correlacion = Freq
+    )
+  
+  ggplot(
+    df_long,
+    aes(x = Producto_X, y = Producto_Y, fill = Correlacion)
+  ) +
+    geom_tile(color = "white", linewidth = 0.3) +
+    
+    scale_fill_gradient2(
+      low = "#494634",
+      mid = "white",
+      high = "#DBC21F",
+      midpoint = 0,
+      limits = c(-1, 1),
+      name = "Correlación",
+      labels = function(x)
+        format(x, decimal.mark = ",", big.mark = ".")
+    ) +
+    
+    labs(
+      title = paste("Matriz de correlación de precios de productos -", anio),
+      x = NULL,
+      y = NULL
+    ) +
+    
+    coord_fixed() +
+    
+    theme_minimal() +
+    theme(
+      plot.title = element_text(
+        hjust = 0.5,
+        size = 14,
+        face = "bold"
+      ),
+      axis.text.x = element_text(
+        angle = 45,
+        hjust = 1,
+        size = 7
+      ),
+      axis.text.y = element_text(
+        size = 7
+      ),
+      legend.position = "right",
+      panel.grid = element_blank()
+    )
+}
+
+
+
 #correlacion_precios(data, 2023)
 

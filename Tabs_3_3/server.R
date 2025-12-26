@@ -22,6 +22,10 @@ options(encoding = "UTF-8")
 # Cargar función y base de datos (OBLIGATORIO)
 ################################################################################-
 
+# AÑADE ESTO AQUÍ (Entorno Global del Server)
+meses_es <- c("Enero","Febrero","Marzo","Abril","Mayo","Junio",
+              "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+
 source("3_3b_funcion_elasticidad.R", encoding = "UTF-8")  
 # Este archivo DEBE declarar: data y grafico_producto_anual()
 
@@ -45,44 +49,46 @@ server <- function(input, output, session) {
       
       if (nrow(df) == 0) return(NULL)
       
-      anio_sel <- df %>% pull(mes_y_ano) %>% year() %>% max(na.rm = TRUE)
-      df <- df %>% filter(year(mes_y_ano) == anio_sel)
-      
-      fig <- grafico_producto_anual(data, input$producto, anio_sel)
+      anio_sel <- max(year(df$mes_y_ano), na.rm = TRUE)
       
     } else {
+      
       anio_sel <- as.numeric(input$anio)
       
       df <- data %>%
         mutate(mes_y_ano = as.Date(mes_y_ano)) %>%
-        filter(producto == input$producto, year(mes_y_ano) == anio_sel)
+        filter(
+          producto == input$producto,
+          year(mes_y_ano) == anio_sel
+        )
       
-      fig <- grafico_producto_anual(data, input$producto, anio_sel)
+      if (nrow(df) == 0) return(NULL)
     }
     
-    if (is.null(fig) || nrow(df) == 0) return(NULL)
+    df_final <- preparar_df_producto_anual(
+      data,
+      input$producto,
+      anio_sel
+    )
+    
+    if (is.null(df_final)) return(NULL)
     
     list(
-      grafico = fig,
-      datos   = df,
-      anio    = anio_sel
+      df_final = df_final,
+      datos    = df,
+      anio     = anio_sel
     )
   })
   
   ###############################################################################
   # MOSTRAR GRÁFICO PLOTLY
   ###############################################################################
-  output$grafico <- plotly::renderPlotly({
+  output$grafico <- renderPlotly({
     res <- resultado()
+    req(res)
     
-    if (is.null(res)) {
-      return(plotly_empty(type = "scatter") %>% 
-               layout(title = "Sin datos para mostrar"))
-    }
-    
-    res$grafico
+    grafico_producto_anual_plotly(res$df_final)
   })
-  
   ###############################################################################
   # SUBTÍTULO
   ###############################################################################
@@ -204,7 +210,7 @@ server <- function(input, output, session) {
   ###############################################################################
   observeEvent(input$reset, {
     updateSelectInput(session, "producto", selected = "Aguacate")
-    updateSelectInput(session, "anio", selected = "todos")
+    updateSelectInput(session, "anio", selected = "2024")
   })
   
   ###############################################################################
@@ -222,7 +228,7 @@ server <- function(input, output, session) {
   )
   
   ###############################################################################
-  # GENERAR INFORME PDF INSTITUCIONAL
+  # GENERAR INFORME PDF INSTITUCIONAL (GRÁFICO PLANO)
   ###############################################################################
   output$report <- downloadHandler(
     filename = function() {
@@ -232,36 +238,35 @@ server <- function(input, output, session) {
       res <- resultado()
       req(res)
       
-      # ---- 1. Crear PNG temporal ----
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- tempfile(fileext = ".png")
-      
-      htmlwidgets::saveWidget(
-        plotly::as_widget(res$grafico),
-        tmp_html,
-        selfcontained = TRUE
+      # --------------------------------------------------
+      # 1. Crear GRÁFICO PLANO (ggplot)
+      # --------------------------------------------------
+      df_final <- preparar_df_producto_anual(
+        data,
+        input$producto,
+        res$anio
       )
       
-      webshot2::webshot(
-        tmp_html, file = tmp_png,
-        vwidth = 1600, vheight = 900, delay = 1
-      )
+      grafico_plano <- grafico_producto_anual_plano(df_final)
       
-      # ---- 2. Renderizar informe con params ----
+      # --------------------------------------------------
+      # 2. Renderizar informe PDF (SIN webshot, SIN PNG)
+      # --------------------------------------------------
       temp_pdf <- tempfile(fileext = ".pdf")
       
       rmarkdown::render(
         input = file.path(getwd(), "informe.Rmd"),
         output_file = temp_pdf,
-        output_format = "pdf_document",
+        output_format = rmarkdown::pdf_document(latex_engine = "xelatex"),
         encoding = "UTF-8",
         params = list(
           datos     = res$datos,
-          plot      = tmp_png,
+          plot      = grafico_plano,   # 👈 ggplot directo
           producto  = input$producto,
           anio      = input$anio,
           mensaje1  = mensaje1_reactivo()
-        )
+        ),
+        envir = new.env(parent = globalenv())
       )
       
       file.copy(temp_pdf, file, overwrite = TRUE)

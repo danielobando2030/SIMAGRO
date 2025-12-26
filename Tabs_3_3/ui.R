@@ -11,7 +11,7 @@ library(lubridate)
 source("3_3b_funcion_elasticidad.R", encoding = "UTF-8")
 
 productos <- sort(unique(data$producto))
-anios <- sort(unique(year(data$mes_y_ano)))
+anios     <- sort(unique(year(data$mes_y_ano)))
 
 ui <- fluidPage(
   
@@ -95,11 +95,23 @@ ui <- fluidPage(
   # ================= FILTROS =================
   div(
     fluidRow(
-      column(3,
-             selectInput("producto", "Seleccione producto:", productos, selected = "Aguacate")
+      column(
+        3,
+        selectInput(
+          "producto",
+          "Seleccione producto:",
+          productos,
+          selected = "Aguacate"        # 👈 POR DEFECTO
+        )
       ),
-      column(2,
-             selectInput("anio", "Año:", c("Todos" = "todos", anios))
+      column(
+        2,
+        selectInput(
+          "anio",
+          "Año:",
+          c("Todos" = "todos", anios),
+          selected = "2025"             # 👈 POR DEFECTO
+        )
       )
     )
   ),
@@ -145,9 +157,11 @@ ui <- fluidPage(
   fluidRow(
     column(
       12,
-      HTML("<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
-           <br>
-           La elasticidad se calcula como la variación porcentual del precio dividida por la variación porcentual de la cantidad ofertada."),
+      HTML(
+        "<b>Fuente:</b> Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).<br>
+         <br>
+         La elasticidad se calcula como la variación porcentual del precio dividida por la variación porcentual de la cantidad ofertada."
+      ),
       class = "nota-metodo"
     )
   ),

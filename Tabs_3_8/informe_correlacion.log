@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.28)  12 DEC 2025 00:04
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.28)  24 DEC 2025 13:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**C:/Users/Usuario/AppData/Local/Temp/Rtmp0WhYYu/informe_corr_3c043523dda/informe_correlacion.tex
-(c:/Users/Usuario/AppData/Local/Temp/Rtmp0WhYYu/informe_corr_3c043523dda/informe_correlacion.tex
+**C:/Users/Usuario/AppData/Local/Temp/RtmpKK0wmP/informe_corr_44dc7ed01de6/informe_correlacion.tex
+(c:/Users/Usuario/AppData/Local/Temp/RtmpKK0wmP/informe_corr_44dc7ed01de6/informe_correlacion.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-14>
 (c:/Users/Usuario/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -961,8 +961,8 @@ LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/n' will be
 (Font)              scaled to size 14.0pt on input line 107.
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/n' will be
 (Font)              scaled to size 12.0pt on input line 112.
-File: ../../../../AppData/Local/Temp/Rtmp0WhYYu/informe_corr_3c043523dda/grafico_tmp.png Graphic file (type bmp)
-<../../../../AppData/Local/Temp/Rtmp0WhYYu/informe_corr_3c043523dda/grafico_tmp.png>
+File: C:/Users/Usuario/AppData/Local/Temp/RtmpKK0wmP/informe_corr_44dc7ed01de6/informe_correlacion_files/figure-latex/grafico_principal-1.pdf Graphic file (type pdf)
+<use C:/Users/Usuario/AppData/Local/Temp/RtmpKK0wmP/informe_corr_44dc7ed01de6/informe_correlacion_files/figure-latex/grafico_principal-1.pdf>
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/n' will be
 (Font)              scaled to size 8.0pt on input line 124.
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/b/n' will be
@@ -971,12 +971,12 @@ LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/b/n' will be
 (Font)              scaled to size 12.0pt on input line 134.
 
 LaTeX Font Warning: Font shape `TU/Prompt-Regular.ttf(0)/m/sl' undefined
-(Font)              using `TU/Prompt-Regular.ttf(0)/m/n' instead on input line 173.
+(Font)              using `TU/Prompt-Regular.ttf(0)/m/n' instead on input line 172.
 
 File: www/logo_3.png Graphic file (type bmp)
 <www/logo_3.png>
 LaTeX Font Info:    Font shape `TU/Prompt-Regular.ttf(0)/m/sl' will be
-(Font)              scaled to size 10.0pt on input line 173.
+(Font)              scaled to size 10.0pt on input line 172.
 
 Package fancyhdr Warning: \headheight is too small (56.9055pt): 
 (fancyhdr)                Make it at least 60.08264pt, for example:
@@ -1008,12 +1008,12 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 18632 strings out of 470180
- 343075 string characters out of 5476331
+ 18624 strings out of 470180
+ 342978 string characters out of 5476331
  894820 words of memory out of 5000000
- 46985 multiletter control sequences out of 15000+600000
+ 46977 multiletter control sequences out of 15000+600000
  631326 words of font info for 74 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,11n,116p,434b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,11n,116p,445b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on informe_correlacion.pdf (2 pages).

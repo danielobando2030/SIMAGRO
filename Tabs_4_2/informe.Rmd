@@ -3,6 +3,7 @@ title: ' '
 params:
   anio: NA
   mes: NA
+  plot: NA
   producto: NA
   datos: NA
   grafico_png: NA
@@ -108,7 +109,7 @@ cat("\\endgroup\n")
 \endgroup
 
 ```{r grafico_principal, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
-knitr::include_graphics(params$grafico_png)
+print(params$plot)
 ```
 
 \vspace{0.2cm}
@@ -119,24 +120,19 @@ knitr::include_graphics(params$grafico_png)
 
 \vspace{0.25cm}
 
-\begingroup
-\fontsize{10}{10}\selectfont
-\textcolor{grayA}{`r params$mensaje3`}
-\endgroup
+```{r mensajes_interpretativos, results='asis', echo=FALSE}
+print_msg <- function(txt) {
+  if (is.null(txt) || is.na(txt) || !nzchar(txt)) return()
+  cat("\\begingroup\n")
+  cat("\\fontsize{10}{10}\\selectfont\n")
+  cat("\\textcolor{grayA}{", txt, "}\n", sep = "")
+  cat("\\endgroup\n\n")
+}
 
-\vspace{0.25cm}
-
-\begingroup
-\fontsize{10}{10}\selectfont
-\textcolor{grayA}{`r params$mensaje2`}
-\endgroup
-
-\vspace{0.25cm}
-
-\begingroup
-\fontsize{10}{10}\selectfont
-\textcolor{grayA}{`r params$mensaje1`}
-\endgroup
+print_msg(params$mensaje3)
+print_msg(params$mensaje2)
+print_msg(params$mensaje1)
+```
 
 \vspace{0.45cm}
 

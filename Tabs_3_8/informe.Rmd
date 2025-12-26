@@ -2,6 +2,7 @@
 title: ' '
 params:
   anio: NA
+  plot: NA
   datos: NA
   grafico: NA
   mensaje_altas: NA
@@ -119,7 +120,7 @@ cat("\\endgroup\n")
 \endgroup
 
 ```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics(params$grafico)
+print(params$plot)
 ```
 
 \vspace{0.3cm}
@@ -165,7 +166,6 @@ knitr::include_graphics(params$grafico)
 \textcolor{grayA}{Este gráfico muestra la correlación de los precios mayoristas como referencia para Bogotá y Cundinamarca. Donde un valor cercano a 1 indica que los dos productos se mueven en la misma dirección, y valores cercanos a -1 indican que los precios alimentos tienden a moverse de manera contraria.}
 \endgroup
 
-\newpage
 
 \vspace*{6cm}
 

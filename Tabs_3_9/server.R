@@ -191,7 +191,7 @@ server <- function(input, output, session) {
   
   
   # ------------------------------------------------------------------
-  # 7. Informe PDF (mantiene formato correcto)
+  # 7. Informe PDF (mantiene formato correcto + gráfico estático)
   # ------------------------------------------------------------------
   output$report <- downloadHandler(
     filename = function() glue("informe_huella_carbono_{input$anio}_{input$mes}.pdf"),
@@ -200,33 +200,44 @@ server <- function(input, output, session) {
       res <- resultado()
       if (is.null(res)) stop("No hay datos para generar el informe.")
       
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- tempfile(fileext = ".png")
+      # =========================
+      # 👉 GRÁFICO ESTÁTICO (NUEVO)
+      # =========================
+      grafico_estatico <- graficar_treemap_producto_estatico(
+        data = res$datos,
+        anio = input$anio,
+        mes  = input$mes
+      )
       
-      htmlwidgets::saveWidget(as_widget(res$grafico_plotly), tmp_html, selfcontained = TRUE)
-      webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
-      
+      # -------------------------
+      # Escapar mensajes (igual que antes)
+      # -------------------------
       mensaje1_txt <- gsub("%", "\\\\%", res$mensaje1)
       
       mensaje2_txt <- res$mensaje2
       mensaje2_txt <- gsub("%", "\\\\%", mensaje2_txt)
       mensaje2_txt <- gsub("\n", " \\\\newline ", mensaje2_txt)
       
+      # -------------------------
+      # Render PDF
+      # -------------------------
       rmarkdown::render(
         input = "informe.Rmd",
         output_file = file,
         params = list(
-          producto    = "Huella de Carbono",
-          anio        = input$anio,
-          mes         = input$mes,
-          datos       = res$datos,
-          mensaje1    = mensaje1_txt,
-          mensaje2    = mensaje2_txt,
-          grafico_png = tmp_png,
-          mapa_png    = "",
-          tabla_datos = NULL,
-          logo_sup    = "www/logo_3.png",
-          logo_inf    = "www/logo_2.png"
+          producto = "Huella de Carbono",
+          anio     = input$anio,
+          mes      = input$mes,
+          
+          # 👇 CLAVE FAO
+          plot     = grafico_estatico,
+          
+          datos    = res$datos,
+          mensaje1 = mensaje1_txt,
+          mensaje2 = mensaje2_txt,
+          
+          logo_sup = "www/logo_3.png",
+          logo_inf = "www/logo_2.png"
         ),
         envir = new.env(parent = globalenv())
       )

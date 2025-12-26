@@ -226,3 +226,103 @@ diferencias_precios_interactivo <- function(opcion1, opcion2 = NULL, opcion4 = N
     ciudad_min = ciudad_min
   ))
 }
+
+
+diferencias_precios_estatico <- function(df) {
+  
+  if (nrow(df) == 0) return(ggplot() + theme_void())
+  
+  # -----------------------------
+  # Paleta (Idéntica al interactivo)
+  # -----------------------------
+  city_colors <- c(
+    "#DBC21F", "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
+    "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22",
+    "#17becf", "#aec7e8", "#ffbb78", "#98df8a", "#ff9896",
+    "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7"
+  )
+  
+  df <- df %>% 
+    distinct(ciudad, .keep_all = TRUE) %>%
+    mutate(
+      color = city_colors[1:min(n(), length(city_colors))],
+      color = ifelse(ciudad == "Bogotá", "#DBC21F", color)
+    )
+  
+  # -----------------------------
+  # Tamaño burbujas (Equilibrado)
+  # -----------------------------
+  if (all(is.na(df$dev)) || sd(df$dev, na.rm = TRUE) == 0) {
+    df$marker_size <- 10
+  } else {
+    df$marker_size <- scales::rescale(df$dev, to = c(6, 16))
+  }
+  
+  mean_marker_others <- mean(df$marker_size[df$ciudad != "Bogotá"], na.rm = TRUE)
+  df$marker_size[df$ciudad == "Bogotá"] <- mean_marker_others
+  
+  # -----------------------------
+  # Lógica de Posicionamiento (Labels más cerca)
+  # -----------------------------
+  # Reducimos el offset base para acercar los nombres
+  offset_y_cerca <- 0.05 
+  
+  df <- df %>%
+    mutate(
+      # El y_label ahora está mucho más próximo al centro (y=1)
+      y_label = case_when(
+        ciudad == "Bogotá" ~ 1 + offset_y_cerca + (marker_size/250),
+        row_number() %% 2 == 0 ~ 1 - offset_y_cerca - (marker_size/250),
+        TRUE ~ 1 + offset_y_cerca + (marker_size/250)
+      )
+    )
+  
+  # -----------------------------
+  # Gráfico Estático
+  # -----------------------------
+  ggplot(df, aes(x = comp, y = 1)) +
+    # Línea de referencia
+    geom_vline(xintercept = 0, linetype = "dotted", color = "#E0E0E0", linewidth = 0.6) +
+    
+    # Burbujas
+    geom_point(
+      aes(size = marker_size, color = ciudad),
+      alpha = 0.8,
+      show.legend = FALSE
+    ) +
+    
+    # Nombres de ciudades (Ajustados por y_label)
+    geom_text(
+      aes(y = y_label, label = ciudad),
+      angle = 90,
+      size = 3.2,
+      color = "#333333",
+      vjust = 0.5 # Centrado respecto al punto de anclaje
+    ) +
+    
+    # Escalas y Formatos
+    scale_color_manual(values = setNames(df$color, df$ciudad)) +
+    scale_size_identity() + 
+    scale_x_continuous(
+      name = NULL,
+      labels = function(x) paste0("$", formatC(x, big.mark = ".", decimal.mark = ",", format = "f", digits = 0))
+    ) +
+    
+    # Ajuste de encuadre
+    coord_cartesian(ylim = c(0.8, 1.2)) +
+    
+    theme_minimal() +
+    theme(
+      axis.title.y = element_blank(),
+      axis.text.y  = element_blank(),
+      axis.ticks.y = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      plot.margin = margin(5, 10, 5, 10)
+    )
+}
+
+######
+
+
