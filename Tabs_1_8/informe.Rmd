@@ -95,7 +95,7 @@ tabla_kable
 
 <!-- Titulo del tablaro -->
 \fontsize{14}{14} \selectfont \textcolor{mybrown}{Principales productos por volumen en el abastecimiento desde y hacia Cundinamarca}\
-\fontsize{12}{12} \selectfont \textcolor{mybrown}{Vizualiza los productos con mayor participación en el abastecimiento de alimentos desde y hacia Cundinamarca}\
+\fontsize{12}{12} \selectfont \textcolor{mybrown}{Visualiza los productos con mayor participación en el abastecimiento de alimentos desde y hacia Cundinamarca}\
 <!-- Subtitulo -->
 \fontsize{10}{10} \selectfont `r params$subtitulo`\
 <!-- Grafica -->
