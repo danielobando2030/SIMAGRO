@@ -118,7 +118,6 @@ print(params$plot)
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
-\vspace{0.25cm}
 
 ```{r mensajes_interpretativos, results='asis', echo=FALSE}
 print_msg <- function(txt) {
@@ -131,12 +130,8 @@ print_msg <- function(txt) {
 
 print_msg(params$mensaje3)
 print_msg(params$mensaje2)
-print_msg(params$mensaje1)
 ```
 
-\vspace{0.45cm}
-
-\newpage
 
 \begingroup
 \fontsize{8}{8}\selectfont
@@ -144,7 +139,7 @@ print_msg(params$mensaje1)
 Esta visualización permite ver las rutas más importantes por donde se transportan los alimentos hacia Bogotá y Cundinamarca.}
 \endgroup
 
-\vspace*{4cm}
+
 
 \AddToShipoutPictureBG*{
   \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}

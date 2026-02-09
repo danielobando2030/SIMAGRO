@@ -17,26 +17,24 @@ output:
     latex_engine: xelatex
 
 header-includes:
-  - \usepackage{float}
-  - \usepackage{arydshln}
-  - \usepackage{graphicx}
-  - \usepackage{xcolor}
-  - \usepackage{fontspec}
-  - \usepackage{booktabs}
-  - \usepackage{fancyhdr}
-  - \usepackage{eso-pic}
-  - \usepackage{colortbl}
-  - \usepackage{adjustbox}
-  - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{78,77,77}
-  - \definecolor{MYGREEN}{RGB}{78,77,77}
-  - \definecolor{grayA}{RGB}{78,77,77}
-  - \definecolor{green2}{RGB}{78,77,77}
-  - \pagestyle{fancy}
-  - \fancyfoot{}
-  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
-  - \setlength{\headheight}{2cm}
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}  
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mybrown}{RGB}{78,77,77}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{} 
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \usepackage{eso-pic}
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 ---
 
 ```{r setup, include=FALSE}
@@ -47,12 +45,12 @@ library(kableExtra)
 ```
 
 \begin{flushright}
-\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
 
-\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
+\section*{\textcolor{mybrown}{Parámetros con los cuales se generó el informe:}}
 
-```{r, results='asis'}
+```{r,warning=FALSE,message=FALSE}
 opciones_mes <- c(
   "Enero"=1,"Febrero"=2,"Marzo"=3,"Abril"=4,"Mayo"=5,"Junio"=6,
   "Julio"=7,"Agosto"=8,"Septiembre"=9,"Octubre"=10,"Noviembre"=11,"Diciembre"=12
@@ -69,29 +67,27 @@ df_params <- data.frame(
     ifelse(params$producto=="todo","Todos los productos",params$producto)
   )
 )
+tabla_kable <- df_params %>%
+  knitr::kable(
+    col.names = NULL,  # No mostrar nombres de columnas
+    align = 'l',  # Alineación de las columnas
+    format = "latex",  # Formato de salida
+    booktabs = TRUE,  # No utilizar el estilo de las tablas del paquete booktabs
+    linesep = "",  # No agregar ninguna línea separadora
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left", bootstrap_options = "borderless")  # Estilo de la tabla con bordes blancos y cuadrícula completa
+  
+tabla_kable
 
-cat("\\begingroup\n")
-cat("\\small\n")
-cat("\\begin{adjustbox}{width=1\\textwidth}\n")
-cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
-cat("\\toprule\n")
-
-for (i in 1:nrow(df_params)) {
-  cat(df_params$Parámetro[i], " & ", df_params$Valor[i], " \\\\\n", sep = "")
-}
-
-cat("\\bottomrule\n")
-cat("\\end{tabular}\n")
-cat("\\end{adjustbox}\n")
-cat("\\endgroup\n")
 ```
 
 \begingroup
 \fontsize{14}{14}\selectfont
-\textcolor{mygreen}{Diferencias de precios de alimentos con Bogotá}
+\textcolor{mybrown}{Diferencias de precios de alimentos con Bogotá}
 \par
 \fontsize{12}{12}\selectfont
-\textcolor{mygreen}{Descubre los departamentos donde hay mayores y menores diferencias de precios en los alimentos con Bogotá y Cundinamarca}
+\textcolor{mybrown}{Descubre los departamentos donde hay mayores y menores diferencias de precios en los alimentos con Bogotá y Cundinamarca}
 \par
 \endgroup
 
@@ -99,28 +95,27 @@ cat("\\endgroup\n")
 print(params$plot)
 ```
 
-\vspace{0.2cm}
 \begingroup
 \fontsize{8}{8}\selectfont
-\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
 \begingroup
 \fontsize{10}{10}\selectfont 
-\textcolor{grayA}`r params$mensaje1`
+\textcolor{mybrown}`r params$mensaje1`
 \endgroup
 
 \vspace{0.2cm}
 
 \begingroup
 \fontsize{10}{10}\selectfont 
-\textcolor{grayA}`r params$mensaje2`
+\textcolor{mybrown}`r params$mensaje2`
 \endgroup
 
 \vspace{0.25cm}
 \begingroup
 \fontsize{8}{8}\selectfont
-\textcolor{grayA}{Esta visualización compara los precios promedio de alimentos entre Bogotá y los demás departamentos del país, mostrando qué territorios registran mayores o menores valores relativos. Un valor mayor indica precios más altos con respecto a Bogotá, mientras que un valor menor indica precios más bajos comparando con la misma.}
+\textcolor{mybrown}{Esta visualización compara los precios promedio de alimentos entre Bogotá y los demás departamentos del país, mostrando qué territorios registran mayores o menores valores relativos. Un valor mayor indica precios más altos con respecto a Bogotá, mientras que un valor menor indica precios más bajos comparando con la misma.}
 \endgroup
 
 \AddToShipoutPictureBG*{

@@ -123,11 +123,11 @@ ui <- fluidPage(
       div(
         plotlyOutput("grafico", height = "420px"),
         # Botones — MISMO ORDEN QUE MÓDULO 1_10b
-        actionButton("descargar", "Gráfica", icon = icon("download")),
+        downloadButton("descargar", "Gráfica", icon = icon("download")),
         downloadButton("descargarDatos", "Datos"),
         shiny::a(
           "GitHub",
-          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_10",
+          href = "https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_3_10",
           target = "_blank",
           class = "btn btn-default shiny-action-button",
           icon("github")

@@ -13,7 +13,6 @@ library(dplyr)
 library(plotly)
 library(glue)
 library(htmlwidgets)
-library(webshot2)
 library(rmarkdown)
 
 options(scipen = 999)
@@ -131,37 +130,26 @@ server <- function(input, output, session) {
   ###############################################################################
   # Descargar gráfica PNG (INTERACTIVA)
   ###############################################################################
+
+  
   output$descargar <- downloadHandler(
     filename = function() {
-      paste0("grafico_comparativo_", Sys.Date(), ".png")
+      paste("IND2_", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
+      # Forzar la ejecución de la función reactiva
+      
       res <- resultado()
       req(res)
       
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- tempfile(fileext = ".png")
+      # --- Gráfico estático ggplot ---
+      grafico_plano <- diferencias_precios_estatico(res$datos)
       
-      htmlwidgets::saveWidget(
-        widget = plotly::as_widget(res$grafico),
-        file   = tmp_html,
-        selfcontained = TRUE
-      )
-      
-      webshot2::webshot(
-        tmp_html,
-        file   = tmp_png,
-        vwidth = 2800,
-        vheight = 1800,
-        zoom = 1.5,
-        delay = 1
-      )
-      
-      file.copy(tmp_png, file, overwrite = TRUE)
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
     }
-  )
-  
-  # ============================================================
+  )  
+    # ============================================================
   # Texto para informe PDF
   # ============================================================
   

@@ -5,7 +5,6 @@ params:
   plot: NA
   anio: NA
   datos: NA        # <--- AGREGADO
-  grafico_png: NA
   mes: NA
   mensaje1: NA
   mensaje2: NA
@@ -96,28 +95,22 @@ cat("\\endgroup\n")
 print(params$plot)
 ```
 
-\vspace{0.2cm}
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
 
-\vspace{0.2cm}
-
 \begingroup
 \fontsize{10}{10}\selectfont
 \textcolor{grayA}{`r enc2utf8(params$mensaje1)`}
 \endgroup
-
-\vspace{0.2cm}
 
 \begingroup
 \fontsize{10}{10}\selectfont
 \textcolor{grayA}{`r enc2utf8(params$mensaje2)`}
 \endgroup
 
-\vspace{0.25cm}
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{grayA}{Esta visualizaición permite ver la posición del precio mayorista en Bogotá mes a mes del alimento con respecto a las demás ciudades del país.}

@@ -89,28 +89,17 @@ cat("\\normalsize\n")
 ```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
 print(params$plot)
 ```
-
-\vspace{0.2cm}
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
-\vspace{0.2cm}
-
-\begingroup
-\fontsize{10}{11}\selectfont
-\textcolor{grayA}{`r enc2utf8(params$resumen)`}
-\endgroup
-
-\vspace{0.2cm}
 
 \begingroup
 \fontsize{10}{10}\selectfont
 \textcolor{grayA}{`r enc2utf8(params$mensaje1)`}
 \endgroup
 
-\newpage
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{grayA}{Este gráfico muestra la diferencia promedio de precios entre ciudades comparadas con Bogotá. El tamaño del círculo representa la variabilidad interna del precio (desviación estándar). Valores positivos indican precios mayores que Bogotá; valores negativos, menores.}

@@ -127,12 +127,19 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
       .groups = "drop"
     )
   
+  
+  diccionario=c("precio_prom"="Precio promedio" ,
+                "cambio_pct"="Cambio porcentual mensual", 
+                "cambio_pct_anual"="Cambio porcentual anual")
+  
+  
+  
   grafico_plano <- ggplot(df_linea, aes(x = mes_y_ano, y = valor)) +
-    geom_line(color = col_grafico, linewidth = 1.4) +
-    geom_point(color = col_grafico, size = 2.8) +
+    geom_line(color = col_grafico, linewidth = 0.5) +
+    geom_point(color = col_grafico, size = 1.5) +
     labs(
       x = "Fecha",
-      y = str_to_title(variable)
+      y = str_to_title(diccionario[variable])
     ) +
     theme_minimal(base_size = 14) +
     theme(
@@ -147,6 +154,10 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
   # ======================================================
   # 9. GRÁFICO INTERACTIVO (plotly – DASHBOARD)
   # ======================================================
+  
+  
+  
+  
   grafico_interactivo <- plot_ly(
     data = df_linea,
     x = ~mes_y_ano,
@@ -180,6 +191,11 @@ graficar_variable <- function(temporalidad = c("mensual", "diaria"),
       hoverlabel = list(bgcolor = "white", font = list(color = "black")),
       hovermode = "x unified"
     )
+  
+  
+  
+  
+  
   
   # -----------------------------
   # 10. Retornar lista FAO

@@ -272,6 +272,26 @@ server <- function(input, output, session) {
     )
   })
   
+  
+  
+  output$descargar <- downloadHandler(
+    filename = function() {
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
+      res <- grafico_reactivo()
+      
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = res$grafico_plano, width = 13, height = 7, dpi = 200)
+    }
+  )
+  
+  
+  
+  
+  
+  
   # --- 8. Reset ---
   observeEvent(input$reset, {
     updateSelectInput(session, "temporalidad", selected = "mensual")
@@ -279,4 +299,9 @@ server <- function(input, output, session) {
     updateSelectInput(session, "anio", selected = "Todos los años")
     updateSelectInput(session, "producto", selected = "Todos los productos")
   })
-}
+
+  
+  
+  
+  
+  }

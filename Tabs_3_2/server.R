@@ -13,7 +13,6 @@ library(readr)
 library(sf)
 library(stringr)
 library(glue)
-library(webshot2)
 library(htmlwidgets)
 library(rmarkdown)
 
@@ -131,68 +130,20 @@ server <- function(input, output, session) {
   )
   
   # --- 6. Descargar imagen ---
+  
   output$descargar <- downloadHandler(
-    filename = function() glue("mapa_{Sys.Date()}.png"),
-    content  = function(file) {
-      
+    filename = function() {
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
       res <- datos_reactivos()
-      req(res)
       
-      # 1. Reconstruir el mapa EXACTO que se ve en pantalla
-      shp <- shapefile_global %>%
-        left_join(res$datos, by = "cod_depto")
-      
-      shp$nombre_final <- dplyr::coalesce(
-        shp$departamento.y, shp$departamento.x, shp$departamento,
-        as.character(shp$cod_depto)
-      )
-      
-      shp$nombre_final <- stringr::str_to_title(stringr::str_to_lower(shp$nombre_final))
-      
-      pal <- colorNumeric(
-        palette = colorRampPalette(c("#DBC21F", "#B6A534", "#6D673E", "#494634"))(100),
-        domain  = shp$comp,
-        na.color = "#D9D9D9"
-      )
-      
-      shp$tooltip_text <- ifelse(
-        is.na(shp$comp),
-        paste0("<strong>", shp$nombre_final, "</strong><br>Sin datos disponibles"),
-        paste0("<strong>", shp$nombre_final, "</strong><br>Diferencia de precio: $", round(shp$comp))
-      )
-      
-      # 2. Crear mapa Leaflet completo (igual al visible)
-      mapa_leaf <- leaflet(shp) %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        addPolygons(
-          fillColor = ~ ifelse(is.na(comp), "#D9D9D9", pal(comp)),
-          fillOpacity = 0.8,
-          color = "#D5D5D5",
-          weight = 1,
-          popup = ~tooltip_text,
-          label = ~htmlEscape(nombre_final)
-        ) %>%
-        addLegend(
-          pal     = pal,
-          values  = ~comp,
-          opacity = 0.7,
-          title   = "Diferencia del precio"
-        )
-      
-      # 3. Guardarlo primero como HTML
-      temphtml <- tempfile(fileext = ".html")
-      htmlwidgets::saveWidget(mapa_leaf, temphtml, selfcontained = TRUE)
-      
-      # 4. Capturar el PNG final
-      webshot2::webshot(
-        url = temphtml,
-        file = file,
-        vwidth = 1600,
-        vheight = 1000,
-        delay = 2
-      )
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = res$grafico_plano, width = 13, height = 7, dpi = 200)
     }
   )
+  
   
   # --- 7. Generar informe institucional PDF (xelatex) ---
   output$descargarInforme <- downloadHandler(

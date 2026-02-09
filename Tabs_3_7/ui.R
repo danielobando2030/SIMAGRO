@@ -80,10 +80,10 @@ ui <- fluidPage(
         # ==========================
         downloadButton("descargarGrafico", "Gráfica", class = "btn-faoc"),
         downloadButton("descargarDatos", "Datos", class = "btn-faoc"),   # ← AGREGADO
-        
+      
         shiny::a(
           tagList(icon("github"), " GitHub"),
-          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_7",
+          href = "https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_3_7",
           target = "_blank",
           class = "btn-faoc",
           style = "text-decoration:none;"

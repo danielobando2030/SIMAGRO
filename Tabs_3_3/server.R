@@ -12,7 +12,7 @@ rm(list = ls())
 pacman::p_load(
   readr, lubridate, dplyr, ggplot2, zoo, readxl, glue,
   tidyverse, gridExtra, corrplot, plotly, arrow, shiny,
-  webshot2, htmlwidgets, rmarkdown, shinyscreenshot, kableExtra
+  htmlwidgets, rmarkdown, shinyscreenshot, kableExtra
 )
 
 options(scipen = 999)
@@ -116,28 +116,17 @@ server <- function(input, output, session) {
   ###############################################################################
   output$descargar <- downloadHandler(
     filename = function() {
-      paste0("grafico_elasticidad_", input$producto, "_", input$anio, ".png")
+      paste("IND2_", Sys.Date(), ".png", sep="")
     },
     content = function(file) {
+      # Forzar la ejecución de la función reactiva
+  
+      
       res <- resultado()
       req(res)
       
-      # 1. Crear HTML temporal del plotly
-      temp_html <- tempfile(fileext = ".html")
-      htmlwidgets::saveWidget(
-        as_widget(res$grafico),
-        temp_html,
-        selfcontained = TRUE
-      )
-      
-      # 2. Convertir a PNG
-      webshot2::webshot(
-        url = temp_html,
-        file = file,
-        vwidth = 1400,
-        vheight = 900,
-        delay = 1
-      )
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_producto_anual_plano(res$df_final), width = 13, height = 7, dpi = 200)
     }
   )
   
@@ -246,6 +235,7 @@ server <- function(input, output, session) {
         input$producto,
         res$anio
       )
+      print(df_final)
       
       grafico_plano <- grafico_producto_anual_plano(df_final)
       

@@ -13,7 +13,6 @@ library(plotly)
 library(dplyr)
 library(glue)
 library(rmarkdown)
-library(webshot2)
 library(htmlwidgets)
 
 # -------------------------------------------------------------------------------
@@ -95,9 +94,13 @@ output$descargar <- downloadHandler(
     paste("grafica-", Sys.Date(), ".png", sep="")
   },
   content = function(file) {
-    tempFile <- tempfile(fileext = ".html")
-    htmlwidgets::saveWidget(as_widget(resultado()$grafico_plano), tempFile, selfcontained = FALSE)
-    webshot::webshot(tempFile, file = file, delay = 2)
+
+    
+    # --- Gráfico estático ggplot ---
+    grafico_plano <- resultado()$grafico_plano
+    
+    # Usa ggsave para guardar el gráfico
+    ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
   }
 )
 

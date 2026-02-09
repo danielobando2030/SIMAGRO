@@ -5,7 +5,7 @@
 
 pacman::p_load(
   shiny, plotly, dplyr, zoo, lubridate,
-  rmarkdown, webshot2, htmlwidgets, glue
+  rmarkdown, htmlwidgets, glue
 )
 options(scipen = 999)
 
@@ -193,6 +193,64 @@ server <- function(input, output, session) {
         envir = new.env(parent = globalenv()),
         knit_root_dir = tmp_dir
       )
+    }
+  )
+  
+  output$descargarDatos <- downloadHandler(
+    filename = function() {
+      paste0("datos_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      res <-    df <- data_filtrada() %>%
+        arrange(mes_y_ano) %>%
+        mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100) %>%
+        filter(!is.na(cambio_pct_mensual))
+      
+      req(res)
+      write.csv(res, file, row.names = FALSE, fileEncoding = "UTF-8")
+    }
+  )
+  
+  
+  
+  
+  
+  output$descargarGrafico <- downloadHandler(
+    filename = function() {
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
+      
+      df <- data_filtrada() %>%
+        arrange(mes_y_ano) %>%
+        mutate(cambio_pct_mensual = (precio_prom - lag(precio_prom)) / lag(precio_prom) * 100) %>%
+        filter(!is.na(cambio_pct_mensual))
+      
+      grafico_plano <- ggplot(df, aes(x = mes_y_ano, y = cambio_pct_mensual)) +
+        geom_hline(yintercept = 0, linetype = "dotted", color = "gray50") +
+        geom_line(color = "#DBC21F", linewidth = 0.8) +
+        geom_point(color = "#DBC21F", size = 2) +
+        scale_y_continuous(
+          name = "Cambio % mensual",
+          labels = function(x)
+            format(round(x, 2), decimal.mark = ",", big.mark = ".")
+        ) +
+        scale_x_date(
+          name = "Mes",
+          date_labels = "%b",
+          date_breaks = "1 month"
+        ) +
+        theme_minimal() +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          panel.grid.minor = element_blank()
+        )
+      
+      # --- Gráfico estático ggplot ---
+      
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
     }
   )
   

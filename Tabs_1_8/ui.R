@@ -57,7 +57,7 @@ ui <- fluidPage(
     "))
   ),
   tags$h1("Principales productos por volumen que entran y salen de Cundinamarca", class = "main-header"),
-  tags$h2("Visualiza los productos con mayor participación en el abastecimiento de alimentos desde y hacia Cundinamarca", class = "main-header_2"),
+  tags$h2("Vizualiza los productos con mayor participación en el abastecimiento de alimentos desde y hacia Cundinamarca", class = "main-header_2"),
   div(
     textOutput("subtitulo"),
     class = "sub-header2",

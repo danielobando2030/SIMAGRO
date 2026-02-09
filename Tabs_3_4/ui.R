@@ -153,7 +153,7 @@ ui <- fluidPage(
         
         shiny::a(
           tagList(icon("github"), " GitHub"),
-          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_4",
+          href = "https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_3_4",
           target = "_blank",
           class = "btn-faoc-link"
         ),

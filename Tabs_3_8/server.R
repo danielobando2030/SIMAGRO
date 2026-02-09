@@ -5,7 +5,7 @@
 
 pacman::p_load(
   shiny, plotly, dplyr, lubridate, tidyr, stringr,
-  htmlwidgets, webshot2, rmarkdown
+  htmlwidgets, rmarkdown
 )
 options(scipen = 999)
 
@@ -40,7 +40,9 @@ server <- function(input, output, session) {
   
   # --- Cálculo de correlaciones ---
   resultado_correlacion <- reactive({
+    
     anio_sel <- if (!is.null(input$anio)) as.numeric(input$anio) else max(data$anio, na.rm = TRUE)
+    
     res <- correlacion_precios(data, anio_sel)
     return(res)
   })
@@ -124,22 +126,18 @@ server <- function(input, output, session) {
       paste0("correlacion_", input$anio, ".png")
     },
     content = function(file) {
-      res <- resultado_correlacion()
-      g   <- res$grafico
+
       
-      # Carpeta temporal
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- tempfile(fileext = ".png")
+      anio_sel <- if (!is.null(input$anio)) as.numeric(input$anio) else max(data$anio, na.rm = TRUE)
       
-      # Guardar html
-      htmlwidgets::saveWidget(as_widget(g), tmp_html, selfcontained = TRUE)
+      # --- Gráfico estático ggplot ---
+      grafico_plano <- correlacion_precios_estatico(data, anio_sel)
       
-      # Convertir a PNG
-      webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
+    }     
       
-      # Copiar a destino final
-      file.copy(tmp_png, file)
-    }
+    
   )
   
   
@@ -232,10 +230,6 @@ server <- function(input, output, session) {
       tmp_rmd  <- file.path(getwd(), "informe.Rmd")
       tmp_pdf  <- file.path(tmp_dir, "informe_correlacion.pdf")
       
-      # ---- Guardar gráfico Plotly como PNG ----
-      htmlwidgets::saveWidget(as_widget(g), tmp_html, selfcontained = TRUE)
-      Sys.sleep(1.2)
-      webshot2::webshot(tmp_html, tmp_png, vwidth = 1600, vheight = 1000)
       
       # ---- Render PDF ----
       rmarkdown::render(
@@ -244,7 +238,6 @@ server <- function(input, output, session) {
         output_file = tmp_pdf,
         params = list(
           datos          = m,
-          grafico        = tmp_png,
           plot = correlacion_precios_estatico(data, input$anio),
           anio           = if (!is.null(input$anio)) input$anio else max(data$anio),
           mensaje_altas  = mensaje_altas,

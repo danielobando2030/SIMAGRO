@@ -100,17 +100,6 @@ print(params$plot)
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
-\vspace{0.2cm}
-
-\begingroup
-\fontsize{10}{10}\selectfont
-\textcolor{grayA}{`r enc2utf8(params$mensaje1)`}
-\endgroup
-
-```{r lista_atipicos, results='asis'}
-cat(params$lista_atipicos)
-```
-
 
 \vspace{0.25cm}
 \begingroup

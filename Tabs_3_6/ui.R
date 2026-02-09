@@ -123,7 +123,7 @@ ui <- fluidPage(
         downloadButton("descargarDatos", "Datos", class = "btn-faoc"),
         shiny::a(
           tagList(icon("github"), " GitHub"),
-          href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_6",
+          href = "https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_3_6",
           target = "_blank",
           class = "btn-faoc"
         ),

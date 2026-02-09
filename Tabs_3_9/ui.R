@@ -136,13 +136,12 @@ ui <- fluidPage(
       div(
         plotlyOutput("grafico", height = "500px"),
         br(),
-        
-        # Usamos la misma estructura de iconos del proyecto de referencia
-        actionButton("descargarGraf", "Gráfica", icon = icon("download"), class = "btn-faoc"),
+# Usamos la misma estructura de iconos del proyecto de referencia
+        downloadButton("descargarGraf", "Gráfica", icon = icon("download"), class = "btn-faoc"),
         downloadButton("descargarDatos", "Datos", class = "btn-faoc"), # El icono se puede inyectar vía CSS o dejarlo limpio
         
         shiny::a("GitHub", 
-                 href = "https://github.com/FAO-Cundinamarca/VP2025_Tabs_3_9", 
+                 href = "https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_3_9", 
                  target = "_blank",
                  class = "btn btn-default btn-faoc", 
                  icon("github"),

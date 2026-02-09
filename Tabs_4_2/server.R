@@ -13,7 +13,7 @@ library(leaflet)
 library(glue)
 library(rmarkdown)
 library(htmlwidgets)
-library(webshot2)
+
 library(callr)
 library(maps)   # ✅ CORRECTO (no 'map')
 
@@ -213,6 +213,36 @@ server <- function(input, output, session) {
       Producto = input$producto
     )
   })
+  
+  
+  
+  output$descargar <- downloadHandler(
+    filename = function() {
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
+      
+      
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = plot_estatico_pdf(), width = 13, height = 7, dpi = 200)
+    }
+  )  
+  
+  
+  
+  output$descargarDatos <- downloadHandler(
+    filename = function() {
+      paste0("datos_comparativo_", Sys.Date(), ".csv")
+    },
+    content = function(file) {
+      res <-datos_filtrados()
+      
+      req(res)
+      write.csv(res, file, row.names = FALSE, fileEncoding = "UTF-8")
+    }
+  )
+  
   
   ###########################################################################
   # 8.5 MAPA ESTÁTICO GGplot PARA PDF

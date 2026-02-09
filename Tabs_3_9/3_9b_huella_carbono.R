@@ -164,7 +164,7 @@ graficar_treemap_producto_estatico <- function(data, anio = NULL, mes = NULL) {
     )
   
   # --- 2. Gráfico Estático con Jerarquía Gris Claro ---
-  ggplot(df_prod, aes(area = c02_total, subgroup = categoria)) +
+  p=ggplot(df_prod, aes(area = c02_total, subgroup = categoria)) +
     
     # Capa 1: Fondo del Contenedor (Gris muy tenue para el encasillado)
     treemapify::geom_treemap_subgroup_border(fill = "#EDEDED", color = "white", linewidth = 3) +
@@ -205,7 +205,8 @@ graficar_treemap_producto_estatico <- function(data, anio = NULL, mes = NULL) {
     
     theme_void() +
     theme(plot.margin = margin(10, 10, 10, 10))
-}
+return(p)
+  }
 #################################
 # PRUEBA
 #################################

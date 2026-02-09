@@ -20,44 +20,43 @@ output:
     latex_engine: xelatex
 
 header-includes:
-  - \usepackage{float}
-  - \usepackage{arydshln}
-  - \usepackage{graphicx}
-  - \usepackage{xcolor}
-  - \usepackage{fontspec}
-  - \usepackage{booktabs}
-  - \usepackage{fancyhdr}
-  - \usepackage{eso-pic}
-  - \usepackage{colortbl}
-  - \usepackage{adjustbox}
-  - \setmainfont{Prompt-Regular.ttf}
-  - \definecolor{mygreen}{RGB}{78,77,77}
-  - \definecolor{MYGREEN}{RGB}{78,77,77}
-  - \definecolor{grayA}{RGB}{78,77,77}
-  - \definecolor{green2}{RGB}{78,77,77}
-  - \pagestyle{fancy}
-  - \fancyfoot{}
-  - \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
-  - \renewcommand{\headrule}{\color{mygreen}\hrule width\headwidth height\headrulewidth}
-  - \setlength{\headheight}{2cm}
+- \usepackage{float}
+- \usepackage{arydshln}
+- \usepackage{tabu}
+- \usepackage{xcolor}
+- \usepackage{fontspec}
+- \usepackage{booktabs}  
+- \usepackage{fancyhdr}
+- \usepackage{graphicx}
+- \definecolor{mybrown}{RGB}{78,77,77}
+- "\\setmainfont{Prompt-Regular.ttf}"
+- \pagestyle{fancy}
+- \fancyfoot{} 
+- \usepackage{colortbl}
+- \usepackage{adjustbox}
+- \setlength{\headheight}{2cm}
+- \fancyhead[C]{\includegraphics[width=\textwidth]{www/logo_3.png}}
+- \usepackage{eso-pic}
+- \renewcommand{\headrule}{\color{mybrown}\hrule width\headwidth height\headrulewidth} 
 ---
 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(dplyr)
-library(knitr)
-library(kableExtra)
+  library(knitr)
+  library(kableExtra)
+  library(xtable)
+
+
 ```        
 
 \begin{flushright}
-\textcolor{mygreen}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
+\textcolor{mybrown}{Informe en línea generado el: `r format(Sys.Date(), "%d %B, %Y")`}
 \end{flushright}
+\section*{Parámetros con los cuales se generó el informe:}
 
-\section*{\textcolor{mygreen}{Parámetros con los cuales se generó el informe:}}
 
-
-```{r tabla_parametros, results='asis'}
+```{r,warning=FALSE,message=FALSE}
 library(stringr)
 
 # Función sencilla para escapar solo el guion bajo
@@ -102,10 +101,16 @@ producto_label <- ifelse(
 )
 
 # Variable a graficar (nota: aquí vienen nombres como precio_prom, cambio_pct_anual)
+
+diccionario=c("precio_prom"="Precio promedio" ,
+  "cambio_pct"="Cambio porcentual mensual", 
+   "cambio_pct_anual"="Cambio porcentual anual")
+
+variable=diccionario[params$variable]
 variable_label <- ifelse(
-  is.null(params$variable) || params$variable == "",
+  is.null(variable)||is.na(variable) || variable == "",
   "No especificada",
-  params$variable
+  variable
 )
 
 # --------- Data frame de parámetros ---------
@@ -115,81 +120,60 @@ df_params <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# --------- Impresión tabla estilo FAO (sin floats) ---------
-cat("\\begingroup\n")
-cat("\\small\n")
-cat("\\begin{adjustbox}{width=1\\textwidth}\n")
-cat("\\begin{tabular}{p{4cm} @{\\hspace{5cm}} p{6cm}}\n")
-cat("\\toprule\n")
+# Crear la tabla con knitr::kable
+tabla_kable <- df_params %>%
+  knitr::kable(
+    col.names = NULL,  # No mostrar nombres de columnas
+    align = 'l',  # Alineación de las columnas
+    format = "latex",  # Formato de salida
+    booktabs = TRUE,  # No utilizar el estilo de las tablas del paquete booktabs
+    linesep = "",  # No agregar ninguna línea separadora
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = TRUE, latex_options = "HOLD_position", position = "left", bootstrap_options = "borderless")  # Estilo de la tabla con bordes blancos y cuadrícula completa
 
-for (i in 1:nrow(df_params)) {
-  cat(
-    escape_latex(df_params$Parámetro[i]), " & ",
-    escape_latex(df_params$Valor[i]), " \\\\\n",
-    sep = ""
-  )
-}
+tabla_kable
 
-cat("\\bottomrule\n")
-cat("\\end{tabular}\n")
-cat("\\end{adjustbox}\n")
-cat("\\endgroup\n")
 ```
 
 
 \begingroup
 \fontsize{14}{14}\selectfont
-\textcolor{mygreen}{Comportamiento de los precios en el tiempo}
+\textcolor{mybrown}{Comportamiento de los precios en el tiempo}
 \par
 \fontsize{12}{12}\selectfont
-\textcolor{mygreen}{Descubre la dinámica de los precios en las centrales mayoristas de Bogotá y Cundinamarca, así como las tasas de varación de los mismos a lo largo del tiempo}
+\textcolor{mybrown}{Descubre la dinámica de los precios en las centrales mayoristas de Bogotá y Cundinamarca, así como las tasas de varación de los mismos a lo largo del tiempo}
 \par
 \endgroup
 
 ```{r grafico_principal, echo=FALSE, out.width="100%", fig.align='center'}
 suppressWarnings(print(params$plot))
 ```
-
-\vspace{0.3cm}
-
 \begingroup
 \fontsize{8}{8}\selectfont
-\textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
+\textcolor{mybrown}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
-\vspace{0.4cm}
+
+\vspace{0.1cm}
 
 \begingroup
-\fontsize{10}{12}\selectfont
-\textcolor{grayA}{`r escape_textcolor(params$mensaje_volatil)`}
+\fontsize{9}{9}\selectfont
+\textcolor{mybrown}{Este gráfico muestra la evolución de los precios mayoristas como referencia para Bogotá y Cundinamarca.}
 \endgroup
 
-\vspace{0.25cm}
 
 \begingroup
-\fontsize{10}{12}\selectfont
-\textcolor{grayA}{`r escape_textcolor(params$mensaje_promedio)`}
+\fontsize{9}{9}\selectfont
+\textcolor{mybrown}{`r escape_textcolor(params$mensaje_promedio)`}
 \endgroup
-
-\vspace{0.25cm}
-
-\newpage
 
 \begingroup
-\fontsize{10}{12}\selectfont
-\textcolor{grayA}{`r escape_textcolor(params$mensaje_mesanual)`}
-\endgroup
-
-\vspace{0.4cm}
-
-\begingroup
-\fontsize{8}{8}\selectfont
-\textcolor{grayA}{Este gráfico muestra la evolución de los precios mayoristas como referencia para Bogotá y Cundinamarca.}
+\fontsize{9}{9}\selectfont
+\textcolor{mybrown}{`r escape_textcolor(params$mensaje_mesanual)`}
 \endgroup
 
 
-
-\vspace*{6cm}
 
 \AddToShipoutPictureBG*{
   \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}

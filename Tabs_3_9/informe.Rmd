@@ -87,46 +87,34 @@ cat("\\endgroup\n")
 \endgroup
 
 
-```{r grafico_principal, echo=FALSE, message=FALSE, warning=FALSE, out.width="95%", fig.align="center"}
+```{r grafico_principal, echo=FALSE, message=FALSE, warning=FALSE, out.width="90%", fig.align="center"}
 print(params$plot)
 ```
 
-\vspace{0.2cm}
 \begingroup
 \fontsize{8}{8}\selectfont
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA) - DANE. 
 Emisiones estimadas según distancias y factores IPCC/DEFRA/FAO.}
 \endgroup
 
-\vspace{0.2cm}
-
-\begingroup
-\fontsize{10}{10}\selectfont
-\textcolor{grayA}{`r params$mensaje1`}
-\endgroup
-
-\vspace{0.2cm}
 
 \begingroup
 \fontsize{10}{10}\selectfont
 \textcolor{grayA}{`r params$mensaje2`}
 \endgroup
 
-\vspace{0.45cm}
-
-\newpage
-
 \begingroup
-\fontsize{8}{8}\selectfont
+\fontsize{10}{10}\selectfont
 \textcolor{grayA}{
 Esta visualización permite ver la cantidad de CO\textsubscript{2} que se emiten por grupo de alimentos y 
 productos individuales de CO\textsubscript{2} consumidos en Cundinamarca y Bogotá en un periodo determinado.
 }
 \endgroup
 
-\vspace*{4cm}
+
 
 \AddToShipoutPictureBG*{
-  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_2.png}
+  \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
 }
+
 

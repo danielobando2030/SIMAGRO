@@ -191,3 +191,10 @@ grafico_producto_anual_plano <- function(df_final) {
       legend.position = "bottom"
     )
 }
+
+
+
+grafico_producto_anual_plotly <- function(df_final) {
+   ggplotly(grafico_producto_anual_plano(df_final)) 
+}
+

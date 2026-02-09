@@ -83,26 +83,30 @@ server <- function(input, output, session) {
       anio_sel <- if (input$anio == "todos") NULL else as.numeric(input$anio)
       graf <- visualizar_bandas_plotly(df, input$producto, anio_sel)
       
-      tmp_html <- tempfile(fileext = ".html")
-      tmp_png  <- tempfile(fileext = ".png")
+      grafico_plano <- diferencias_precios_estatico(res$datos)
       
-      htmlwidgets::saveWidget(
-        htmlwidgets::as_widget(graf),
-        tmp_html,
-        selfcontained = TRUE
-      )
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
+        }
+  )
+  
+  
+  output$descargarGrafico <- downloadHandler(
+    filename = function() {
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
       
-      webshot2::webshot(
-        tmp_html,
-        file   = tmp_png,
-        vwidth = 1600,
-        vheight = 900,
-        delay = 1
-      )
-      
-      file.copy(tmp_png, file, overwrite = TRUE)
+      df <- data_filtrada()
+      req(nrow(df) > 0)
+      anio_sel <- if (input$anio == "todos") NULL else as.numeric(input$anio)
+      grafico_plano <- visualizar_bandas_estatico(df, input$producto, anio_sel)
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
     }
   )
+  
   
   # -----------------------------------------------------------
   # Descargar datos CSV

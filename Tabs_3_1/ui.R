@@ -145,7 +145,7 @@ ui <- fluidPage(
            downloadButton("descargarDatos", "Datos", class = "btn btn-faoc"),
            
            a("GitHub",
-             href = "https://github.com/Simonaa-Antioquia/Tableros/tree/main/Tabs_3_1",
+             href = "https://github.com/danielobando2030/SIMAGRO/tree/main/Tabs_3_1",
              target = "_blank",
              class = "btn btn-faoc", icon("github")),
            

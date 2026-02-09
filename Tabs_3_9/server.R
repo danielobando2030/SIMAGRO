@@ -9,7 +9,6 @@ library(shiny)
 library(plotly)
 library(dplyr)
 library(rmarkdown)
-library(webshot2)
 library(htmlwidgets)
 library(glue)
 library(knitr)
@@ -178,17 +177,35 @@ server <- function(input, output, session) {
     }
   )
   
-  output$descargarGraf <- downloadHandler(
-    filename = function() glue("grafico_emisiones_{input$anio}_{input$mes}.png"),
-    content = function(file) {
-      res <- resultado()
-      if (is.null(res) || is.null(res$grafico_plotly)) stop("Sin gráfico.")
-      tmp_html <- tempfile(fileext = ".html")
-      htmlwidgets::saveWidget(res$grafico_plotly, tmp_html, selfcontained = TRUE)
-      webshot2::webshot(tmp_html, file, vwidth = 1600, vheight = 1000)
-    }
-  )
+   
   
+  # ============================================================
+  # Texto para informe PDF
+  # ============================================================
+  
+  resumen_reactivo <- reactive({
+    res <- resultado()
+    if (is.null(res)) return("")
+    
+    glue(
+      "Producto: {input$producto} | Año: {input$anio}. ",
+      "El precio más bajo se observó en {res$ciudad_min} (",
+      res$precio_min,
+      " pesos menos que Bogotá) y el más alto en {res$ciudad_max} (",
+      res$precio_max,
+      " pesos más que Bogotá)."
+    )
+  })
+  
+  
+  
+  
+  
+
+
+
+
+
   
   # ------------------------------------------------------------------
   # 7. Informe PDF (mantiene formato correcto + gráfico estático)
@@ -243,7 +260,36 @@ server <- function(input, output, session) {
       )
     }
   )
+
   
+  
+  
+  output$descargarGraf<- downloadHandler(
+    filename = function(){
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
+      res <- resultado()
+      #if (is.null(res)) stop("No hay datos para generar el informe.")
+      # =========================
+      # 👉 GRÁFICO ESTÁTICO (NUEVO)
+      # =========================
+      grafico_plano <- graficar_treemap_producto_estatico(
+        data = res$datos,
+        anio = input$anio,
+        mes  = input$mes
+      )
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
+      
+      
+      #ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
+    }
+  )  
+  
+  
+    
   # ------------------------------------------------------------------
   # 8. Reset filtros
   # ------------------------------------------------------------------

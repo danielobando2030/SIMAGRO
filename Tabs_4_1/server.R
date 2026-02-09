@@ -12,7 +12,7 @@ rm(list = ls())
 library(readr); library(lubridate); library(dplyr); library(ggplot2); library(zoo); library(readxl)
 library(glue); library(tidyverse); library(gridExtra); library(corrplot)
 library(shiny); library(shinydashboard)
-library(htmlwidgets); library(webshot2); library(magick)
+library(htmlwidgets);  library(magick)
 library(knitr); library(rmarkdown)
 library(leaflet); library(scales); library(stringr); library(purrr)
 
@@ -198,7 +198,24 @@ server <- function(input, output, session) {
       str_replace_all("\\$", "\\\\$")
   }
   
-  output$descargarPDF <- downloadHandler(
+
+  output$descargar <- downloadHandler(
+    filename = function() {
+      paste("IND2_", Sys.Date(), ".png", sep="")
+    },
+    content = function(file) {
+      # Forzar la ejecución de la función reactiva
+      # --- Gráfico estático ggplot ---
+      grafico_plano <- plot_estatico()
+      # Usa ggsave para guardar el gráfico
+      ggplot2::ggsave(filename = file, plot = grafico_plano, width = 13, height = 7, dpi = 200)
+    }
+  )  
+  
+  
+  
+  
+    output$descargarPDF <- downloadHandler(
     filename = function(){
       paste0("informe_rutas_", input$anio, "_",
              mes_nombre_a_numero[input$mes], "_",
@@ -253,7 +270,23 @@ server <- function(input, output, session) {
       )
     }
   )
-}
+
+    output$descargarDatos <- downloadHandler(
+      filename = function() {
+        paste0("datos_comparativo_", Sys.Date(), ".csv")
+      },
+      content = function(file) {
+        res <- resultado()
+        req(res)
+        write.csv(res$datos, file, row.names = FALSE, fileEncoding = "UTF-8")
+      }
+    )
+    
+    
+    
+    
+    
+    }
 
 ################################################################################-
 # FIN

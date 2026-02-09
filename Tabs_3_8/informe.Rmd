@@ -130,36 +130,17 @@ print(params$plot)
 \textcolor{mygreen}{\textbf{Fuente:} Cálculos propios a partir de datos del Sistema de Información de Precios y Abastecimiento del Sector Agropecuario (SIPSA).}
 \endgroup
 
-\vspace{0.4cm}
-
-\begingroup
-\fontsize{12}{14}\selectfont
-\textcolor{mygreen}{\textbf{Correlaciones más altas:}}
-\endgroup
-
-\vspace{0.15cm}
 
 \begingroup
 \fontsize{10}{12}\selectfont
-\textcolor{grayA}{`r escape_textcolor(params$mensaje_altas)`}
+\textcolor{grayA}{\textbf{Correlaciones más altas: }`r escape_textcolor(params$mensaje_altas)`}
 \endgroup
 
-\vspace{0.5cm}
-
-\begingroup
-\fontsize{12}{14}\selectfont
-\textcolor{mygreen}{\textbf{Correlaciones más bajas:}}
-\endgroup
-
-\vspace{0.15cm}
 
 \begingroup
 \fontsize{10}{12}\selectfont
-\textcolor{grayA}{`r escape_textcolor(params$mensaje_bajas)`}
+\textcolor{grayA}{\textbf{Correlaciones más bajas: }`r escape_textcolor(params$mensaje_bajas)`}
 \endgroup
-
-\vspace{0.25cm}
-
 
 \begingroup
 \fontsize{8}{8}\selectfont
@@ -167,7 +148,6 @@ print(params$plot)
 \endgroup
 
 
-\vspace*{6cm}
 
 \AddToShipoutPictureBG*{
   \includegraphics[width=\paperwidth,height=3cm,keepaspectratio]{www/logo_4.png}
